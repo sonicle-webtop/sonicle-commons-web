@@ -71,6 +71,7 @@ public class JsonResult extends HashMap<String, Object> {
 	public static final String START_PROP = "start";
 	public static final String LIMIT_PROP = "limit";
 	public static final String SELECTED_PROP = "selected";
+	protected String dataProperty = DATA_PROP;
 
 	/***
 	 * Default constructor.
@@ -82,55 +83,65 @@ public class JsonResult extends HashMap<String, Object> {
 	}
 	
 	public JsonResult(Object data) {
+		this(DATA_PROP, data);
+	}
+	
+	public JsonResult(String dataProperty, Object data) {
 		super();
-		this.setSuccess(true);
-		this.setData(data);
+		this.dataProperty = dataProperty;
+		setSuccess(true);
+		setData(data);
 	}
 	
 	public JsonResult(Object data, int totalCount) {
+		this(DATA_PROP, data, totalCount);
+	}
+	
+	public JsonResult(String dataProperty, Object data, int totalCount) {
 		super();
-		this.setSuccess(true);
-		this.setData(data);
-		this.setTotal(totalCount);
+		this.dataProperty = dataProperty;
+		setSuccess(true);
+		setData(data);
+		setTotal(totalCount);
 	}
 	
 	public JsonResult(Object data, ExtMetaData meta, int totalCount) {
 		super();
-		this.setSuccess(true);
-		this.setData(data);
-		this.setTotal(totalCount);
-		this.setMetaData(meta);
+		setSuccess(true);
+		setData(data);
+		setTotal(totalCount);
+		setMetaData(meta);
 	}
 	
 	public JsonResult(Object data, ExtMetaData meta, int totalCount, int start, int limit) {
 		super();
-		this.setSuccess(true);
-		this.setData(data);
-		this.setTotal(totalCount);
-		this.setMetaData(meta);
-		this.setStart(start);
-		this.setLimit(limit);
+		setSuccess(true);
+		setData(data);
+		setTotal(totalCount);
+		setMetaData(meta);
+		setStart(start);
+		setLimit(limit);
 	}
 	
 	public JsonResult(boolean success, String message) {
 		super();
-		this.setSuccess(success);
-		this.setMessage(message);
+		setSuccess(success);
+		setMessage(message);
 	}
 	
 	public JsonResult(boolean success, String message, Object data) {
 		super();
-		this.setSuccess(success);
-		this.setMessage(message);
-		this.setData(data);
+		setSuccess(success);
+		setMessage(message);
+		setData(data);
 	}
 	
 	public boolean getSuccess() {
-		return (Boolean)this.get(SUCCESS_PROP);
+		return (Boolean)get(SUCCESS_PROP);
 	}
 
 	public JsonResult setSuccess(boolean value) {
-		this.put(SUCCESS_PROP, value);
+		put(SUCCESS_PROP, value);
 		return this;
 	}
 
@@ -139,25 +150,29 @@ public class JsonResult extends HashMap<String, Object> {
 	}
 
 	public JsonResult setMessage(String value) {
-		this.put(MESSAGE_PROP, value);
+		put(MESSAGE_PROP, value);
 		return this;
 	}
 	
 	public ExtMetaData getMetaData() {
-		return (ExtMetaData)this.get(METADATA_PROP);
+		return (ExtMetaData)get(METADATA_PROP);
 	}
 
 	public JsonResult setMetaData(ExtMetaData value) {
-		this.put(METADATA_PROP, value);
+		put(METADATA_PROP, value);
 		return this;
 	}
 	
+	public Object getDataProperty() {
+		return dataProperty;
+	}
+	
 	public Object getData() {
-		return (Object)this.get(DATA_PROP);
+		return (Object)get(dataProperty);
 	}
 
 	public JsonResult setData(Object value) {
-		this.put(DATA_PROP, value);
+		put(dataProperty, value);
 		return this;
 	}
 	
