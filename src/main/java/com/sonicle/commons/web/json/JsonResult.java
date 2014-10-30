@@ -36,6 +36,9 @@ package com.sonicle.commons.web.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.sonicle.commons.web.gson.GsonExtJsGridFilterTypeAdapter;
 import com.sonicle.commons.web.gson.GsonISODateTypeAdapter;
 import com.sonicle.commons.web.json.extjs.ExtGridFilter;
@@ -258,4 +261,52 @@ public class JsonResult extends HashMap<String, Object> {
 	public void printTo(PrintWriter out, boolean serializeNulls) {
 		out.println(toJson(serializeNulls));
 	}
+	
+
+	//EXEMPLE JSON CLASS PARSING
+	public static void main(String args[]) {
+		String json="{ a: 'aaa', b: 111, c: { d: 'ddd', e: 222, f: 4.5 } }";
+		MyTest mt=JsonResult.gson.fromJson(json, MyTest.class);
+		MyTest mt2=JsonResult.gson.fromJson(json, MyTest2.class);
+		//JsonParser parser=new JsonParser();
+		//JsonObject p=parser.parse(json).getAsJsonObject();
+		//MyTest mt=new MyTest();
+		//mt.a=p.get("a").getAsString();
+		//mt.b=p.get("b").getAsInt();
+		//mt.c=p.get("c").getAsJsonObject().toString();
+		System.out.println("MT  -> "+mt);
+		System.out.println("MT2 -> "+mt2);
+	}
+	
+	public static class MyTest {
+		public String a;
+		public int b;
+		
+		@Override
+		public String toString() {
+			return "a="+a+", b="+b;
+		}
+	}
+	
+	public static class MyC {
+		String d;
+		int e;
+		float f;
+		
+		@Override
+		public String toString() {
+			return "{ d="+d+", e="+e+" f="+f;
+		}		
+	}
+	
+	public static class MyTest2 extends MyTest {
+		
+		MyC c;
+		
+		@Override
+		public String toString() {
+			return "a="+a+", b="+b+", c="+c+"  ["+c.getClass()+"]";
+		}
+	}
+	
 }
