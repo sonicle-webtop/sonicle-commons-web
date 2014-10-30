@@ -38,8 +38,10 @@ import com.sonicle.commons.LangUtils;
 import com.sonicle.commons.net.IPUtils;
 import com.sonicle.commons.validation.Validator;
 import com.sonicle.commons.validation.ValidatorException;
+import com.sonicle.commons.web.json.JsonResult;
 import eu.medsea.mimeutil.MimeType;
 import eu.medsea.mimeutil.MimeUtil;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -81,6 +83,20 @@ import org.slf4j.LoggerFactory;
 public class ServletUtils {
 	
 	final static Logger logger = (Logger) LoggerFactory.getLogger(ServletUtils.class);
+	
+	public static String getPayload(HttpServletRequest request) throws IOException {
+		String line = null;
+		StringBuilder buffer = new StringBuilder();
+		BufferedReader reader = request.getReader();
+		while ((line = reader.readLine()) != null) {
+			buffer.append(line);
+		}
+		return buffer.toString();
+	}
+	
+	public static <T>T getPayload(HttpServletRequest request, Class<T> type) throws IOException {
+		return JsonResult.gson.fromJson(getPayload(request), type);
+	}
 	
 	public static String getStringAttribute(HttpServletRequest request, String name) {
 		return getStringAttribute(request, name, null);
