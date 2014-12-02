@@ -32,7 +32,7 @@
  * display the words "Copyright (C) 2014 Sonicle S.r.l.".
  */
 
-package com.sonicle.commons.web.servlet;
+package com.sonicle.commons.web;
 
 import com.sonicle.commons.LangUtils;
 import com.sonicle.commons.net.IPUtils;

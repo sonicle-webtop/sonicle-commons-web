@@ -1,5 +1,5 @@
 /*
- * Sonicle Commons Web is a helper library developed by Sonicle S.r.l.
+ * sonicle-commons-web is a library developed by Sonicle S.r.l.
  * Copyright (C) 2014 Sonicle S.r.l.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -31,21 +31,22 @@
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Copyright (C) 2014 Sonicle S.r.l.".
  */
+package com.sonicle.commons.web;
 
-package com.sonicle.commons.web.servlet;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
- * 
+ *
  * @author malbinola
  */
-public class Crud {
+public class URLUtils {
 	
-	public static final String LIST = "list";
-	public static final String BEGIN = "begin";
-	public static final String END = "end";
-	public static final String SAVE = "save";
-	public static final String CREATE = "create";
-	public static final String READ = "read";
-	public static final String UPDATE = "update";
-	public static final String DELETE = "delete";
+	public static String encodeQuietly(String s) {
+		try {
+			return URLEncoder.encode(s, "UTF-8");
+		} catch (UnsupportedEncodingException ex) {
+			return s;
+		}
+	}
 }
