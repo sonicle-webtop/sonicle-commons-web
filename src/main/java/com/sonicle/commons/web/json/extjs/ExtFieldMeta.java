@@ -55,14 +55,26 @@ public class ExtFieldMeta extends HashMap<String, Object> {
 		this.setName(name);
 	}
 	
+	public String getName() {
+		return (String) get(NAME);
+	}
+	
 	public ExtFieldMeta setName(String value) {
 		this.put(NAME , value);
 		return this;
 	}
 	
+	public String getType() {
+		return (String) get(TYPE);
+	}
+	
 	public ExtFieldMeta setType(String value) {
 		this.put(TYPE , value);
 		return this;
+	}
+	
+	public Boolean getAllowBlank() {
+		return (Boolean) get(ALLOW_BLANK);
 	}
 	
 	public ExtFieldMeta setAllowBlank(Boolean value) {

@@ -71,7 +71,8 @@ public class ExtTreeNode {
 		return this.data;
 	}
 	
-	public void setData(Object value) {
+	public ExtTreeNode setData(Object value) {
 		this.data = value;
+		return this;
 	}
 }

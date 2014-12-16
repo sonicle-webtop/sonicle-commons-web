@@ -84,29 +84,13 @@ public class ServletUtils {
 	
 	final static Logger logger = (Logger) LoggerFactory.getLogger(ServletUtils.class);
 	
-	public static String getPayload(HttpServletRequest request) throws IOException {
-		String line = null;
-		StringBuilder buffer = new StringBuilder();
-		BufferedReader reader = request.getReader();
-		while ((line = reader.readLine()) != null) {
-			buffer.append(line);
-		}
-		return buffer.toString();
-	}
-	
-	public static <T>T getPayload(HttpServletRequest request, Class<T> type) throws IOException {
-		return JsonResult.gson.fromJson(getPayload(request), type);
-	}
-	
-	public static String getStringAttribute(HttpServletRequest request, String name) {
-		return getStringAttribute(request, name, null);
-	}
-	
-	public static String getStringAttribute(HttpServletRequest request, String name, String defaultValue) {
-		String value = String.valueOf(request.getAttribute(name));
-		return LangUtils.value(value, defaultValue);
-	}
-	
+	/**
+	 * Gets request's parameter value.
+	 * @param request The HttpServletRequest.
+	 * @param name Parameter name.
+	 * @param defaultValue Desired defaultValue if undefined.
+	 * @return Value as String.
+	 */
 	public static String getStringParameter(HttpServletRequest request, String name, String defaultValue) {
 		try {
 			return ServletUtils.getStringParameter(request, name, true);
@@ -115,10 +99,27 @@ public class ServletUtils {
 		}
 	}
 	
+	/**
+	 * Gets request's parameter value.
+	 * @param request The HttpServletRequest.
+	 * @param name Parameter name.
+	 * @param required True to generate an exception if undefined.
+	 * @return Value as String.
+	 * @throws java.lang.Exception
+	 */
 	public static String getStringParameter(HttpServletRequest request, String name, boolean required) throws Exception {
 		return getStringParameter(request, name, required, true);
 	}
 	
+	/**
+	 * Gets request's parameter value.
+	 * @param request The HttpServletRequest.
+	 * @param name Parameter name.
+	 * @param required True to generate an exception if undefined.
+	 * @param emptyAsNull True to treat empty string as undefined.
+	 * @return Value as String.
+	 * @throws java.lang.Exception
+	 */
 	public static String getStringParameter(HttpServletRequest request, String name, boolean required, boolean emptyAsNull) throws Exception {
 		try {
 			String value = request.getParameter(name);
@@ -153,6 +154,13 @@ public class ServletUtils {
 		}
 	}
 	
+	/**
+	 * Gets request's parameter value.
+	 * @param request The HttpServletRequest.
+	 * @param name Parameter name.
+	 * @param defaultValue Desired defaultValue if undefined.
+	 * @return Value as Integer.
+	 */
 	public static Integer getIntParameter(HttpServletRequest request, String name, Integer defaultValue) {
 		try {
 			return ServletUtils.getIntParameter(request, name, true);
@@ -161,24 +169,47 @@ public class ServletUtils {
 		}
 	}
 	
+	/**
+	 * Gets request's parameter value.
+	 * @param request The HttpServletRequest.
+	 * @param name Parameter name.
+	 * @param required True to generate an exception if undefined.
+	 * @return Value as Integer.
+	 * @throws java.lang.Exception
+	 */
 	public static Integer getIntParameter(HttpServletRequest request, String name, boolean required) throws Exception {
 		try {
-			String value = request.getParameter(name);
+			String value = StringUtils.defaultIfBlank(request.getParameter(name), null);
 			return Validator.validateInteger(required, value);
 		} catch(ValidatorException ex) {
 			throw new Exception(MessageFormat.format("Error getting parameter [{0}]", name), ex);
 		}
 	}
 	
+	/**
+	 * Gets request's parameter value.
+	 * @param request The HttpServletRequest.
+	 * @param name Parameter name.
+	 * @param defaultValue Desired defaultValue if undefined.
+	 * @return Value as Boolean.
+	 */
 	public static boolean getBooleanParameter(HttpServletRequest request, String name, boolean defaultValue) {
 		try {
-			String value = request.getParameter(name);
+			String value = StringUtils.defaultIfBlank(request.getParameter(name), null);
 			return Validator.validateBoolean(true, value);
 		} catch(ValidatorException ex) {
 			return defaultValue;
 		}
 	}
 	
+	/**
+	 * Gets request's parameter value.
+	 * @param request The HttpServletRequest.
+	 * @param name Parameter name.
+	 * @param locale Locale to use for decimal format.
+	 * @param defaultValue Desired defaultValue if undefined.
+	 * @return Value as Float.
+	 */
 	public static Float getFloatParameter(HttpServletRequest request, String name, Locale locale, Float defaultValue) {
 		try {
 			return ServletUtils.getFloatParameter(request, name, locale, true);
@@ -187,15 +218,31 @@ public class ServletUtils {
 		}
 	}
 	
+	/**
+	 * Gets request's parameter value.
+	 * @param request The HttpServletRequest.
+	 * @param name Parameter name.
+	 * @param locale Locale to use for decimal format.
+	 * @param required True to generate an exception if undefined.
+	 * @return Value as Float.
+	 * @throws java.lang.Exception
+	 */
 	public static Float getFloatParameter(HttpServletRequest request, String name, Locale locale, boolean required) throws Exception {
 		try {
-			String value = request.getParameter(name);
+			String value = StringUtils.defaultIfBlank(request.getParameter(name), null);
 			return Validator.validateFloat(required, value, locale);
 		} catch(ValidatorException ex) {
 			throw new Exception(MessageFormat.format("Error getting parameter [{0}]", name), ex);
 		}
 	}
 	
+	/**
+	 * Gets request's parameter value.
+	 * @param request The HttpServletRequest.
+	 * @param name Parameter name.
+	 * @param defaultValue Desired defaultValue if undefined.
+	 * @return Value as Date.
+	 */
 	public static Date getDateParameter(HttpServletRequest request, String name, Date defaultValue) {
 		try {
 			return ServletUtils.getDateParameter(request, name, true);
@@ -204,14 +251,74 @@ public class ServletUtils {
 		}
 	}
 	
+	/**
+	 * Gets request's parameter value.
+	 * @param request The HttpServletRequest.
+	 * @param name Parameter name.
+	 * @param required True to generate an exception if undefined.
+	 * @return Value as Date.
+	 * @throws java.lang.Exception
+	 */
 	public static Date getDateParameter(HttpServletRequest request, String name, boolean required) throws Exception {
 		try {
-			String value = request.getParameter(name);
+			String value = StringUtils.defaultIfBlank(request.getParameter(name), null);
 			//return Validator.validateDate(required, value, "yyyy-MM-dd'T'HH:mm:ss'Z'");
 			return Validator.validateDate(required, value, "yyyy-MM-dd");
 		} catch(ValidatorException ex) {
 			throw new Exception(MessageFormat.format("Error getting parameter [{0}]", name), ex);
 		}
+	}
+	
+	/**
+	 * Gets request's attribute value.
+	 * @param request The HttpServletRequest.
+	 * @param name Attribute name.
+	 * @return Value as string.
+	 */
+	public static String getStringAttribute(HttpServletRequest request, String name) {
+		return getStringAttribute(request, name, null);
+	}
+	
+	/**
+	 * Gets request's attribute value.
+	 * @param request The HttpServletRequest.
+	 * @param name Attribute name.
+	 * @param defaultValue Attribute defaultValue.
+	 * @return Value as string.
+	 */
+	public static String getStringAttribute(HttpServletRequest request, String name, String defaultValue) {
+		String value = String.valueOf(request.getAttribute(name));
+		return LangUtils.value(value, defaultValue);
+	}
+	
+	/**
+	 * Extracts request payload.
+	 * @param request The HttpServletRequest.
+	 * @return Payload string.
+	 * @throws IOException 
+	 */
+	public static String getPayload(HttpServletRequest request) throws IOException {
+		String line = null;
+		StringBuilder buffer = new StringBuilder();
+		BufferedReader reader = request.getReader();
+		while ((line = reader.readLine()) != null) {
+			buffer.append(line);
+		}
+		return buffer.toString();
+	}
+	
+	/**
+	 * /**
+	 * Extracts request payload as class.
+	 * String payload is treated as JSON and deserialized as specified class type.
+	 * @param <T> Type
+	 * @param request The HttpServletRequest.
+	 * @param type Output class type.
+	 * @return Payload string.
+	 * @throws IOException 
+	 */
+	public static <T>T getPayload(HttpServletRequest request, Class<T> type) throws IOException {
+		return JsonResult.gson.fromJson(getPayload(request), type);
 	}
 	
 	public static void writeErrorHandlingJs(HttpServletResponse response) throws IOException {
