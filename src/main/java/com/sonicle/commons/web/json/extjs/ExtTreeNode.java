@@ -34,18 +34,24 @@
 
 package com.sonicle.commons.web.json.extjs;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  *
  * @author malbinola
  */
-public class ExtTreeNode {
+public class ExtTreeNode extends HashMap<String, Object> {
 	
-	public String id = null;
-	public String text = null;
-	public boolean leaf = true;
-	public String iconCls = null;
-	public String qtip = null;
-	public Object data = null;
+	public static final String ID_PROP = "id";
+	public static final String TEXT_PROP = "text";
+	public static final String LEAF_PROP = "leaf";
+	public static final String ICON_CLASS_PROP = "iconCls";
+	public static final String TOOLTIP_PROP = "qtip";
+	public static final String EXPANDED_PROP = "expanded";
+	public static final String LOADED_PROP = "loaded";
+	public static final String CHECKED_PROP = "checked";
+	public static final String CHILDREN_PROP = "children";
 	
 	public ExtTreeNode() {
 		
@@ -60,19 +66,92 @@ public class ExtTreeNode {
 	}
 	
 	public ExtTreeNode(String id, String text, boolean leaf, String iconClass, String tooltip) {
-		this.id = id;
-		this.text = text;
-		this.leaf = leaf;
-		this.iconCls = iconClass;
-		this.qtip = tooltip;
+		setId(id);
+		setText(text);
+		setLeaf(leaf);
+		setIconClass(iconClass);
+		setTooltip(tooltip);
 	}
 	
-	public Object getData() {
-		return this.data;
+	public String getId() {
+		return (String)this.get(ID_PROP);
 	}
 	
-	public ExtTreeNode setData(Object value) {
-		this.data = value;
+	public final ExtTreeNode setId(String value) {
+		this.put(ID_PROP, value);
+		return this;
+	}
+	
+	public String getText() {
+		return (String)this.get(TEXT_PROP);
+	}
+	
+	public final ExtTreeNode setText(String value) {
+		this.put(TEXT_PROP, value);
+		return this;
+	}
+	
+	public Boolean getLeaf() {
+		return (Boolean)this.get(LEAF_PROP);
+	}
+	
+	public final ExtTreeNode setLeaf(boolean value) {
+		this.put(LEAF_PROP, value);
+		if(value) this.remove(CHILDREN_PROP);
+		return this;
+	}
+	
+	public String getIconClass() {
+		return (String)this.get(ICON_CLASS_PROP);
+	}
+	
+	public final ExtTreeNode setIconClass(String value) {
+		this.put(ICON_CLASS_PROP, value);
+		return this;
+	}
+	
+	public String getTooltip() {
+		return (String)this.get(TOOLTIP_PROP);
+	}
+	
+	public final ExtTreeNode setTooltip(String value) {
+		this.put(TOOLTIP_PROP, value);
+		return this;
+	}
+	
+	public Boolean getExpanded() {
+		return (Boolean)this.get(EXPANDED_PROP);
+	}
+	
+	public final ExtTreeNode setExpanded(boolean value) {
+		if(value && !getLeaf()) this.put(EXPANDED_PROP, value);
+		return this;
+	}
+	
+	public Boolean getChecked() {
+		return (Boolean)this.get(CHECKED_PROP);
+	}
+	
+	public final ExtTreeNode setChecked(boolean value) {
+		this.put(CHECKED_PROP, value);
+		return this;
+	}
+	
+	public Boolean getLoaded() {
+		return (Boolean)this.get(LOADED_PROP);
+	}
+	
+	public final ExtTreeNode setLoaded(boolean value) {
+		if(value && !getLeaf()) this.put(LOADED_PROP, value);
+		return this;
+	}
+	
+	public ArrayList<ExtTreeNode> getChildren() {
+		return (ArrayList<ExtTreeNode>)this.get(CHILDREN_PROP);
+	}
+	
+	public final ExtTreeNode setChildren(ArrayList<ExtTreeNode> value) {
+		this.put(CHILDREN_PROP, value);
 		return this;
 	}
 }

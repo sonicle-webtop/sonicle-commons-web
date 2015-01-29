@@ -307,6 +307,13 @@ public class ServletUtils {
 		return buffer.toString();
 	}
 	
+	public static <T>JsPayload getPayload2(HttpServletRequest request, Class<T> type) throws IOException {
+		String payload = getPayload(request);
+		JsPayloadFields fields = JsonResult.gson.fromJson(payload, JsPayloadFields.class);
+		T data = JsonResult.gson.fromJson(payload, type);
+		return new JsPayload<T>(fields, data);
+	}
+	
 	/**
 	 * /**
 	 * Extracts request payload as class.

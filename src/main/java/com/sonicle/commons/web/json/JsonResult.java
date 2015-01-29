@@ -44,6 +44,9 @@ import com.sonicle.commons.web.gson.GsonISODateTypeAdapter;
 import com.sonicle.commons.web.json.extjs.ExtGridFilter;
 import com.sonicle.commons.web.json.extjs.ExtMetaData;
 import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -63,6 +66,11 @@ public class JsonResult extends HashMap<String, Object> {
 	
 	public static final Gson gsonWoNulls = new GsonBuilder()
 		.registerTypeAdapter(java.util.Date.class, new GsonISODateTypeAdapter())
+		.create();
+	
+	public static final Gson gsonWoNullsNoEscape = new GsonBuilder()
+		.registerTypeAdapter(java.util.Date.class, new GsonISODateTypeAdapter())
+		.disableHtmlEscaping()
 		.create();
 	
 	public static final String SUCCESS_PROP = "success";
@@ -264,7 +272,13 @@ public class JsonResult extends HashMap<String, Object> {
 	
 
 	//EXEMPLE JSON CLASS PARSING
-	public static void main(String args[]) {
+	public static void main(String args[]) throws ParseException {
+		
+		//JsonResult.gson.fromJson("2015-01-20T00:00:00Z", Date.class);
+		//new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse("1970-01-01T00:00:00Z");
+		
+		
+		/*
 		String json="{ a: 'aaa', b: 111, c: { d: 'ddd', e: 222, f: 4.5 } }";
 		MyTest mt=JsonResult.gson.fromJson(json, MyTest.class);
 		MyTest mt2=JsonResult.gson.fromJson(json, MyTest2.class);
@@ -276,6 +290,7 @@ public class JsonResult extends HashMap<String, Object> {
 		//mt.c=p.get("c").getAsJsonObject().toString();
 		System.out.println("MT  -> "+mt);
 		System.out.println("MT2 -> "+mt2);
+		*/
 	}
 	
 	public static class MyTest {

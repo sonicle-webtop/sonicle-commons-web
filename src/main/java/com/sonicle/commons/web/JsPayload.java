@@ -1,5 +1,5 @@
 /*
- * Sonicle Commons Web is a helper library developed by Sonicle S.r.l.
+ * sonicle-commons-web is a library developed by Sonicle S.r.l.
  * Copyright (C) 2014 Sonicle S.r.l.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -31,54 +31,23 @@
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Copyright (C) 2014 Sonicle S.r.l.".
  */
-
-package com.sonicle.commons.web.gson;
-
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import com.google.gson.JsonSyntaxException;
-import java.lang.reflect.Type;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
+package com.sonicle.commons.web;
 
 /**
  *
  * @author malbinola
+ * @param <T>
  */
-public class GsonISODateTypeAdapter implements JsonSerializer<Date>, JsonDeserializer<Date> {
-
-	private final DateFormat dateFormat;
+public class JsPayload<T> {
+	public JsPayloadFields fields;
+	public T data;
 	
-	public GsonISODateTypeAdapter() {
-		//dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
-		dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
-		dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+	public JsPayload(JsPayloadFields fields, T data) {
+		this.fields = fields;
+		this.data = data;
 	}
 	
-	@Override
-	public JsonElement serialize(Date t, Type type, JsonSerializationContext jsc) {
-		synchronized (dateFormat) {
-			String dateFormatAsString = dateFormat.format(t);
-			return new JsonPrimitive(dateFormatAsString);
-		}
-	}
-	
-	@Override
-	public Date deserialize(JsonElement je, Type type, JsonDeserializationContext jdc) throws JsonParseException {
-		try {
-			synchronized (dateFormat) {
-				return dateFormat.parse(je.getAsString());
-			}
-		} catch (ParseException e) {
-			throw new JsonSyntaxException(je.getAsString(), e);
-		}
+	public boolean contains(String fieldName) {
+		return fields.containsKey(fieldName);
 	}
 }
