@@ -31,7 +31,7 @@
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Copyright (C) 2014 Sonicle S.r.l.".
  */
-package com.sonicle.commons.web;
+package com.sonicle.commons.web.json;
 
 /**
  *
@@ -39,15 +39,15 @@ package com.sonicle.commons.web;
  * @param <T>
  */
 public class JsPayload<T> {
-	public JsPayloadFields fields;
+	public JsPayloadRecord record;
 	public T data;
 	
-	public JsPayload(JsPayloadFields fields, T data) {
-		this.fields = fields;
+	public JsPayload(JsPayloadRecord record, T data) {
+		this.record = record;
 		this.data = data;
 	}
 	
 	public boolean contains(String fieldName) {
-		return fields.containsKey(fieldName);
+		return record.containsKey(fieldName);
 	}
 }

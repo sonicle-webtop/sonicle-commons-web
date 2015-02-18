@@ -57,15 +57,15 @@ public class ExtTreeNode extends HashMap<String, Object> {
 		
 	}
 	
-	public ExtTreeNode(String id, String text, boolean leaf) {
+	public ExtTreeNode(Object id, String text, boolean leaf) {
 		this(id, text, leaf, null, null);
 	}
 	
-	public ExtTreeNode(String id, String text, boolean leaf, String iconClass) {
+	public ExtTreeNode(Object id, String text, boolean leaf, String iconClass) {
 		this(id, text, leaf, iconClass, null);
 	}
 	
-	public ExtTreeNode(String id, String text, boolean leaf, String iconClass, String tooltip) {
+	public ExtTreeNode(Object id, String text, boolean leaf, String iconClass, String tooltip) {
 		setId(id);
 		setText(text);
 		setLeaf(leaf);
@@ -73,11 +73,11 @@ public class ExtTreeNode extends HashMap<String, Object> {
 		setTooltip(tooltip);
 	}
 	
-	public String getId() {
-		return (String)this.get(ID_PROP);
+	public Object getId() {
+		return this.get(ID_PROP);
 	}
 	
-	public final ExtTreeNode setId(String value) {
+	public final ExtTreeNode setId(Object value) {
 		this.put(ID_PROP, value);
 		return this;
 	}

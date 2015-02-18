@@ -31,7 +31,7 @@
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Copyright (C) 2014 Sonicle S.r.l.".
  */
-package com.sonicle.commons.web;
+package com.sonicle.commons.web.json;
 
 import java.util.HashMap;
 
@@ -39,9 +39,9 @@ import java.util.HashMap;
  *
  * @author malbinola
  */
-public class JsPayloadFields extends HashMap<String, Object> {
+public class JsPayloadRecord extends HashMap<String, Object> {
 	
-	public JsPayloadFields() {
+	public JsPayloadRecord() {
 		super();
 	}
 }

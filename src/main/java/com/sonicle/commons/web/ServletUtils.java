@@ -34,6 +34,10 @@
 
 package com.sonicle.commons.web;
 
+import com.sonicle.commons.web.json.JsPayloadRecords;
+import com.sonicle.commons.web.json.JsPayloadRecord;
+import com.sonicle.commons.web.json.JsPayload;
+import com.sonicle.commons.web.json.JsListPayload;
 import com.sonicle.commons.LangUtils;
 import com.sonicle.commons.net.IPUtils;
 import com.sonicle.commons.validation.Validator;
@@ -307,25 +311,26 @@ public class ServletUtils {
 		return buffer.toString();
 	}
 	
-	public static <T>JsPayload getPayload2(HttpServletRequest request, Class<T> type) throws IOException {
-		String payload = getPayload(request);
-		JsPayloadFields fields = JsonResult.gson.fromJson(payload, JsPayloadFields.class);
-		T data = JsonResult.gson.fromJson(payload, type);
-		return new JsPayload<T>(fields, data);
-	}
-	
 	/**
-	 * /**
-	 * Extracts request payload as class.
-	 * String payload is treated as JSON and deserialized as specified class type.
-	 * @param <T> Type
+	 * De-serializes th HTTP request's payload string into specified class object.
+	 * @param <T>
 	 * @param request The HttpServletRequest.
 	 * @param type Output class type.
-	 * @return Payload string.
+	 * @return Payload object that contains de-serialized data.
 	 * @throws IOException 
 	 */
-	public static <T>T getPayload(HttpServletRequest request, Class<T> type) throws IOException {
-		return JsonResult.gson.fromJson(getPayload(request), type);
+	public static <T>JsPayload getPayload2(HttpServletRequest request, Class<T> type) throws IOException {
+		String payload = getPayload(request);
+		JsPayloadRecord record = JsonResult.gson.fromJson(payload, JsPayloadRecord.class);
+		T data = JsonResult.gson.fromJson(payload, type);
+		return new JsPayload<T>(record, data);
+	}
+	
+	public static <T>JsListPayload getPayloadAsList(HttpServletRequest request, Class<T> type) throws IOException {
+		String payload = getPayload(request);
+		JsPayloadRecords records = JsonResult.gson.fromJson(payload, JsPayloadRecords.class);
+		T data = JsonResult.gson.fromJson(payload, type);
+		return new JsListPayload<T>(records, data);
 	}
 	
 	public static void writeErrorHandlingJs(HttpServletResponse response) throws IOException {
