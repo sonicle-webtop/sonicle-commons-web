@@ -319,15 +319,15 @@ public class ServletUtils {
 	 * @return Payload object that contains de-serialized data.
 	 * @throws IOException 
 	 */
-	public static <T>JsPayload getPayload2(HttpServletRequest request, Class<T> type) throws IOException {
-		String payload = getPayload(request);
+	public static <T>JsPayload getPayload(HttpServletRequest request, Class<T> type) throws IOException {
+		String payload = ServletUtils.getPayload(request);
 		JsPayloadRecord record = JsonResult.gson.fromJson(payload, JsPayloadRecord.class);
 		T data = JsonResult.gson.fromJson(payload, type);
 		return new JsPayload<T>(record, data);
 	}
 	
 	public static <T>JsListPayload getPayloadAsList(HttpServletRequest request, Class<T> type) throws IOException {
-		String payload = getPayload(request);
+		String payload = ServletUtils.getPayload(request);
 		JsPayloadRecords records = JsonResult.gson.fromJson(payload, JsPayloadRecords.class);
 		T data = JsonResult.gson.fromJson(payload, type);
 		return new JsListPayload<T>(records, data);
