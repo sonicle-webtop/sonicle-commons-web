@@ -33,15 +33,19 @@
  */
 package com.sonicle.commons.web.json;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  *
  * @author malbinola
  */
-public class JsPayloadRecords extends ArrayList<MapItem> {
+public class MapItem extends HashMap<String, Object> {
 	
-	public JsPayloadRecords() {
+	public MapItem() {
 		super();
+	}
+	
+	public boolean has(String key) {
+		return containsKey(key);
 	}
 }

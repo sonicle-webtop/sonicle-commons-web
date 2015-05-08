@@ -36,18 +36,7 @@ package com.sonicle.commons.web.json;
 /**
  *
  * @author malbinola
- * @param <T>
  */
-public class JsPayload<T> {
-	public JsPayloadRecord record;
-	public T data;
+public class CrudItems extends CrudContainer<MapItemList> {
 	
-	public JsPayload(JsPayloadRecord record, T data) {
-		this.record = record;
-		this.data = data;
-	}
-	
-	public boolean contains(String fieldName) {
-		return record.containsKey(fieldName);
-	}
 }

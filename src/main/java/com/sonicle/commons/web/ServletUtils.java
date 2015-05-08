@@ -35,8 +35,8 @@
 package com.sonicle.commons.web;
 
 import com.sonicle.commons.web.json.JsPayloadRecords;
-import com.sonicle.commons.web.json.JsPayloadRecord;
-import com.sonicle.commons.web.json.JsPayload;
+import com.sonicle.commons.web.json.MapItem;
+import com.sonicle.commons.web.json.Payload;
 import com.sonicle.commons.web.json.JsListPayload;
 import com.sonicle.commons.LangUtils;
 import com.sonicle.commons.net.IPUtils;
@@ -311,21 +311,33 @@ public class ServletUtils {
 		return buffer.toString();
 	}
 	
+	public static <D>Payload getPayload(HttpServletRequest request, Class<D> dataType) throws IOException {
+		return getPayload(request, MapItem.class, dataType);
+	}
+	
 	/**
 	 * De-serializes th HTTP request's payload string into specified class object.
 	 * @param <T>
 	 * @param request The HttpServletRequest.
-	 * @param type Output class type.
+	 * @param mapType Output class type.
+	 * @param dataType Output class type.
 	 * @return Payload object that contains de-serialized data.
 	 * @throws IOException 
 	 */
-	public static <T>JsPayload getPayload(HttpServletRequest request, Class<T> type) throws IOException {
+	public static <M,D>Payload getPayload(HttpServletRequest request, Class<M> mapType, Class<D> dataType) throws IOException {
 		String payload = ServletUtils.getPayload(request);
-		JsPayloadRecord record = JsonResult.gson.fromJson(payload, JsPayloadRecord.class);
-		T data = JsonResult.gson.fromJson(payload, type);
-		return new JsPayload<T>(record, data);
+		M map = JsonResult.gson.fromJson(payload, mapType);
+		D data = JsonResult.gson.fromJson(payload, dataType);
+		return new Payload<M,D>(map, data);
 	}
-	
+	/**
+	 * @deprecated 
+	 * @param <T>
+	 * @param request
+	 * @param type
+	 * @return
+	 * @throws IOException 
+	 */
 	public static <T>JsListPayload getPayloadAsList(HttpServletRequest request, Class<T> type) throws IOException {
 		String payload = ServletUtils.getPayload(request);
 		JsPayloadRecords records = JsonResult.gson.fromJson(payload, JsPayloadRecords.class);

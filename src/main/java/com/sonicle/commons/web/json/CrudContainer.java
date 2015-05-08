@@ -33,15 +33,12 @@
  */
 package com.sonicle.commons.web.json;
 
-import java.util.HashMap;
-
 /**
  *
  * @author malbinola
  */
-public class JsPayloadRecord extends HashMap<String, Object> {
-	
-	public JsPayloadRecord() {
-		super();
-	}
+public class CrudContainer<T> {
+	public T C;
+	public T U;
+	public T D;
 }

@@ -39,9 +39,9 @@ import java.util.ArrayList;
  *
  * @author malbinola
  */
-public class JsPayloadRecords extends ArrayList<MapItem> {
+public class MapItemList extends ArrayList<MapItem> {
 	
-	public JsPayloadRecords() {
+	public MapItemList() {
 		super();
 	}
 }

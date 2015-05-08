@@ -35,6 +35,7 @@ package com.sonicle.commons.web.json;
 
 /**
  *
+ * @deprecated 
  * @author malbinola
  * @param <T>
  */
