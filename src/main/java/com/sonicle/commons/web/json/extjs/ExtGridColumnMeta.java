@@ -43,9 +43,14 @@ import java.util.HashMap;
 public class ExtGridColumnMeta extends HashMap<String, Object> {
 	
 	public static final String HEADER = "header";
+	public static final String DATA_INDEX = "dataIndex";
 	public static final String HIDDEN  = "hidden";
 	public static final String WIDTH  = "width";
 	public static final String SORTABLE  = "sortable";
+	public static final String HIDEABLE  = "hideable";
+	public static final String MENU_DISABLED  = "menuDisabled";
+	public static final String DRAGGABLE  = "draggable";
+	public static final String GROUPABLE  = "groupable";
 	public static final String RENDERER  = "renderer";
 	public static final String XTYPE  = "xtype";
 	public static final String FORMAT  = "format";
@@ -60,14 +65,25 @@ public class ExtGridColumnMeta extends HashMap<String, Object> {
 	public ExtGridColumnMeta() {
 		super();
 	}
-
-	public ExtGridColumnMeta(String header) {
+	
+	public ExtGridColumnMeta(String dataIndex) {
 		super();
-		this.put(HEADER , header);
+		setDataIndex(dataIndex);
+	}
+	
+	public ExtGridColumnMeta(String dataIndex, String header) {
+		super();
+		setDataIndex(dataIndex);
+		setHeader(header);
 	}
 	
 	public ExtGridColumnMeta setHeader(String value) {
 		this.put(HEADER , value);
+		return this;
+	}
+	
+	public ExtGridColumnMeta setDataIndex(String value) {
+		this.put(DATA_INDEX , value);
 		return this;
 	}
 	
@@ -83,6 +99,26 @@ public class ExtGridColumnMeta extends HashMap<String, Object> {
 	
 	public ExtGridColumnMeta setSortable(boolean value) {
 		this.put(SORTABLE , value);
+		return this;
+	}
+	
+	public ExtGridColumnMeta setHideable(boolean value) {
+		this.put(HIDEABLE , value);
+		return this;
+	}
+	
+	public ExtGridColumnMeta setMenuDisabled(boolean value) {
+		this.put(MENU_DISABLED , value);
+		return this;
+	}
+	
+	public ExtGridColumnMeta setDraggable(boolean value) {
+		this.put(DRAGGABLE , value);
+		return this;
+	}
+	
+	public ExtGridColumnMeta setGroupable(boolean value) {
+		this.put(GROUPABLE , value);
 		return this;
 	}
 	

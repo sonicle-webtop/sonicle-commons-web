@@ -40,7 +40,7 @@ import java.util.HashMap;
  *
  * @author malbinola
  */
-public class ExtMetaData extends HashMap {
+public class ExtGridMetaData extends HashMap {
 
 	public static final String META_STORE_ROOT = "root";
 	public static final String META_FIELDS = "fields";
@@ -53,11 +53,11 @@ public class ExtMetaData extends HashMap {
 	public static final String META_TOTAL_COUNT = "total";
 	public static final String META_SELECTED = "selected";
 	
-	public ExtMetaData() {
+	public ExtGridMetaData() {
 		super();
 	}
 	
-	public ExtMetaData(boolean defaults) {
+	public ExtGridMetaData(boolean defaults) {
 		super();
 		this.setRoot("data");
 		this.setTotalProperty("total");
