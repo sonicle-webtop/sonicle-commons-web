@@ -63,6 +63,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.StringTokenizer;
+import java.util.zip.GZIPOutputStream;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
@@ -137,9 +138,9 @@ public class ServletUtils {
 		try {
 			String value = request.getParameter(name);
 			String value2 = Validator.validateString(false, value, true);
-			if(Validator.isNull(value2)) return new ArrayList<String>();
+			if(Validator.isNull(value2)) return new ArrayList<>();
 			String[] values = StringUtils.split(value2, separator);
-			return new ArrayList<String>(Arrays.asList(values));
+			return new ArrayList<>(Arrays.asList(values));
 		} catch(ValidatorException ex) {
 			throw new Exception(MessageFormat.format("Error getting parameter [{0}]", name), ex);
 		}
@@ -148,11 +149,11 @@ public class ServletUtils {
 	public static ArrayList<String> getStringParameters(HttpServletRequest request, String name) throws Exception {
 		try {
 			String[] values = request.getParameterValues(name);
-			if(Validator.isNull(values)) return new ArrayList<String>();
+			if(Validator.isNull(values)) return new ArrayList<>();
 			for(String value : values) {
 				Validator.validateString(false, value, false);
 			}
-			return new ArrayList<String>(Arrays.asList(values));
+			return new ArrayList<>(Arrays.asList(values));
 		} catch(ValidatorException ex) {
 			throw new Exception(MessageFormat.format("Error getting parameter [{0}]", name), ex);
 		}
@@ -273,6 +274,11 @@ public class ServletUtils {
 		}
 	}
 	
+	public static <T>T getObjectParameter(HttpServletRequest request, String name, T defaultValue, Class<T> type) throws Exception {
+		String value = getStringParameter(request, name, true);
+		return LangUtils.value(value, defaultValue, type);
+	}
+	
 	/**
 	 * Gets request's attribute value.
 	 * @param request The HttpServletRequest.
@@ -345,6 +351,120 @@ public class ServletUtils {
 		return new JsListPayload<T>(records, data);
 	}
 	
+	/**
+	 * Returns if client accepts gzip encoding.
+	 * @param request The HttpServletRequest.
+	 * @return True if can deflate, false otherwise
+	 */
+	public static boolean acceptsDeflate(HttpServletRequest request) {
+		final String ae = request.getHeader("Accept-Encoding");
+		return (ae != null) && ae.contains("gzip");
+	}
+	
+	/**
+	 * Returns if a mime-type is generally deflatable.
+	 * @param mimeType A valid mime-type
+	 * @return 
+	 */
+	public static boolean isDeflatable(String mimeType) {
+		return mimeType.startsWith("text/")
+			|| mimeType.equals("application/postscript")
+			|| mimeType.startsWith("application/ms")
+			|| mimeType.startsWith("application/vnd")
+			|| mimeType.endsWith("xml");
+	}
+	
+	/**
+	 * Tries to retrieve content type from the file name.
+	 * @param fileName The file name
+	 * @return Mime-type string
+	 */
+	public static String guessMimeType(String fileName) {
+		//MimeUtil.registerMimeDetector(ExtensionMimeDetector.class.getName());
+		//MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.MagicMimeMimeDetector");
+		MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.ExtensionMimeDetector");
+		//MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.OpendesktopMimeDetector");
+		MimeType mime = MimeUtil.getMostSpecificMimeType(MimeUtil.getMimeTypes(fileName));
+		return (mime == null) ? null : mime.toString();
+	}
+	
+	public static void setContentTypeHeader(HttpServletResponse response, String mimeType) {
+		if(StringUtils.isEmpty(mimeType)) mimeType = "application/octet-stream";
+		response.setContentType(mimeType);
+	}
+	
+	public static void setContentDispositionHeader(HttpServletResponse response, String dipositionType, String fileName) {
+		response.addHeader("Content-Disposition", MessageFormat.format("{0}; filename=\"{1}\"", dipositionType, fileName));
+	}
+	
+	public static void setFileStreamHeaders(HttpServletResponse response, String fileName) {
+		setFileStreamHeaders(response, guessMimeType(fileName), "inline", fileName);
+	}
+	
+	public static void setFileStreamHeaders(HttpServletResponse response, String mimeType, String fileName) {
+		setFileStreamHeaders(response, mimeType, "inline", fileName);
+	}
+	
+	public static void setFileStreamHeaders(HttpServletResponse response, String mimeType, String dispositionType, String fileName) {
+		setContentTypeHeader(response, mimeType);
+		setContentDispositionHeader(response, dispositionType, fileName);
+	}
+	
+	public static void setCacheControlHeaderPrivateNoCache(HttpServletResponse response) {
+		response.setHeader("Cache-Control", "private, no-cache");
+	}
+	
+	public static void setCacheControlHeaderPrivateMaxAge(HttpServletResponse response, int maxAge) {
+		response.setHeader("Cache-Control", MessageFormat.format("private, max-age={0}", maxAge));//, must-revalidate
+	}
+	
+	public static OutputStream prepareForStreamCopy(HttpServletRequest request, HttpServletResponse response, String mimeType, int contentLength, int gzipThreshold) throws IOException {
+		final int BUFFER_SIZE = 4*1024;
+		
+		boolean willDeflate = acceptsDeflate(request) && isDeflatable(mimeType) && (contentLength >= gzipThreshold);
+		if(willDeflate) {
+			response.setHeader("Content-Encoding", "gzip");
+			return new GZIPOutputStream(response.getOutputStream(), BUFFER_SIZE);
+			// Content length is not directly predictable in case of GZIP.
+			// So only add it if there is no means of GZIP, else browser will hang.
+		} else {
+			if(contentLength >= 0) response.setContentLength(contentLength);
+			return response.getOutputStream();
+		}
+	}
+	
+	public static void transferStreams(InputStream is, OutputStream os) throws IOException {
+		final int BUFFER_SIZE = 4*1024;
+		
+		byte[] buf = new byte[BUFFER_SIZE];
+		int bytesRead;
+		while ((bytesRead = is.read(buf)) != -1) {
+			os.write(buf, 0, bytesRead);
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public static void writeErrorHandlingJs(HttpServletResponse response) throws IOException {
 		ServletUtils.writeErrorHandlingJs(response, null);
 	}
@@ -380,7 +500,7 @@ public class ServletUtils {
 	public static void writeFileStream(HttpServletResponse response, String filename, InputStream fileStream, boolean dispAsAttachment) {
 		String fext = FilenameUtils.getExtension(filename);
 		//String ctype = URLConnection.guessContentTypeFromName(filename);
-		String ctype = guessContentTypeFromName(filename);
+		String ctype = guessMimeType(filename);
 		String dispositionType = (dispAsAttachment) ? "attachment" : "inline";
 		ServletUtils.setFileStreamHeaders(response, ctype, dispositionType, filename);
 		try {
@@ -404,15 +524,7 @@ public class ServletUtils {
 	}
 	*/
 	
-	public static void setFileStreamHeaders(HttpServletResponse response, String contentType, String filename) {
-		setFileStreamHeaders(response, contentType, "inline", filename);
-	}
 	
-	public static void setFileStreamHeaders(HttpServletResponse response, String contentType, String dispositionType, String filename) {
-		if(Validator.isNullString(contentType)) contentType = "application/octet-stream";
-		response.setContentType(contentType);
-		response.addHeader("Content-Disposition", MessageFormat.format("{0}; filename=\"{1}\"", dispositionType, filename));
-	}
 	
 	public static void writeInputStream(HttpServletResponse response, InputStream is) throws IOException {
 		ServletUtils.writeInputStream(is, response.getOutputStream());
@@ -457,25 +569,9 @@ public class ServletUtils {
 	}
 	
 	/**
-	 * Tries to retrieve content type from the file name.
-	 * 
-	 * @param fileName The file name.
-	 * @return Content type string.
-	 */
-	public static String guessContentTypeFromName(String fileName) {
-		//MimeUtil.registerMimeDetector(ExtensionMimeDetector.class.getName());
-		//MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.MagicMimeMimeDetector");
-		MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.ExtensionMimeDetector");
-		//MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.OpendesktopMimeDetector");
-		MimeType mime = MimeUtil.getMostSpecificMimeType(MimeUtil.getMimeTypes(fileName));
-		return (mime == null) ? null : mime.toString();
-	}
-	
-	/**
 	 * Discovers the remote client IP address from a request.
 	 * This method also take into account possible headers that a proxy or a
 	 * gateway could apply (eg. X-Forwarded-For, HTTP_X_FORWARDED_FOR, ect).
-	 * 
 	 * @param request The HTTP request.
 	 * @return The client IP address.
 	 */
