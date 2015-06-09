@@ -48,6 +48,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * A convenience class used to easly reply to an async request.
@@ -251,13 +252,23 @@ public class JsonResult extends HashMap<String, Object> {
 		}
 	}
 	
+	public void printTo(HttpServletResponse response, PrintWriter out) {
+		printTo(response, out, true);
+	}
+	
+	public void printTo(HttpServletResponse response, PrintWriter out, boolean serializeNulls) {
+		String json = toJson(serializeNulls);
+		if(response != null) response.setContentLength(json.getBytes().length);
+		out.println(json);
+	}
+	
 	/**
 	 * Serializes this result object and prints its json representation into the writer.
 	 * 
 	 * @param out The writer
 	 */
 	public void printTo(PrintWriter out) {
-		printTo(out, true);
+		printTo(null, out, true);
 	}
 	
 	/**

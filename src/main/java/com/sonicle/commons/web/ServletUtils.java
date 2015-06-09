@@ -393,6 +393,14 @@ public class ServletUtils {
 		response.setContentType(mimeType);
 	}
 	
+	public static void setHtmlContentTypeHeader(HttpServletResponse response) {
+		response.setContentType("text/html;charset=UTF-8");
+	}
+	
+	public static void setJsonContentTypeHeader(HttpServletResponse response) {
+		response.setContentType("application/json");
+	}
+	
 	public static void setContentDispositionHeader(HttpServletResponse response, String dipositionType, String fileName) {
 		response.addHeader("Content-Disposition", MessageFormat.format("{0}; filename=\"{1}\"", dipositionType, fileName));
 	}
