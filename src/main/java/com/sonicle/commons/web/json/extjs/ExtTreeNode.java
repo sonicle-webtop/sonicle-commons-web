@@ -46,6 +46,7 @@ public class ExtTreeNode extends HashMap<String, Object> {
 	public static final String ID_PROP = "id";
 	public static final String TEXT_PROP = "text";
 	public static final String LEAF_PROP = "leaf";
+	public static final String CLS_PROP = "cls";
 	public static final String ICON_CLASS_PROP = "iconCls";
 	public static final String TOOLTIP_PROP = "qtip";
 	public static final String EXPANDED_PROP = "expanded";
@@ -98,6 +99,15 @@ public class ExtTreeNode extends HashMap<String, Object> {
 	public final ExtTreeNode setLeaf(boolean value) {
 		this.put(LEAF_PROP, value);
 		if(value) this.remove(CHILDREN_PROP);
+		return this;
+	}
+	
+	public String getCls() {
+		return (String)this.get(CLS_PROP);
+	}
+	
+	public final ExtTreeNode setCls(String value) {
+		this.put(CLS_PROP, value);
 		return this;
 	}
 	
