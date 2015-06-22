@@ -45,6 +45,11 @@ public class MapItem extends HashMap<String, Object> {
 		super();
 	}
 	
+	public MapItem add(String key, Object value) {
+		put(key, value);
+		return this;
+	}
+	
 	public boolean has(String key) {
 		return containsKey(key);
 	}
