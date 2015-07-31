@@ -36,8 +36,8 @@ package com.sonicle.commons.web.json;
 /**
  *
  * @author malbinola
- * @param <M>
- * @param <D>
+ * @param <M> Type of map property.
+ * @param <D> Type of data property.
  */
 public class Payload<M,D> {
 	public M map;

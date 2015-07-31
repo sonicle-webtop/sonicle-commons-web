@@ -87,7 +87,7 @@ public class ExtGridColumnMeta extends HashMap<String, Object> {
 		return this;
 	}
 	
-	public ExtGridColumnMeta setHidden(String value) {
+	public ExtGridColumnMeta setHidden(boolean value) {
 		this.put(HIDDEN , value);
 		return this;
 	}
