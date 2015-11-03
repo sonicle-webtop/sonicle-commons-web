@@ -34,10 +34,10 @@
 
 package com.sonicle.commons.web;
 
-import com.sonicle.commons.web.json.JsPayloadRecords;
+import com.sonicle.commons.web.json.PayloadAsListRecords;
 import com.sonicle.commons.web.json.MapItem;
 import com.sonicle.commons.web.json.Payload;
-import com.sonicle.commons.web.json.JsListPayload;
+import com.sonicle.commons.web.json.PayloadAsList;
 import com.sonicle.commons.LangUtils;
 import com.sonicle.commons.net.IPUtils;
 import com.sonicle.commons.validation.Validator;
@@ -358,11 +358,11 @@ public class ServletUtils {
 	 * @return
 	 * @throws IOException 
 	 */
-	public static <T>JsListPayload getPayloadAsList(HttpServletRequest request, Class<T> type) throws IOException {
+	public static <T>PayloadAsList getPayloadAsList(HttpServletRequest request, Class<T> type) throws IOException {
 		String payload = ServletUtils.getPayload(request);
-		JsPayloadRecords records = JsonResult.gson.fromJson(payload, JsPayloadRecords.class);
+		PayloadAsListRecords records = JsonResult.gson.fromJson(payload, PayloadAsListRecords.class);
 		T data = JsonResult.gson.fromJson(payload, type);
-		return new JsListPayload<T>(records, data);
+		return new PayloadAsList<>(records, data);
 	}
 	
 	/**

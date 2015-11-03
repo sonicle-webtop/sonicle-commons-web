@@ -33,18 +33,15 @@
  */
 package com.sonicle.commons.web.json;
 
+import java.util.ArrayList;
+
 /**
  *
- * @deprecated 
  * @author malbinola
- * @param <T>
  */
-public class JsListPayload<T> {
-	public JsPayloadRecords records;
-	public T data;
+public class PayloadAsListRecords extends ArrayList<MapItem> {
 	
-	public JsListPayload(JsPayloadRecords records, T data) {
-		this.records = records;
-		this.data = data;
+	public PayloadAsListRecords() {
+		super();
 	}
 }
