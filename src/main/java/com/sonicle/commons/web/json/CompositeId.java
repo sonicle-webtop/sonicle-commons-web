@@ -42,23 +42,25 @@ import org.apache.commons.lang3.StringUtils;
 public final class CompositeId {
 	private String[] tokens;
 	
+	public CompositeId() {
+		this.tokens = new String[2];
+	}
+	
 	public CompositeId(Object... tokens) {
-		this(tokens.length);
+		this.tokens = new String[tokens.length];
 		for(int i=0; i<tokens.length; i++) {
-			setToken(i, String.valueOf(tokens[i]));
+			setToken(i, tokens[i].toString());
 		}
 	}
 	
-	public CompositeId(int howManyTokens) {
-		this.tokens = new String[howManyTokens];
+	public CompositeId parse(String value) {
+		this.tokens = StringUtils.split(value, "|", 2);
+		return this;
 	}
 	
-	public CompositeId(String value) {
-		this(value, 2);
-	}
-	
-	public CompositeId(String value, int howManyTokens) {
+	public CompositeId parse(String value, int howManyTokens) {
 		this.tokens = StringUtils.split(value, "|", howManyTokens);
+		return this;
 	}
 	
 	public CompositeId setToken(int index, String value) {
