@@ -43,7 +43,7 @@ public final class CompositeId {
 	private String[] tokens;
 	
 	public CompositeId() {
-		this.tokens = new String[2];
+		tokens = new String[2];
 	}
 	
 	public CompositeId(Object... tokens) {
@@ -54,22 +54,30 @@ public final class CompositeId {
 	}
 	
 	public CompositeId parse(String value) {
-		this.tokens = StringUtils.split(value, "|", 2);
+		tokens = StringUtils.split(value, "|");
 		return this;
 	}
 	
 	public CompositeId parse(String value, int howManyTokens) {
-		this.tokens = StringUtils.split(value, "|", howManyTokens);
+		tokens = StringUtils.split(value, "|", howManyTokens);
 		return this;
 	}
 	
+	public int getHowManyTokens() {
+		return tokens.length;
+	}
+	
+	public void setHowManyTokens(int value) {
+		tokens = new String[value];
+	}
+	
 	public CompositeId setToken(int index, String value) {
-		this.tokens[index] = value;
+		tokens[index] = value;
 		return this;
 	}
 	
 	public String getToken(int index) {
-		return this.tokens[index];
+		return tokens[index];
 	}
 	
 	@Override
