@@ -564,16 +564,21 @@ public class ServletUtils {
 		is.close();
 	}
 	
+	public static void writeContent(HttpServletResponse response, InputStream is, String contentType) throws IOException {
+		byte[] bytes = IOUtils.toByteArray(is);
+		writeContent(response, bytes, bytes.length, contentType);
+	}
+	
 	/**
 	 * Writes an output stream to response's output stream, specifying also desired content type.
 	 * 
 	 * @param response Response object to write to.
-	 * @param data Output stream to write.
+	 * @param baos Output stream to write.
 	 * @param contentType Data length.
 	 * @throws IOException 
 	 */
-	public static void writeContent(HttpServletResponse response, ByteArrayOutputStream data, String contentType) throws IOException {
-		writeContent(response, data.toByteArray(), data.size(), contentType);
+	public static void writeContent(HttpServletResponse response, ByteArrayOutputStream baos, String contentType) throws IOException {
+		writeContent(response, baos.toByteArray(), baos.size(), contentType);
 	}
 	
 	/**
@@ -586,8 +591,8 @@ public class ServletUtils {
 	 */
 	public static void writeContent(HttpServletResponse response, byte[] data, int length, String contentType) throws IOException {
 		response.setContentType(contentType);
-		IOUtils.write(data, response.getOutputStream());
 		response.setContentLength(length);
+		IOUtils.write(data, response.getOutputStream());
 	}
 	
 	/**
