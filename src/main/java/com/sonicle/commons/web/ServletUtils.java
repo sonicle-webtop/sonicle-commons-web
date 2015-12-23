@@ -334,6 +334,20 @@ public class ServletUtils {
 	
 	/**
 	 * Unserializes the HTTP request's payload string into a Payload object 
+	 * containing a map property object for testing field presence and a data
+	 * bean representing the unserialized fields data.
+	 * @param <D> Type of data property.
+	 * @param payload The HttpServletRequest's payload raw string.
+	 * @param dataType Class type of data property.
+	 * @return Payload object that contains unserialized data.
+	 * @throws IOException 
+	 */
+	public static <D>Payload getPayload(String payload, Class<D> dataType) throws IOException {
+		return getPayload(payload, MapItem.class, dataType);
+	}
+	
+	/**
+	 * Unserializes the HTTP request's payload string into a Payload object 
 	 * containing a map property for testing field presence and a data
 	 * bean representing the unserialized fields data.
 	 * @param <M> Type of map property.
@@ -346,10 +360,32 @@ public class ServletUtils {
 	 */
 	public static <M, D>Payload getPayload(HttpServletRequest request, Class<M> mapType, Class<D> dataType) throws IOException {
 		String payload = ServletUtils.getPayload(request);
+		/*
+		M map = JsonResult.gson.fromJson(payload, mapType);
+		D data = JsonResult.gson.fromJson(payload, dataType);
+		return new Payload<>(map, data);
+		*/
+		return getPayload(payload, mapType, dataType);
+	}
+	
+	/**
+	 * Unserializes the HTTP request's payload string into a Payload object 
+	 * containing a map property for testing field presence and a data
+	 * bean representing the unserialized fields data.
+	 * @param <M> Type of map property.
+	 * @param <D> Type of data property.
+	 * @param payload The HttpServletRequest's payload raw string.
+	 * @param mapType Class type of map property.
+	 * @param dataType Class type of data property.
+	 * @return Payload object that contains unserialized data.
+	 * @throws IOException
+	 */
+	public static <M, D>Payload getPayload(String payload, Class<M> mapType, Class<D> dataType) throws IOException {
 		M map = JsonResult.gson.fromJson(payload, mapType);
 		D data = JsonResult.gson.fromJson(payload, dataType);
 		return new Payload<>(map, data);
 	}
+	
 	/**
 	 * @deprecated 
 	 * @param <T>
