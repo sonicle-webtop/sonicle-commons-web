@@ -1,5 +1,5 @@
 /*
- * Sonicle Commons Web is a helper library developed by Sonicle S.r.l.
+ * sonicle-commons-web is a library developed by Sonicle S.r.l.
  * Copyright (C) 2014 Sonicle S.r.l.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -31,22 +31,60 @@
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
  * display the words "Copyright (C) 2014 Sonicle S.r.l.".
  */
+package com.sonicle.commons.web.json.extjs;
 
-package com.sonicle.commons.web;
+import com.sonicle.commons.web.json.JsonResult;
+import java.util.HashMap;
 
 /**
- * 
+ *
  * @author malbinola
  */
-public class Crud {
-	public static final String LIST = "list";
-	public static final String BEGIN = "begin";
-	public static final String END = "end";
-	public static final String SAVE = "save";
-	public static final String CREATE = "create";
-	public static final String READ = "read";
-	public static final String UPDATE = "update";
-	public static final String DELETE = "delete";
-	public static final String COPY = "copy";
-	public static final String MOVE = "move";
+public class GroupMeta extends HashMap<String, Object> {
+	public static final String FIELD = "field";
+	public static final String DIRECTION = "direction";
+	public static final String DIRECTION_ASC = "ASC";
+	public static final String DIRECTION_DESC = "DESC";
+	
+	public GroupMeta() {
+		super();
+	}
+	
+	public GroupMeta(String field) {
+		super();
+		this.setField(field);
+		this.setDirection(DIRECTION_ASC);
+	}
+	
+	public GroupMeta(String field, String direction) {
+		super();
+		this.setField(field);
+		this.setDirection(direction);
+	}
+	
+	public String getField() {
+		return (String) get(FIELD);
+	}
+	
+	public GroupMeta setField(String value) {
+		this.put(FIELD , value);
+		return this;
+	}
+	
+	public String getDirection() {
+		return (String) get(DIRECTION);
+	}
+	
+	public GroupMeta setDirection(String value) {
+		this.put(DIRECTION , value);
+		return this;
+	}
+	
+	public static String toJson(GroupMeta value) throws Exception {
+		return JsonResult.gson.toJson(value);
+	}
+	
+	public static GroupMeta fromJson(String value) throws Exception {
+		return JsonResult.gson.fromJson(value, GroupMeta.class);
+	}
 }

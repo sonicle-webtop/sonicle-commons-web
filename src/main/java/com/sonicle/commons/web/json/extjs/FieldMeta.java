@@ -40,17 +40,16 @@ import java.util.HashMap;
  *
  * @author malbinola
  */
-public class ExtFieldMeta extends HashMap<String, Object> {
-	
+public class FieldMeta extends HashMap<String, Object> {
 	public static final String NAME = "name";
 	public static final String TYPE = "type";
 	public static final String ALLOW_BLANK = "allowBlank";
 	
-	public ExtFieldMeta() {
+	public FieldMeta() {
 		super();
 	}
 	
-	public ExtFieldMeta(String name) {
+	public FieldMeta(String name) {
 		super();
 		this.setName(name);
 	}
@@ -59,7 +58,7 @@ public class ExtFieldMeta extends HashMap<String, Object> {
 		return (String) get(NAME);
 	}
 	
-	public ExtFieldMeta setName(String value) {
+	public FieldMeta setName(String value) {
 		this.put(NAME , value);
 		return this;
 	}
@@ -68,7 +67,7 @@ public class ExtFieldMeta extends HashMap<String, Object> {
 		return (String) get(TYPE);
 	}
 	
-	public ExtFieldMeta setType(String value) {
+	public FieldMeta setType(String value) {
 		this.put(TYPE , value);
 		return this;
 	}
@@ -77,7 +76,7 @@ public class ExtFieldMeta extends HashMap<String, Object> {
 		return (Boolean) get(ALLOW_BLANK);
 	}
 	
-	public ExtFieldMeta setAllowBlank(Boolean value) {
+	public FieldMeta setAllowBlank(Boolean value) {
 		this.put(ALLOW_BLANK , value);
 		return this;
 	}

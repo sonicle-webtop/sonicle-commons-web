@@ -40,12 +40,12 @@ import java.util.HashMap;
  *
  * @author malbinola
  */
-public class ExtGridMetaData extends HashMap {
-
+public class GridMetadata extends HashMap {
 	public static final String META_STORE_ROOT = "root";
 	public static final String META_FIELDS = "fields";
 	public static final String META_COLUMNS_INFO = "colsInfo";
 	public static final String META_SORT_INFO = "sortInfo";
+	public static final String META_GROUP_INFO = "groupInfo";
 	public static final String META_ID_PROPERTY = "idProperty";
 	public static final String META_TOTAL_PROPERTY = "totalProperty";
 	public static final String META_MESSAGE_PROPERTY = "messageProperty";
@@ -53,11 +53,11 @@ public class ExtGridMetaData extends HashMap {
 	public static final String META_TOTAL_COUNT = "total";
 	public static final String META_SELECTED = "selected";
 	
-	public ExtGridMetaData() {
+	public GridMetadata() {
 		super();
 	}
 	
-	public ExtGridMetaData(boolean defaults) {
+	public GridMetadata(boolean defaults) {
 		super();
 		this.setRoot("data");
 		this.setTotalProperty("total");
@@ -86,6 +86,22 @@ public class ExtGridMetaData extends HashMap {
 
 	public void setColumnsInfo(Object value) {
 		this.put(META_COLUMNS_INFO, value);
+	}
+	
+	public Object getSortInfo() {
+		return (Object)this.get(META_SORT_INFO);
+	}
+
+	public void setSortInfo(Object value) {
+		this.put(META_SORT_INFO, value);
+	}
+	
+	public Object getGroupInfo() {
+		return (Object)this.get(META_GROUP_INFO);
+	}
+
+	public void setGroupInfo(Object value) {
+		this.put(META_GROUP_INFO, value);
 	}
 	
 	public String getIdProperty() {

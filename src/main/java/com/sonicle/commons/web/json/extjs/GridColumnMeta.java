@@ -40,8 +40,7 @@ import java.util.HashMap;
  * Helper Json-ready class to deal with ExtJs grid column metadata info.
  * @author malbinola
  */
-public class ExtGridColumnMeta extends HashMap<String, Object> {
-	
+public class GridColumnMeta extends HashMap<String, Object> {
 	public static final String HEADER = "header";
 	public static final String DATA_INDEX = "dataIndex";
 	public static final String HIDDEN  = "hidden";
@@ -55,89 +54,88 @@ public class ExtGridColumnMeta extends HashMap<String, Object> {
 	public static final String XTYPE  = "xtype";
 	public static final String FORMAT  = "format";
 	public static final String TPL  = "tpl";
-	
 	public static final String XTYPE_GRID  = "gridcolumn";
 	public static final String XTYPE_BOOLEAN  = "booleancolumn";
 	public static final String XTYPE_NUMBER  = "numbercolumn";
 	public static final String XTYPE_DATE  = "datecolumn";
 	public static final String XTYPE_TEMPLATE  = "templatecolumn";
 	
-	public ExtGridColumnMeta() {
+	public GridColumnMeta() {
 		super();
 	}
 	
-	public ExtGridColumnMeta(String dataIndex) {
+	public GridColumnMeta(String dataIndex) {
 		super();
 		setDataIndex(dataIndex);
 	}
 	
-	public ExtGridColumnMeta(String dataIndex, String header) {
+	public GridColumnMeta(String dataIndex, String header) {
 		super();
 		setDataIndex(dataIndex);
 		setHeader(header);
 	}
 	
-	public ExtGridColumnMeta setHeader(String value) {
+	public GridColumnMeta setHeader(String value) {
 		this.put(HEADER , value);
 		return this;
 	}
 	
-	public ExtGridColumnMeta setDataIndex(String value) {
+	public GridColumnMeta setDataIndex(String value) {
 		this.put(DATA_INDEX , value);
 		return this;
 	}
 	
-	public ExtGridColumnMeta setHidden(boolean value) {
+	public GridColumnMeta setHidden(boolean value) {
 		this.put(HIDDEN , value);
 		return this;
 	}
 	
-	public ExtGridColumnMeta setWidth(int value) {
+	public GridColumnMeta setWidth(int value) {
 		this.put(WIDTH , value);
 		return this;
 	}
 	
-	public ExtGridColumnMeta setSortable(boolean value) {
+	public GridColumnMeta setSortable(boolean value) {
 		this.put(SORTABLE , value);
 		return this;
 	}
 	
-	public ExtGridColumnMeta setHideable(boolean value) {
+	public GridColumnMeta setHideable(boolean value) {
 		this.put(HIDEABLE , value);
 		return this;
 	}
 	
-	public ExtGridColumnMeta setMenuDisabled(boolean value) {
+	public GridColumnMeta setMenuDisabled(boolean value) {
 		this.put(MENU_DISABLED , value);
 		return this;
 	}
 	
-	public ExtGridColumnMeta setDraggable(boolean value) {
+	public GridColumnMeta setDraggable(boolean value) {
 		this.put(DRAGGABLE , value);
 		return this;
 	}
 	
-	public ExtGridColumnMeta setGroupable(boolean value) {
+	public GridColumnMeta setGroupable(boolean value) {
 		this.put(GROUPABLE , value);
 		return this;
 	}
 	
-	public ExtGridColumnMeta setRenderer(String value) {
+	public GridColumnMeta setRenderer(String value) {
 		this.put(RENDERER , value);
 		return this;
 	}
 	
-	public ExtGridColumnMeta setXType(String value) {
+	public GridColumnMeta setXType(String value) {
 		this.put(XTYPE, value);
 		return this;
 	}
 	
-	public ExtGridColumnMeta setFormat(String value) {
+	public GridColumnMeta setFormat(String value) {
 		this.put(FORMAT, value);
 		return this;
 	}
 	
-	public ExtGridColumnMeta setTpl(String value) {
+	public GridColumnMeta setTpl(String value) {
 		this.put(TPL, value);
 		return this;
 	}

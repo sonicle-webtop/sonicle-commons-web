@@ -40,7 +40,7 @@ import com.sonicle.commons.web.gson.GsonExtJsGridFilterTypeAdapter;
 import com.sonicle.commons.web.gson.GsonISODateTypeAdapter;
 import com.sonicle.commons.web.gson.JodaDateTimeTypeAdapter;
 import com.sonicle.commons.web.json.extjs.ExtGridFilter;
-import com.sonicle.commons.web.json.extjs.ExtGridMetaData;
+import com.sonicle.commons.web.json.extjs.GridMetadata;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.HashMap;
@@ -114,7 +114,7 @@ public class JsonResult extends HashMap<String, Object> {
 		setTotal(totalCount);
 	}
 	
-	public JsonResult(Object data, ExtGridMetaData meta, int totalCount) {
+	public JsonResult(Object data, GridMetadata meta, int totalCount) {
 		super();
 		setSuccess(true);
 		setData(data);
@@ -122,7 +122,7 @@ public class JsonResult extends HashMap<String, Object> {
 		setMetaData(meta);
 	}
 	
-	public JsonResult(Object data, ExtGridMetaData meta, int totalCount, int start, int limit) {
+	public JsonResult(Object data, GridMetadata meta, int totalCount, int start, int limit) {
 		super();
 		setSuccess(true);
 		setData(data);
@@ -163,11 +163,11 @@ public class JsonResult extends HashMap<String, Object> {
 		return this;
 	}
 	
-	public ExtGridMetaData getMetaData() {
-		return (ExtGridMetaData)get(METADATA_PROP);
+	public GridMetadata getMetaData() {
+		return (GridMetadata)get(METADATA_PROP);
 	}
 
-	public JsonResult setMetaData(ExtGridMetaData value) {
+	public JsonResult setMetaData(GridMetadata value) {
 		put(METADATA_PROP, value);
 		return this;
 	}
