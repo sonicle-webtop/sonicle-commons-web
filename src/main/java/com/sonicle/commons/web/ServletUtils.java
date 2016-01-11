@@ -425,11 +425,22 @@ public class ServletUtils {
 	}
 	
 	/**
-	 * Tries to retrieve content type from the file name.
+	 * Tries to guess MediaType from filename.
+	 * @deprecated Use {@link #guessMediaType()} instead.
 	 * @param fileName The file name
-	 * @return Mime-type string
+	 * @return MediaType string
 	 */
+	@Deprecated
 	public static String guessMimeType(String fileName) {
+		return guessMediaType(fileName);
+	}
+	
+	/**
+	 * Tries to guess MediaType from filename.
+	 * @param fileName The file name
+	 * @return MediaType string
+	 */
+	public static String guessMediaType(String fileName) {
 		//MimeUtil.registerMimeDetector(ExtensionMimeDetector.class.getName());
 		//MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.MagicMimeMimeDetector");
 		MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.ExtensionMimeDetector");
@@ -438,9 +449,9 @@ public class ServletUtils {
 		return (mime == null) ? null : mime.toString();
 	}
 	
-	public static void setContentTypeHeader(HttpServletResponse response, String mimeType) {
-		if(StringUtils.isEmpty(mimeType)) mimeType = "application/octet-stream";
-		response.setContentType(mimeType);
+	public static void setContentTypeHeader(HttpServletResponse response, String mediaType) {
+		if(StringUtils.isEmpty(mediaType)) mediaType = "application/octet-stream";
+		response.setContentType(mediaType);
 	}
 	
 	public static void setHtmlContentTypeHeader(HttpServletResponse response) {
@@ -476,10 +487,10 @@ public class ServletUtils {
 		response.setHeader("Cache-Control", MessageFormat.format("private, max-age={0}", maxAge));//, must-revalidate
 	}
 	
-	public static OutputStream prepareForStreamCopy(HttpServletRequest request, HttpServletResponse response, String mimeType, int contentLength, int gzipThreshold) throws IOException {
+	public static OutputStream prepareForStreamCopy(HttpServletRequest request, HttpServletResponse response, String mediaType, int contentLength, int gzipThreshold) throws IOException {
 		final int BUFFER_SIZE = 4*1024;
 		
-		boolean willDeflate = acceptsDeflate(request) && isDeflatable(mimeType) && (contentLength >= gzipThreshold);
+		boolean willDeflate = acceptsDeflate(request) && isDeflatable(mediaType) && (contentLength >= gzipThreshold);
 		if(willDeflate) {
 			response.setHeader("Content-Encoding", "gzip");
 			return new GZIPOutputStream(response.getOutputStream(), BUFFER_SIZE);
