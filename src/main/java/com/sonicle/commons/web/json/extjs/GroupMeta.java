@@ -80,6 +80,11 @@ public class GroupMeta extends HashMap<String, Object> {
 		return this;
 	}
 	
+	public GroupMeta set(String property, Object value) {
+		this.put(property, value);
+		return this;
+	}
+	
 	public static String toJson(GroupMeta value) throws Exception {
 		return JsonResult.gson.toJson(value);
 	}

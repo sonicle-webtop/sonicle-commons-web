@@ -81,6 +81,11 @@ public class SortMeta extends HashMap<String, Object> {
 		return this;
 	}
 	
+	public SortMeta set(String property, Object value) {
+		this.put(property, value);
+		return this;
+	}
+	
 	public static String toJson(SortMeta value) throws Exception {
 		return JsonResult.gson.toJson(value);
 	}

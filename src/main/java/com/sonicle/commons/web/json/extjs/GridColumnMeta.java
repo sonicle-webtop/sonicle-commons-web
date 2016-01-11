@@ -139,4 +139,9 @@ public class GridColumnMeta extends HashMap<String, Object> {
 		this.put(TPL, value);
 		return this;
 	}
+	
+	public GridColumnMeta set(String property, Object value) {
+		this.put(property, value);
+		return this;
+	}
 }

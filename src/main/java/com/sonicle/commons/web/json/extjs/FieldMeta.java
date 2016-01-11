@@ -80,4 +80,9 @@ public class FieldMeta extends HashMap<String, Object> {
 		this.put(ALLOW_BLANK , value);
 		return this;
 	}
+	
+	public FieldMeta set(String property, Object value) {
+		this.put(property, value);
+		return this;
+	}
 }
