@@ -145,6 +145,19 @@ public class JsonResult extends HashMap<String, Object> {
 		setData(data);
 	}
 	
+	public JsonResult(Exception ex) {
+		super();
+		setSuccess(false);
+		setMessage(ex.getMessage());
+	}
+	
+	public JsonResult(Exception ex, Object data) {
+		super();
+		setSuccess(false);
+		setMessage(ex.getMessage());
+		setData(data);
+	}
+	
 	public boolean getSuccess() {
 		return (Boolean)get(SUCCESS_PROP);
 	}
