@@ -401,6 +401,14 @@ public class ServletUtils {
 		return new PayloadAsList<>(records, data);
 	}
 	
+	public static String getUserAgent(HttpServletRequest request) {
+		return request.getHeader("user-agent");
+	}
+	
+	public static String getReferer(HttpServletRequest request) {
+		return request.getHeader("referer");
+	}
+	
 	/**
 	 * Returns if client accepts gzip encoding.
 	 * @param request The HttpServletRequest.
