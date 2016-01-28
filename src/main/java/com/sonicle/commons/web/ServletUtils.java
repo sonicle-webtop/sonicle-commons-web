@@ -275,6 +275,12 @@ public class ServletUtils {
 		}
 	}
 	
+	public static <T>T getObjectParameter(HttpServletRequest request, String name, Class<T> type, boolean required) throws Exception {
+		T value = getObjectParameter(request, name, null, type);
+		if(required && (value == null)) throw new Exception(MessageFormat.format("Error getting parameter [{0}]", name));
+		return value;
+	}
+	
 	public static <T>T getObjectParameter(HttpServletRequest request, String name, T defaultValue, Class<T> type) throws Exception {
 		String value = getStringParameter(request, name, true);
 		return LangUtils.value(value, defaultValue, type);
@@ -866,5 +872,37 @@ public class ServletUtils {
 		Cipher aes = Cipher.getInstance("AES/CBC/PKCS5Padding");
 		aes.init(mode, new SecretKeySpec(key.getBytes(), "AES"), new IvParameterSpec(new byte[16]));
 		return aes;
+	}
+	
+	public static class StringArray extends ArrayList<String> {
+		public StringArray() {
+			super();
+		}
+		
+		public static StringArray fromJson(String value) {
+			if(value == null) return null;
+			return JsonResult.gson.fromJson(value, StringArray.class);
+		}
+
+		public static String toJson(StringArray value) {
+			if(value == null) return null;
+			return JsonResult.gson.toJson(value, StringArray.class);
+		}
+	}
+	
+	public static class IntegerArray extends ArrayList<Integer> {
+		public IntegerArray() {
+			super();
+		}
+		
+		public static IntegerArray fromJson(String value) {
+			if(value == null) return null;
+			return JsonResult.gson.fromJson(value, IntegerArray.class);
+		}
+
+		public static String toJson(IntegerArray value) {
+			if(value == null) return null;
+			return JsonResult.gson.toJson(value, IntegerArray.class);
+		}
 	}
 }
