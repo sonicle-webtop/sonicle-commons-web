@@ -562,7 +562,6 @@ public class ServletUtils {
 			sb.append("function load(){ window.close(); }");
 		} else {
 			sb.append("function load(){ if(window.opener.WT) window.opener.WT.error('");
-			//sb.append(Utils.jsEscape(message));
 			sb.append(StringEscapeUtils.escapeEcmaScript(message));
 			sb.append("');window.close();}");
 		}
