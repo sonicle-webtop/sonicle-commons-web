@@ -282,7 +282,7 @@ public class ServletUtils {
 	}
 	
 	public static <T>T getObjectParameter(HttpServletRequest request, String name, T defaultValue, Class<T> type) throws Exception {
-		String value = getStringParameter(request, name, true);
+		String value = getStringParameter(request, name, false);
 		return LangUtils.value(value, defaultValue, type);
 	}
 	
