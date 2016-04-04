@@ -87,8 +87,29 @@ import org.slf4j.LoggerFactory;
  * @author malbinola
  */
 public class ServletUtils {
-	
 	final static Logger logger = (Logger) LoggerFactory.getLogger(ServletUtils.class);
+	
+	/**
+	 * Gets request's attribute value.
+	 * @param request The HttpServletRequest.
+	 * @param name Attribute name.
+	 * @return Value as string.
+	 */
+	public static String getStringAttribute(HttpServletRequest request, String name) {
+		return getStringAttribute(request, name, null);
+	}
+	
+	/**
+	 * Gets request's attribute value.
+	 * @param request The HttpServletRequest.
+	 * @param name Attribute name.
+	 * @param defaultValue Attribute defaultValue.
+	 * @return Value as string.
+	 */
+	public static String getStringAttribute(HttpServletRequest request, String name, String defaultValue) {
+		String value = String.valueOf(request.getAttribute(name));
+		return LangUtils.value(value, defaultValue);
+	}
 	
 	/**
 	 * Gets request's parameter value.
@@ -284,28 +305,6 @@ public class ServletUtils {
 	public static <T>T getObjectParameter(HttpServletRequest request, String name, T defaultValue, Class<T> type) throws Exception {
 		String value = getStringParameter(request, name, false);
 		return LangUtils.value(value, defaultValue, type);
-	}
-	
-	/**
-	 * Gets request's attribute value.
-	 * @param request The HttpServletRequest.
-	 * @param name Attribute name.
-	 * @return Value as string.
-	 */
-	public static String getStringAttribute(HttpServletRequest request, String name) {
-		return getStringAttribute(request, name, null);
-	}
-	
-	/**
-	 * Gets request's attribute value.
-	 * @param request The HttpServletRequest.
-	 * @param name Attribute name.
-	 * @param defaultValue Attribute defaultValue.
-	 * @return Value as string.
-	 */
-	public static String getStringAttribute(HttpServletRequest request, String name, String defaultValue) {
-		String value = String.valueOf(request.getAttribute(name));
-		return LangUtils.value(value, defaultValue);
 	}
 	
 	/**
