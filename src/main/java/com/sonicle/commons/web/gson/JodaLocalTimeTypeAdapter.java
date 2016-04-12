@@ -42,7 +42,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
 import java.lang.reflect.Type;
-import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -50,28 +50,29 @@ import org.joda.time.format.DateTimeFormatter;
  *
  * @author malbinola
  */
-public class JodaDateTimeTypeAdapter implements JsonSerializer<DateTime>, JsonDeserializer<DateTime> {
+public class JodaLocalTimeTypeAdapter implements JsonSerializer<LocalTime>, JsonDeserializer<LocalTime> {
 	private final DateTimeFormatter fmt;
 	
-	public JodaDateTimeTypeAdapter() {
-		fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+	public JodaLocalTimeTypeAdapter() {
+		fmt = DateTimeFormat.forPattern("HH:mm:ss");
 	}
 
 	@Override
-	public JsonElement serialize(DateTime t, Type type, JsonSerializationContext jsc) {
+	public JsonElement serialize(LocalTime lt, Type type, JsonSerializationContext jsc) {
 		synchronized(fmt) {
-			return new JsonPrimitive(fmt.print(t));
+			return new JsonPrimitive(fmt.print(lt));
 		}
 	}
 
 	@Override
-	public DateTime deserialize(JsonElement je, Type type, JsonDeserializationContext jdc) throws JsonParseException {
+	public LocalTime deserialize(JsonElement je, Type type, JsonDeserializationContext jdc) throws JsonParseException {
 		try {
 			synchronized(fmt) {
-				return fmt.parseDateTime(je.getAsString());
+				return fmt.parseLocalTime(je.getAsString());
 			}
 		} catch(IllegalArgumentException | UnsupportedOperationException ex) {
 			throw new JsonSyntaxException(je.getAsString(), ex);
 		}
 	}
+	
 }

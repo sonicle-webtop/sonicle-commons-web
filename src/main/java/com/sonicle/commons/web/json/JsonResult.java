@@ -39,6 +39,8 @@ import com.google.gson.GsonBuilder;
 import com.sonicle.commons.web.gson.GsonExtJsGridFilterTypeAdapter;
 import com.sonicle.commons.web.gson.GsonISODateTypeAdapter;
 import com.sonicle.commons.web.gson.JodaDateTimeTypeAdapter;
+import com.sonicle.commons.web.gson.JodaLocalDateTypeAdapter;
+import com.sonicle.commons.web.gson.JodaLocalTimeTypeAdapter;
 import com.sonicle.commons.web.json.extjs.ExtGridFilter;
 import com.sonicle.commons.web.json.extjs.GridMetadata;
 import java.io.PrintWriter;
@@ -58,6 +60,8 @@ public class JsonResult extends HashMap<String, Object> {
 	public static final Gson gson = new GsonBuilder()
 		.serializeNulls()
 		.registerTypeAdapter(org.joda.time.DateTime.class, new JodaDateTimeTypeAdapter())
+		.registerTypeAdapter(org.joda.time.LocalDate.class, new JodaLocalDateTypeAdapter())
+		.registerTypeAdapter(org.joda.time.LocalTime.class, new JodaLocalTimeTypeAdapter())
 		.registerTypeAdapter(java.util.Date.class, new GsonISODateTypeAdapter())
 		.registerTypeAdapter(ExtGridFilter.class, new GsonExtJsGridFilterTypeAdapter())
 		.create();
