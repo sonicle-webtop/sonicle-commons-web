@@ -61,7 +61,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.zip.GZIPOutputStream;
@@ -71,6 +70,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -95,7 +95,7 @@ public class ServletUtils {
 	 * @param name Attribute name.
 	 * @return Value as string.
 	 */
-	public static String getStringAttribute(HttpServletRequest request, String name) {
+	public static String getStringAttribute(ServletRequest request, String name) {
 		return getStringAttribute(request, name, null);
 	}
 	
@@ -106,7 +106,7 @@ public class ServletUtils {
 	 * @param defaultValue Attribute defaultValue.
 	 * @return Value as string.
 	 */
-	public static String getStringAttribute(HttpServletRequest request, String name, String defaultValue) {
+	public static String getStringAttribute(ServletRequest request, String name, String defaultValue) {
 		String value = String.valueOf(request.getAttribute(name));
 		return LangUtils.value(value, defaultValue);
 	}
@@ -118,7 +118,7 @@ public class ServletUtils {
 	 * @param defaultValue Desired defaultValue if undefined.
 	 * @return Value as String.
 	 */
-	public static String getStringParameter(HttpServletRequest request, String name, String defaultValue) {
+	public static String getStringParameter(ServletRequest request, String name, String defaultValue) {
 		try {
 			return ServletUtils.getStringParameter(request, name, true);
 		} catch(Exception ex) {
@@ -134,7 +134,7 @@ public class ServletUtils {
 	 * @return Value as String.
 	 * @throws java.lang.Exception
 	 */
-	public static String getStringParameter(HttpServletRequest request, String name, boolean required) throws Exception {
+	public static String getStringParameter(ServletRequest request, String name, boolean required) throws Exception {
 		return getStringParameter(request, name, required, true);
 	}
 	
@@ -147,7 +147,7 @@ public class ServletUtils {
 	 * @return Value as String.
 	 * @throws java.lang.Exception
 	 */
-	public static String getStringParameter(HttpServletRequest request, String name, boolean required, boolean emptyAsNull) throws Exception {
+	public static String getStringParameter(ServletRequest request, String name, boolean required, boolean emptyAsNull) throws Exception {
 		try {
 			String value = request.getParameter(name);
 			return Validator.validateString(required, value, emptyAsNull);
@@ -156,7 +156,7 @@ public class ServletUtils {
 		}
 	}
 	
-	public static ArrayList<String> getStringParameterBySeparator(HttpServletRequest request, String name, String separator) throws Exception {
+	public static ArrayList<String> getStringParameterBySeparator(ServletRequest request, String name, String separator) throws Exception {
 		try {
 			String value = request.getParameter(name);
 			String value2 = Validator.validateString(false, value, true);
@@ -168,7 +168,7 @@ public class ServletUtils {
 		}
 	}
 	
-	public static ArrayList<String> getStringParameters(HttpServletRequest request, String name) throws Exception {
+	public static ArrayList<String> getStringParameters(ServletRequest request, String name) throws Exception {
 		try {
 			String[] values = request.getParameterValues(name);
 			if(Validator.isNull(values)) return new ArrayList<>();
@@ -188,7 +188,7 @@ public class ServletUtils {
 	 * @param defaultValue Desired defaultValue if undefined.
 	 * @return Value as Integer.
 	 */
-	public static Integer getIntParameter(HttpServletRequest request, String name, Integer defaultValue) {
+	public static Integer getIntParameter(ServletRequest request, String name, Integer defaultValue) {
 		try {
 			return ServletUtils.getIntParameter(request, name, true);
 		} catch(Exception ex) {
@@ -204,7 +204,7 @@ public class ServletUtils {
 	 * @return Value as Integer.
 	 * @throws java.lang.Exception
 	 */
-	public static Integer getIntParameter(HttpServletRequest request, String name, boolean required) throws Exception {
+	public static Integer getIntParameter(ServletRequest request, String name, boolean required) throws Exception {
 		try {
 			String value = StringUtils.defaultIfBlank(request.getParameter(name), null);
 			return Validator.validateInteger(required, value);
@@ -220,7 +220,7 @@ public class ServletUtils {
 	 * @param defaultValue Desired defaultValue if undefined.
 	 * @return Value as Boolean.
 	 */
-	public static boolean getBooleanParameter(HttpServletRequest request, String name, boolean defaultValue) {
+	public static boolean getBooleanParameter(ServletRequest request, String name, boolean defaultValue) {
 		try {
 			String value = StringUtils.defaultIfBlank(request.getParameter(name), null);
 			return Validator.validateBoolean(true, value);
@@ -237,7 +237,7 @@ public class ServletUtils {
 	 * @param defaultValue Desired defaultValue if undefined.
 	 * @return Value as Float.
 	 */
-	public static Float getFloatParameter(HttpServletRequest request, String name, Locale locale, Float defaultValue) {
+	public static Float getFloatParameter(ServletRequest request, String name, Locale locale, Float defaultValue) {
 		try {
 			return ServletUtils.getFloatParameter(request, name, locale, true);
 		} catch(Exception ex) {
@@ -254,7 +254,7 @@ public class ServletUtils {
 	 * @return Value as Float.
 	 * @throws java.lang.Exception
 	 */
-	public static Float getFloatParameter(HttpServletRequest request, String name, Locale locale, boolean required) throws Exception {
+	public static Float getFloatParameter(ServletRequest request, String name, Locale locale, boolean required) throws Exception {
 		try {
 			String value = StringUtils.defaultIfBlank(request.getParameter(name), null);
 			return Validator.validateFloat(required, value, locale);
@@ -270,7 +270,7 @@ public class ServletUtils {
 	 * @param defaultValue Desired defaultValue if undefined.
 	 * @return Value as Date.
 	 */
-	public static Date getDateParameter(HttpServletRequest request, String name, Date defaultValue) {
+	public static Date getDateParameter(ServletRequest request, String name, Date defaultValue) {
 		try {
 			return ServletUtils.getDateParameter(request, name, true);
 		} catch(Exception ex) {
@@ -286,7 +286,7 @@ public class ServletUtils {
 	 * @return Value as Date.
 	 * @throws java.lang.Exception
 	 */
-	public static Date getDateParameter(HttpServletRequest request, String name, boolean required) throws Exception {
+	public static Date getDateParameter(ServletRequest request, String name, boolean required) throws Exception {
 		try {
 			String value = StringUtils.defaultIfBlank(request.getParameter(name), null);
 			//return Validator.validateDate(required, value, "yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -296,13 +296,13 @@ public class ServletUtils {
 		}
 	}
 	
-	public static <T>T getObjectParameter(HttpServletRequest request, String name, Class<T> type, boolean required) throws Exception {
+	public static <T>T getObjectParameter(ServletRequest request, String name, Class<T> type, boolean required) throws Exception {
 		T value = getObjectParameter(request, name, null, type);
 		if(required && (value == null)) throw new Exception(MessageFormat.format("Error getting parameter [{0}]", name));
 		return value;
 	}
 	
-	public static <T>T getObjectParameter(HttpServletRequest request, String name, T defaultValue, Class<T> type) throws Exception {
+	public static <T>T getObjectParameter(ServletRequest request, String name, T defaultValue, Class<T> type) throws Exception {
 		String value = getStringParameter(request, name, false);
 		return LangUtils.value(value, defaultValue, type);
 	}
