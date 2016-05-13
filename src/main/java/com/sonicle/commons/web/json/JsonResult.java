@@ -66,6 +66,16 @@ public class JsonResult extends HashMap<String, Object> {
 		.registerTypeAdapter(ExtGridFilter.class, new GsonExtJsGridFilterTypeAdapter())
 		.create();
 	
+	public static final Gson gsonNoHtmlEscape = new GsonBuilder()
+		.serializeNulls()
+		.registerTypeAdapter(org.joda.time.DateTime.class, new JodaDateTimeTypeAdapter())
+		.registerTypeAdapter(org.joda.time.LocalDate.class, new JodaLocalDateTypeAdapter())
+		.registerTypeAdapter(org.joda.time.LocalTime.class, new JodaLocalTimeTypeAdapter())
+		.registerTypeAdapter(java.util.Date.class, new GsonISODateTypeAdapter())
+		.registerTypeAdapter(ExtGridFilter.class, new GsonExtJsGridFilterTypeAdapter())
+		.disableHtmlEscaping()
+		.create();
+	
 	public static final Gson gsonWoNulls = new GsonBuilder()
 		.registerTypeAdapter(java.util.Date.class, new GsonISODateTypeAdapter())
 		.create();
