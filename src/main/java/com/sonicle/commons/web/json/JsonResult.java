@@ -59,6 +59,7 @@ public class JsonResult extends HashMap<String, Object> {
 	
 	public static final Gson gson = new GsonBuilder()
 		.serializeNulls()
+		.disableHtmlEscaping()
 		.registerTypeAdapter(org.joda.time.DateTime.class, new JodaDateTimeTypeAdapter())
 		.registerTypeAdapter(org.joda.time.LocalDate.class, new JodaLocalDateTypeAdapter())
 		.registerTypeAdapter(org.joda.time.LocalTime.class, new JodaLocalTimeTypeAdapter())
@@ -66,24 +67,38 @@ public class JsonResult extends HashMap<String, Object> {
 		.registerTypeAdapter(ExtGridFilter.class, new GsonExtJsGridFilterTypeAdapter())
 		.create();
 	
-	public static final Gson gsonNoHtmlEscape = new GsonBuilder()
+	public static final Gson GSON = new GsonBuilder()
 		.serializeNulls()
+		.disableHtmlEscaping()
 		.registerTypeAdapter(org.joda.time.DateTime.class, new JodaDateTimeTypeAdapter())
 		.registerTypeAdapter(org.joda.time.LocalDate.class, new JodaLocalDateTypeAdapter())
 		.registerTypeAdapter(org.joda.time.LocalTime.class, new JodaLocalTimeTypeAdapter())
 		.registerTypeAdapter(java.util.Date.class, new GsonISODateTypeAdapter())
-		.registerTypeAdapter(ExtGridFilter.class, new GsonExtJsGridFilterTypeAdapter())
+		//.registerTypeAdapter(ExtGridFilter.class, new GsonExtJsGridFilterTypeAdapter())
+		.create();
+	
+	//public static final Gson gsonNoHtmlEscape_ = new GsonBuilder()
+	public static final Gson GSON_WONULLS = new GsonBuilder()
+		.serializeNulls()
+		.disableHtmlEscaping()
+		.registerTypeAdapter(org.joda.time.DateTime.class, new JodaDateTimeTypeAdapter())
+		.registerTypeAdapter(org.joda.time.LocalDate.class, new JodaLocalDateTypeAdapter())
+		.registerTypeAdapter(org.joda.time.LocalTime.class, new JodaLocalTimeTypeAdapter())
+		.registerTypeAdapter(java.util.Date.class, new GsonISODateTypeAdapter())
+		//.registerTypeAdapter(ExtGridFilter.class, new GsonExtJsGridFilterTypeAdapter())
+		.create();
+	
+	//public static final Gson gsonWoNulls_ = new GsonBuilder()
+	public static final Gson GSON_PLAIN_WONULLS = new GsonBuilder()
 		.disableHtmlEscaping()
 		.create();
 	
-	public static final Gson gsonWoNulls = new GsonBuilder()
-		.registerTypeAdapter(java.util.Date.class, new GsonISODateTypeAdapter())
-		.create();
-	
-	public static final Gson gsonWoNullsNoEscape = new GsonBuilder()
+	/*
+	public static final Gson gsonWoNullsNoEscape_ = new GsonBuilder()
 		.registerTypeAdapter(java.util.Date.class, new GsonISODateTypeAdapter())
 		.disableHtmlEscaping()
 		.create();
+	*/
 	
 	public static final String SUCCESS_PROP = "success";
 	public static final String MESSAGE_PROP = "message";
@@ -270,9 +285,9 @@ public class JsonResult extends HashMap<String, Object> {
 	 */
 	public String toJson(boolean serializeNulls) {
 		if(serializeNulls) {
-			return JsonResult.gson.toJson(this);
+			return JsonResult.GSON.toJson(this);
 		} else {
-			return JsonResult.gsonWoNulls.toJson(this);
+			return JsonResult.GSON_WONULLS.toJson(this);
 		}
 	}
 	

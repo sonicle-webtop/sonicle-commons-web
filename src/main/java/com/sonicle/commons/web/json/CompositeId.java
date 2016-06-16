@@ -39,7 +39,86 @@ import org.apache.commons.lang3.StringUtils;
  *
  * @author malbinola
  */
-public final class CompositeId {
+public class CompositeId {
+	private String[] tokens;
+	private String separator = "|";
+	
+	public CompositeId() {
+		tokens = new String[2];
+	}
+	
+	public CompositeId(int maxTokens) {
+		tokens = new String[maxTokens];
+	}
+	
+	public CompositeId(Object... tokens) {
+		this(tokens.length);
+		setTokens(tokens);
+	}
+	
+	public CompositeId parse(String s) {
+		return parse(s, false);
+	}
+	
+	public CompositeId parse(String s, boolean keepSize) {
+		String[] split = null;
+		if(keepSize) {
+			split = StringUtils.split(s, separator, tokens.length);
+			if(split.length != tokens.length) throw new IllegalArgumentException();
+		} else {
+			split = StringUtils.split(s, separator);
+		}
+		tokens = split;
+		return this;
+	}
+	
+	public int getSize() {
+		return tokens.length;
+	}
+	
+	public CompositeId setToken(int index, String value) {
+		tokens[index] = value;
+		return this;
+	}
+	
+	public String getToken(int index) {
+		return tokens[index];
+	}
+	
+	public CompositeId setTokens(Object... tokens) {
+		for(int i=0; i<tokens.length; i++) {
+			this.tokens[i] = (tokens[i] != null) ? tokens[i].toString() : null;
+		}
+		return this;
+	}
+	
+	@Override
+	public String toString() {
+		return StringUtils.join(tokens, "|");
+	}
+	
+	public String toString(boolean compress) {
+		if(!compress) {
+			return this.toString();
+		} else {
+			int nullIndex = indexOfNull();
+			if(nullIndex == -1) {
+				return StringUtils.join(tokens, separator);
+			} else {
+				return StringUtils.join(tokens, separator, 0, nullIndex);
+			}
+		}
+	}
+	
+	private int indexOfNull() {
+		for(int i=0; i<tokens.length; i++) {
+			if(tokens[i] == null) return i;
+		}
+		return -1;
+	}
+	
+	
+	/*
 	private String[] tokens;
 	
 	public CompositeId() {
@@ -49,10 +128,10 @@ public final class CompositeId {
 	public CompositeId(Object... tokens) {
 		this.tokens = new String[tokens.length];
 		for(int i=0; i<tokens.length; i++) {
-			setToken(i, tokens[i].toString());
+			if(tokens[i] != null) setToken(i, tokens[i].toString());
 		}
 	}
-	
+	return this;
 	public CompositeId parse(String value) {
 		tokens = StringUtils.split(value, "|");
 		return this;
@@ -84,4 +163,13 @@ public final class CompositeId {
 	public String toString() {
 		return StringUtils.join(tokens, "|");
 	}
+	
+	public String toString(boolean compress) {
+		if(!compress) {
+			return this.toString();
+		} else {
+			
+		}
+	}
+	*/
 }

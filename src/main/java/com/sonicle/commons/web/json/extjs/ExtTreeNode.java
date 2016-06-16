@@ -42,7 +42,6 @@ import java.util.HashMap;
  * @author malbinola
  */
 public class ExtTreeNode extends HashMap<String, Object> {
-	
 	public static final String ID_PROP = "id";
 	public static final String TEXT_PROP = "text";
 	public static final String LEAF_PROP = "leaf";
