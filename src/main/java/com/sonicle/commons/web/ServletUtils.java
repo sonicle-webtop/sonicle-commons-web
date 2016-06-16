@@ -218,6 +218,39 @@ public class ServletUtils {
 	 * @param request The HttpServletRequest.
 	 * @param name Parameter name.
 	 * @param defaultValue Desired defaultValue if undefined.
+	 * @return Value as Long.
+	 */
+
+    public static Long getLongParameter(ServletRequest request, String name, Long defaultValue) {
+		try {
+			return ServletUtils.getLongParameter(request, name, true);
+		} catch(Exception ex) {
+			return defaultValue;
+		}
+	}
+	
+	/**
+	 * Gets request's parameter value.
+	 * @param request The HttpServletRequest.
+	 * @param name Parameter name.
+	 * @param required True to generate an exception if undefined.
+	 * @return Value as Long.
+	 * @throws java.lang.Exception
+	 */
+	public static Long getLongParameter(ServletRequest request, String name, boolean required) throws Exception {
+		try {
+			String value = StringUtils.defaultIfBlank(request.getParameter(name), null);
+			return Validator.validateLong(required, value);
+		} catch(ValidatorException ex) {
+			throw new Exception(MessageFormat.format("Error getting parameter [{0}]", name), ex);
+		}
+	}
+
+    /**
+	 * Gets request's parameter value.
+	 * @param request The HttpServletRequest.
+	 * @param name Parameter name.
+	 * @param defaultValue Desired defaultValue if undefined.
 	 * @return Value as Boolean.
 	 */
 	public static boolean getBooleanParameter(ServletRequest request, String name, boolean defaultValue) {
