@@ -46,7 +46,7 @@ public class JsonHashMap extends HashMap<String, Object> {
 	public static JsonHashMap valueOf(String s) {
 		try {
 			if(StringUtils.isEmpty(s)) return new JsonHashMap();
-			return JsonResult.gsonWoNulls.fromJson(s, JsonHashMap.class);
+			return JsonResult.GSON_PLAIN_WONULLS.fromJson(s, JsonHashMap.class);
 		} catch(Exception ex) {
 			ex.printStackTrace();
 			return new JsonHashMap();
@@ -61,10 +61,4 @@ public class JsonHashMap extends HashMap<String, Object> {
 		put("id", id);
 		put("value", value);
 	}
-	
-	/*
-	public String toJson() {
-		return JsonResult.gsonWoNulls.toJson(this);
-	}
-	*/
 }

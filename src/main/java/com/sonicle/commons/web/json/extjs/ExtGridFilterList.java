@@ -37,8 +37,8 @@ package com.sonicle.commons.web.json.extjs;
 import java.util.ArrayList;
 
 /**
- *
- * @author malbinola
+ * @deprecated Evaluation is necessary to determine if this is really useful
+ * @author dnllr
  */
 public class ExtGridFilterList extends ExtGridFilter {
 	

@@ -35,17 +35,15 @@
 package com.sonicle.commons.web.json.extjs;
 
 /**
- *
- * @author malbinola
+ * @deprecated Evaluation is necessary to determine if this is really useful
+ * @author dnllr
  */
 public class ExtGridFilter {
 	
 	public String type = null;
 	public String field = null;
 	
-	public ExtGridFilter() {
-		
-	}
+	public ExtGridFilter() {}
 	
 	public ExtGridFilter(String type, String field) {
 		this.type = type;
