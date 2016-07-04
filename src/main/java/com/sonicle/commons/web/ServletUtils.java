@@ -508,21 +508,44 @@ public class ServletUtils {
 		response.setContentType("application/json");
 	}
 	
-	public static void setContentDispositionHeader(HttpServletResponse response, String dipositionType, String fileName) {
-		response.addHeader("Content-Disposition", MessageFormat.format("{0}; filename=\"{1}\"", dipositionType, fileName));
+	public static void setContentDispositionHeader(HttpServletResponse response, DispositionType dispositionType, String fileName) {
+		response.addHeader("Content-Disposition", MessageFormat.format("{0}; filename=\"{1}\"", dispositionType.toString(), fileName));
 	}
 	
 	public static void setFileStreamHeaders(HttpServletResponse response, String fileName) {
-		setFileStreamHeaders(response, guessMimeType(fileName), "inline", fileName);
+		setFileStreamHeaders(response, guessMimeType(fileName), DispositionType.INLINE, fileName);
 	}
 	
-	public static void setFileStreamHeaders(HttpServletResponse response, String mimeType, String fileName) {
-		setFileStreamHeaders(response, mimeType, "inline", fileName);
+	public static void setFileStreamHeaders(HttpServletResponse response, String mimeType, String filename) {
+		setFileStreamHeaders(response, mimeType, DispositionType.INLINE, filename);
 	}
 	
-	public static void setFileStreamHeaders(HttpServletResponse response, String mimeType, String dispositionType, String fileName) {
+	public static void setFileStreamHeaders(HttpServletResponse response, String mimeType, DispositionType dispositionType, String filename) {
 		setContentTypeHeader(response, mimeType);
-		setContentDispositionHeader(response, dispositionType, fileName);
+		setContentDispositionHeader(response, dispositionType, filename);
+	}
+	
+	public static void setContentLengthHeader(HttpServletResponse response, int length) {
+		response.setContentLength(length);
+	}
+	
+	public static void setContentLengthHeader(HttpServletResponse response, long length) {
+		response.setContentLengthLong(length);
+	}
+	
+	/**
+	 * @deprecated use setContentDispositionHeader(HttpServletResponse response, DispositionType dispositionType, String fileName) instead
+	 */
+	public static void setContentDispositionHeader(HttpServletResponse response, String dispositionType, String fileName) {
+		response.addHeader("Content-Disposition", MessageFormat.format("{0}; filename=\"{1}\"", dispositionType, fileName));
+	}
+	
+	/**
+	 * @deprecated use setFileStreamHeaders(HttpServletResponse response, String mimeType, DispositionType dipositionType, String fileName) instead
+	 */
+	public static void setFileStreamHeaders(HttpServletResponse response, String mimeType, String dispositionType, String filename) {
+		setContentTypeHeader(response, mimeType);
+		setContentDispositionHeader(response, dispositionType, filename);
 	}
 	
 	public static void setCacheControlHeaderPrivateNoCache(HttpServletResponse response) {
@@ -585,7 +608,6 @@ public class ServletUtils {
 	}
 	
 	public static void writeErrorHandlingJs(HttpServletResponse response, String message) {
-		response.setContentType("text/html");
 		StringBuilder sb = new StringBuilder();
 		sb.append("<html>");
 		sb.append("<head>");
@@ -602,7 +624,12 @@ public class ServletUtils {
 		sb.append("<body onload='load()'>");
 		sb.append("</body>");
 		sb.append("</html>");
+		
 		try {
+			response.reset();
+			byte[] bytes = sb.toString().getBytes();
+			setHtmlContentTypeHeader(response);
+			setContentLengthHeader(response, bytes.length);
 			ServletUtils.writeInputStream(response, new ByteArrayInputStream(sb.toString().getBytes()));
 		} catch(IOException ex) { /* Do nothing! */}
 	}
@@ -612,7 +639,7 @@ public class ServletUtils {
 	}
 	
 	public static void writeFileStream(HttpServletResponse response, String filename, InputStream fileStream, boolean dispAsAttachment) {
-		String fext = FilenameUtils.getExtension(filename);
+		//String fext = FilenameUtils.getExtension(filename);
 		//String ctype = URLConnection.guessContentTypeFromName(filename);
 		String ctype = guessMimeType(filename);
 		String dispositionType = (dispAsAttachment) ? "attachment" : "inline";
