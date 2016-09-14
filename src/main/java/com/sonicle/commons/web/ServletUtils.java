@@ -89,6 +89,17 @@ import org.slf4j.LoggerFactory;
 public class ServletUtils {
 	final static Logger logger = (Logger) LoggerFactory.getLogger(ServletUtils.class);
 	
+	public static String getBaseURL(HttpServletRequest request) {
+		StringBuffer url = request.getRequestURL();
+		return url.substring(0, url.indexOf(request.getServletPath()));
+	}
+	
+	public static String getContextPath(HttpServletRequest request) {
+		//TODO: controllare se il metodo funziona anche con il proxypass
+		String uri = StringUtils.defaultString(request.getRequestURI());
+		return uri.substring(0, uri.indexOf(request.getServletPath()));
+	}
+	
 	/**
 	 * Gets request's attribute value.
 	 * @param request The HttpServletRequest.
@@ -548,11 +559,15 @@ public class ServletUtils {
 		setContentDispositionHeader(response, dispositionType, filename);
 	}
 	
-	public static void setCacheControlHeaderPrivateNoCache(HttpServletResponse response) {
+	public static void setCacheControlPrivate(HttpServletResponse response) {
+		response.setHeader("Cache-Control", "private");
+	}
+	
+	public static void setCacheControlPrivateNoCache(HttpServletResponse response) {
 		response.setHeader("Cache-Control", "private, no-cache");
 	}
 	
-	public static void setCacheControlHeaderPrivateMaxAge(HttpServletResponse response, int maxAge) {
+	public static void setCacheControlPrivateMaxAge(HttpServletResponse response, int maxAge) {
 		response.setHeader("Cache-Control", MessageFormat.format("private, max-age={0}", maxAge));//, must-revalidate
 	}
 	
