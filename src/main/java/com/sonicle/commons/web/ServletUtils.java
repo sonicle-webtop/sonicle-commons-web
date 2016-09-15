@@ -75,7 +75,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base32;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -504,6 +503,10 @@ public class ServletUtils {
 		//MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.OpendesktopMimeDetector");
 		MimeType mime = MimeUtil.getMostSpecificMimeType(MimeUtil.getMimeTypes(fileName));
 		return (mime == null) ? null : mime.toString();
+	}
+	
+	public static void setLocationHeader(HttpServletResponse response, String url) {
+		response.setHeader("Location", url);
 	}
 	
 	public static void setContentTypeHeader(HttpServletResponse response, String mediaType) {
