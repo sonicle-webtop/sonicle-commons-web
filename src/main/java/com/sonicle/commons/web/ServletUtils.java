@@ -547,6 +547,12 @@ public class ServletUtils {
 		response.setContentLengthLong(length);
 	}
 	
+	public static void sendError(HttpServletResponse response, int error) {
+		try {
+			response.sendError(error);
+		} catch (IOException ex) { /* Do nothing... */ }
+	}
+	
 	/**
 	 * @deprecated use setContentDispositionHeader(HttpServletResponse response, DispositionType dispositionType, String fileName) instead
 	 */
