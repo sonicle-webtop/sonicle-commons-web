@@ -64,7 +64,9 @@ public class CompositeId {
 		String[] split = null;
 		if(keepSize) {
 			split = StringUtils.split(s, separator, tokens.length);
-			if(split.length != tokens.length) throw new IllegalArgumentException();
+			for(int i=0; i<tokens.length; i++) {
+				tokens[i] = (i < split.length) ? split[i] : null;
+			}
 		} else {
 			split = StringUtils.split(s, separator);
 		}
@@ -74,6 +76,10 @@ public class CompositeId {
 	
 	public int getSize() {
 		return tokens.length;
+	}
+	
+	public boolean hasToken(int index) {
+		return index < tokens.length;
 	}
 	
 	public CompositeId setToken(int index, String value) {
