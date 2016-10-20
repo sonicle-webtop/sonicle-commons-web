@@ -36,7 +36,7 @@ package com.sonicle.commons.web;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- *
+ * @deprecated 
  * @author malbinola
  */
 public class JsonUtils {
