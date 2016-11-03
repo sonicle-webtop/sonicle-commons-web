@@ -263,7 +263,7 @@ public class ServletUtils {
 	 * @param defaultValue Desired defaultValue if undefined.
 	 * @return Value as Boolean.
 	 */
-	public static boolean getBooleanParameter(ServletRequest request, String name, boolean defaultValue) {
+	public static Boolean getBooleanParameter(ServletRequest request, String name, Boolean defaultValue) {
 		try {
 			String value = StringUtils.defaultIfBlank(request.getParameter(name), null);
 			return Validator.validateBoolean(true, value);
