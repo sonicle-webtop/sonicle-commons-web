@@ -20,7 +20,7 @@ ${licensePrefix}along with this program; if not, see http://www.gnu.org/licenses
 ${licensePrefix}the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 ${licensePrefix}MA 02110-1301 USA.
 ${licensePrefix?replace(" +$", "", "r")}
-${licensePrefix}You can contact Sonicle S.r.l. at email address sonicle[at]sonicle.com
+${licensePrefix}You can contact Sonicle S.r.l. at email address sonicle[at]sonicle[dot]com
 ${licensePrefix?replace(" +$", "", "r")}
 ${licensePrefix}The interactive user interfaces in modified source and object code versions
 ${licensePrefix}of this program must display Appropriate Legal Notices, as required under
