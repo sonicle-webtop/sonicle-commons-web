@@ -49,6 +49,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.InvalidAlgorithmParameterException;
@@ -89,6 +91,14 @@ public class ServletUtils {
 	public static String getBaseURL(HttpServletRequest request) {
 		StringBuffer url = request.getRequestURL();
 		return url.substring(0, url.indexOf(request.getServletPath()));
+	}
+	
+	public static String getInternetName(HttpServletRequest request) throws MalformedURLException {
+		URL url = new URL(request.getRequestURL().toString());
+		String host = url.getHost();
+		int ix1 = host.indexOf('.');
+		int ix2 = host.lastIndexOf('.');
+		return (ix1 == ix2) ? host : host.substring(ix1 + 1);
 	}
 	
 	public static String getContextPath(HttpServletRequest request) {
