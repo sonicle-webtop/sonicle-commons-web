@@ -527,7 +527,7 @@ public class ServletUtils {
 	}
 	
 	public static void setJsonContentTypeHeader(HttpServletResponse response) {
-		response.setContentType("application/json");
+		response.setContentType("application/json;charset=UTF-8");
 	}
 	
 	public static void setContentDispositionHeader(HttpServletResponse response, DispositionType dispositionType, String fileName) {
