@@ -547,6 +547,11 @@ public class ServletUtils {
 		setContentDispositionHeader(response, dispositionType, filename);
 	}
 	
+	public static void setFileStreamHeadersForceDownload(HttpServletResponse response, String filename) {
+		setContentTypeHeader(response, "application/octet-stream");
+		setContentDispositionHeader(response, DispositionType.ATTACHMENT, filename);
+	}
+	
 	public static void setContentLengthHeader(HttpServletResponse response, int length) {
 		response.setContentLength(length);
 	}
