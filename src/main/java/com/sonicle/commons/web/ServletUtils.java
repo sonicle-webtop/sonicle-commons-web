@@ -751,6 +751,22 @@ public class ServletUtils {
 		IOUtils.write(data, response.getOutputStream());
 	}
 	
+	public static void writeError(HttpServletResponse response, int errorNo) {
+		writeError(response, errorNo, null);
+	}
+	
+	public static void writeError(HttpServletResponse response, int errorNo, String message) {
+		try {
+			if (StringUtils.isBlank(message)) {
+				response.sendError(errorNo);
+			} else {
+				response.sendError(errorNo, message);
+			}
+		} catch(IOException ex) {
+			logger.error("Unable to send error", ex);
+		}
+	}
+	
 	/**
 	 * Discovers the remote client IP address from a request.
 	 * This method also take into account possible headers that a proxy or a
