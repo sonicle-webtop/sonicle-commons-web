@@ -531,7 +531,7 @@ public class ServletUtils {
 	}
 	
 	public static void setContentDispositionHeader(HttpServletResponse response, DispositionType dispositionType, String fileName) {
-		response.addHeader("Content-Disposition", MessageFormat.format("{0}; filename=\"{1}\"", dispositionType.toString(), fileName));
+		response.addHeader("Content-Disposition", dispositionType.toString() + "; filename=\"" + fileName + "\"");
 	}
 	
 	public static void setFileStreamHeaders(HttpServletResponse response, String fileName) {
