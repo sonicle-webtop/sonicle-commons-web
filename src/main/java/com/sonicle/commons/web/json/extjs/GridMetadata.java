@@ -32,13 +32,11 @@
  */
 package com.sonicle.commons.web.json.extjs;
 
-import java.util.HashMap;
-
 /**
  *
  * @author malbinola
  */
-public class GridMetadata extends HashMap {
+public class GridMetadata extends ResultMeta {
 	public static final String META_STORE_ROOT = "root";
 	public static final String META_FIELDS = "fields";
 	public static final String META_COLUMNS_INFO = "colsInfo";

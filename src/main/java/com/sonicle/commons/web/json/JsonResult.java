@@ -41,6 +41,7 @@ import com.sonicle.commons.web.gson.JodaLocalDateTypeAdapter;
 import com.sonicle.commons.web.gson.JodaLocalTimeTypeAdapter;
 import com.sonicle.commons.web.json.extjs.ExtGridFilter;
 import com.sonicle.commons.web.json.extjs.GridMetadata;
+import com.sonicle.commons.web.json.extjs.ResultMeta;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.HashMap;
@@ -141,7 +142,7 @@ public class JsonResult extends HashMap<String, Object> {
 		setTotal(totalCount);
 	}
 	
-	public JsonResult(Object data, GridMetadata meta, int totalCount) {
+	public JsonResult(Object data, ResultMeta meta, int totalCount) {
 		super();
 		setSuccess(true);
 		setData(data);
@@ -149,7 +150,7 @@ public class JsonResult extends HashMap<String, Object> {
 		setMetaData(meta);
 	}
 	
-	public JsonResult(Object data, GridMetadata meta, int totalCount, int start, int limit) {
+	public JsonResult(Object data, ResultMeta meta, int totalCount, int start, int limit) {
 		super();
 		setSuccess(true);
 		setData(data);
@@ -203,11 +204,18 @@ public class JsonResult extends HashMap<String, Object> {
 		return this;
 	}
 	
-	public GridMetadata getMetaData() {
-		return (GridMetadata)get(METADATA_PROP);
+	public ResultMeta getMetaData() {
+		return (ResultMeta)get(METADATA_PROP);
 	}
-
-	public JsonResult setMetaData(GridMetadata value) {
+	
+	/**
+	 * This method sets a specific meta property ("metaData") that is suitable 
+	 * only when working with ExtJs grid components. Otherwise you shoud use
+	 * the generic method setMeta that sets the custom "meta" property.
+	 * @param value
+	 * @return 
+	 */
+	public JsonResult setMetaData(ResultMeta value) {
 		put(METADATA_PROP, value);
 		return this;
 	}
