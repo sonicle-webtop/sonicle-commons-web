@@ -94,9 +94,12 @@ public class ServletUtils {
 		return url.substring(0, url.indexOf(request.getServletPath()));
 	}
 	
+	public static String getHost(HttpServletRequest request) throws MalformedURLException {
+		return new URL(request.getRequestURL().toString()).getHost();
+	}
+	
 	public static String getInternetName(HttpServletRequest request) throws MalformedURLException {
-		URL url = new URL(request.getRequestURL().toString());
-		String host = url.getHost();
+		String host = getHost(request);
 		int ix1 = host.indexOf('.');
 		int ix2 = host.lastIndexOf('.');
 		return (ix1 == ix2) ? host : host.substring(ix1 + 1);
