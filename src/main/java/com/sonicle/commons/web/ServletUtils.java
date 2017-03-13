@@ -49,6 +49,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -552,12 +553,12 @@ public class ServletUtils {
 		setContentDispositionHeader(response, DispositionType.ATTACHMENT, filename);
 	}
 	
-	public static void setContentLengthHeader(HttpServletResponse response, int length) {
-		response.setContentLength(length);
-	}
-	
 	public static void setContentLengthHeader(HttpServletResponse response, long length) {
-		response.setContentLengthLong(length);
+		if (length <= Integer.MAX_VALUE) {
+			response.setContentLength((int)length);
+		} else {
+			response.addHeader("Content-Length", Long.toString(length));
+		}
 	}
 	
 	public static void sendError(HttpServletResponse response, int error) {
