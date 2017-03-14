@@ -226,6 +226,16 @@ public class JsonResult extends HashMap<String, Object> {
 		return this;
 	}
 	
+	public JsonResult setMetaError(ResultMeta.Error error) {
+		ResultMeta meta = getMetaData();
+		if (meta == null) {
+			meta = new ResultMeta();
+			setMetaData(meta);
+		}
+		meta.setError(error);
+		return this;
+	}
+	
 	public Object getDataProperty() {
 		return dataProperty;
 	}
