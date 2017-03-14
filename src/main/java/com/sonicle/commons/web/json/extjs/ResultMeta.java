@@ -39,6 +39,7 @@ import java.util.HashMap;
  * @author malbinola
  */
 public class ResultMeta extends HashMap {
+	public static final String ERROR = "error";
 	
 	public ResultMeta() {
 		super();
@@ -47,5 +48,37 @@ public class ResultMeta extends HashMap {
 	public ResultMeta set(String key, Object value) {
 		this.put(key, value);
 		return this;
+	}
+	
+	public ResultMeta setError(Error error) {
+		this.put(ERROR, error);
+		return this;
+	}
+	
+	public static class Error extends HashMap {
+		public static final String TEXT = "text";
+		public static final String RES = "res";
+		
+		public Error() {
+			super();
+		}
+		
+		public String getText() {
+			return (String)this.get(TEXT);
+		}
+
+		public Error setText(String text) {
+			this.put(TEXT, text);
+			return this;
+		}
+		
+		public String getRes() {
+			return (String)this.get(RES);
+		}
+
+		public Error setRes(String res) {
+			this.put(RES, res);
+			return this;
+		}
 	}
 }

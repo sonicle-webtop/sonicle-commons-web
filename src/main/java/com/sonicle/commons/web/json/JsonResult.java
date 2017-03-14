@@ -123,6 +123,12 @@ public class JsonResult extends HashMap<String, Object> {
 		this(DATA_PROP, data);
 	}
 	
+	public JsonResult(ResultMeta meta) {
+		super();
+		setSuccess(true);
+		setMetaData(meta);
+	}
+	
 	public JsonResult(String dataProperty, Object data) {
 		super();
 		this.dataProperty = dataProperty;
