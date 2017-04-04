@@ -89,9 +89,17 @@ import org.slf4j.LoggerFactory;
 public class ServletUtils {
 	final static Logger logger = (Logger) LoggerFactory.getLogger(ServletUtils.class);
 	
-	public static String getBaseURL(HttpServletRequest request) {
+	/**
+	 * Returns the request URL until the servlet path (excluded).
+	 * This URL may differ from the orginal browser URL due to rewrites
+	 * (eg. Apache url_rewrite) potentially applied in the chain.
+	 * @param request The HttpServletRequest object.
+	 * @return 
+	 */
+	public static String getRequestURL(HttpServletRequest request) {
 		StringBuffer url = request.getRequestURL();
-		return url.substring(0, url.indexOf(request.getServletPath()));
+		int iof = url.indexOf(request.getServletPath());
+		return (iof == -1) ? url.toString() : url.substring(0, iof);
 	}
 	
 	public static String getHost(HttpServletRequest request) throws MalformedURLException {
