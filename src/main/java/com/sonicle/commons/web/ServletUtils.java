@@ -46,6 +46,7 @@ import eu.medsea.mimeutil.MimeUtil;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -70,6 +71,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
@@ -88,6 +90,28 @@ import org.slf4j.LoggerFactory;
  */
 public class ServletUtils {
 	final static Logger logger = (Logger) LoggerFactory.getLogger(ServletUtils.class);
+	
+	/**
+	 * Returns the webapp name on filesystem of the passed servletContext.
+	 * @param context The servlet context.
+	 * @return The webapp name.
+	 */
+	public static String getWebappName(ServletContext context) {
+		return getWebappName(context, false);
+	}
+	
+	/**
+	 * Returns the webapp name on filesystem of the passed servletContext.
+	 * You can control the output deciding to strip or not any versioning 
+	 * information (characters after `##` in the name).
+	 * @param context The servlet context.
+	 * @param stripVersion True to strip version info, false otherwise.
+	 * @return The webapp name.
+	 */
+	public static String getWebappName(ServletContext context, boolean stripVersion) {
+		final String name = new File(context.getRealPath("/")).getName();
+		return stripVersion ? StringUtils.split(name, "##", 2)[0] : name;
+	}
 	
 	/**
 	 * Returns the request URL until the servlet path (excluded).
