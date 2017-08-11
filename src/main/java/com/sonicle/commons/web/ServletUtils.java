@@ -50,11 +50,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -549,25 +552,79 @@ public class ServletUtils {
 		return (mime == null) ? null : mime.toString();
 	}
 	
+	/**
+	 * Translates a string into an URL-encoded string.
+	 * @param s <code>String</code> to be translated.
+	 * @return The translated <code>String</code>.
+	 */
+	public static String toURLEncodedString(String s) {
+		try {
+			return new URI(null, null, s, null).toASCIIString();
+		} catch(URISyntaxException ex) {
+			return null;
+		}
+	}
+	
+	/**
+	 * Sets the <code>Content-Type</code> header as <code>text/html</code>.
+	 * @param response The HttpServletResponse.
+	 */
+	public static void setHtmlContentType(HttpServletResponse response) {
+		setContentTypeHeader(response, "text/html");
+	}
+	
+	/**
+	 * Sets the <code>Content-Type</code> header as <code>application/json</code>.
+	 * @param response The HttpServletResponse.
+	 */
+	public static void setJsonContentType(HttpServletResponse response) {
+		setContentTypeHeader(response, "application/json");
+	}
+	
+	/**
+	 * Sets the <code>Location</code> header using provided URL.
+	 * URL value is expected to be escaped and may contain only ASCII characters.
+	 * @param response The HttpServletResponse
+	 * @param url The URL to redirect to.
+	 */
 	public static void setLocationHeader(HttpServletResponse response, String url) {
+		response.setCharacterEncoding("UTF-8");
 		response.setHeader("Location", url);
 	}
 	
+	/**
+	 * Sets the <code>Content-Type</code> header using the provided mediaType. 
+	 * If not provided <code>application/octet-stream</code> will be used instead.
+	 * Character encoding will be set to UTF-8.
+	 * @param response The HttpServletResponse.
+	 * @param mediaType The chosen mediaType.
+	 */
 	public static void setContentTypeHeader(HttpServletResponse response, String mediaType) {
-		if(StringUtils.isEmpty(mediaType)) mediaType = "application/octet-stream";
-		response.setContentType(mediaType);
+		response.setCharacterEncoding("UTF-8");
+		response.setContentType(StringUtils.isEmpty(mediaType) ? "application/octet-stream" : mediaType);
 	}
 	
-	public static void setHtmlContentTypeHeader(HttpServletResponse response) {
-		response.setContentType("text/html;charset=UTF-8");
+	/**
+	 * Sets the <code>Content-Disposition</code> header using provided 
+	 * disposition and filename. Character encoding will be set to UTF-8.
+	 * https://stackoverflow.com/questions/18050718/utf-8-encoding-name-in-downloaded-file
+	 * https://stackoverflow.com/questions/5325322/java-servlet-download-filename-special-characters
+	 * @param response The HttpServletResponse.
+	 * @param dispositionType The disposition mode.
+	 * @param filename The choosen filename.
+	 */
+	public static void setContentDispositionHeader(HttpServletResponse response, DispositionType dispositionType, String filename) {
+		response.setCharacterEncoding("UTF-8");
+		CharsetEncoder enc = StandardCharsets.US_ASCII.newEncoder();
+		if (enc.canEncode(filename)) {
+			response.addHeader("Content-Disposition", dispositionType.toString() + "; filename=\"" + filename + "\"");
+		} else {
+			response.addHeader("Content-Disposition", dispositionType.toString() + "; filename*=UTF-8''" + toURLEncodedString(filename));
+		}
 	}
 	
-	public static void setJsonContentTypeHeader(HttpServletResponse response) {
-		response.setContentType("application/json;charset=UTF-8");
-	}
-	
-	public static void setContentDispositionHeader(HttpServletResponse response, DispositionType dispositionType, String fileName) {
-		response.addHeader("Content-Disposition", dispositionType.toString() + "; filename=\"" + fileName + "\"");
+	public static void setFileStreamHeadersForceDownload(HttpServletResponse response, String filename) {
+		setFileStreamHeaders(response, "application/octet-stream", DispositionType.ATTACHMENT, filename);
 	}
 	
 	public static void setFileStreamHeaders(HttpServletResponse response, String fileName) {
@@ -581,11 +638,6 @@ public class ServletUtils {
 	public static void setFileStreamHeaders(HttpServletResponse response, String mimeType, DispositionType dispositionType, String filename) {
 		setContentTypeHeader(response, mimeType);
 		setContentDispositionHeader(response, dispositionType, filename);
-	}
-	
-	public static void setFileStreamHeadersForceDownload(HttpServletResponse response, String filename) {
-		setContentTypeHeader(response, "application/octet-stream");
-		setContentDispositionHeader(response, DispositionType.ATTACHMENT, filename);
 	}
 	
 	public static void setContentLengthHeader(HttpServletResponse response, long length) {
@@ -602,20 +654,7 @@ public class ServletUtils {
 		} catch (IOException ex) { /* Do nothing... */ }
 	}
 	
-	/**
-	 * @deprecated use setContentDispositionHeader(HttpServletResponse response, DispositionType dispositionType, String fileName) instead
-	 */
-	public static void setContentDispositionHeader(HttpServletResponse response, String dispositionType, String fileName) {
-		response.addHeader("Content-Disposition", MessageFormat.format("{0}; filename=\"{1}\"", dispositionType, fileName));
-	}
 	
-	/**
-	 * @deprecated use setFileStreamHeaders(HttpServletResponse response, String mimeType, DispositionType dipositionType, String fileName) instead
-	 */
-	public static void setFileStreamHeaders(HttpServletResponse response, String mimeType, String dispositionType, String filename) {
-		setContentTypeHeader(response, mimeType);
-		setContentDispositionHeader(response, dispositionType, filename);
-	}
 	
 	public static void setCacheControlPrivate(HttpServletResponse response) {
 		response.setHeader("Cache-Control", "private");
@@ -701,7 +740,7 @@ public class ServletUtils {
 		try {
 			response.reset();
 			byte[] bytes = sb.toString().getBytes();
-			setHtmlContentTypeHeader(response);
+			setHtmlContentType(response);
 			setContentLengthHeader(response, bytes.length);
 			ServletUtils.writeInputStream(response, new ByteArrayInputStream(sb.toString().getBytes()));
 		} catch(IOException ex) { /* Do nothing! */}
@@ -869,10 +908,6 @@ public class ServletUtils {
 			}
 		}
 		return null;
-	}
-	
-	public static void setHtmlContentType(HttpServletResponse response) {
-		response.setContentType("text/html;charset=UTF-8");
 	}
 	
 	public static void redirectRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -1051,5 +1086,31 @@ public class ServletUtils {
 			if(value == null) return null;
 			return JsonResult.gson.toJson(value, IntegerArray.class);
 		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * @deprecated use setContentDispositionHeader(HttpServletResponse response, DispositionType dispositionType, String fileName) instead
+	 */
+	public static void setContentDispositionHeader(HttpServletResponse response, String dispositionType, String fileName) {
+		response.addHeader("Content-Disposition", MessageFormat.format("{0}; filename=\"{1}\"", dispositionType, fileName));
+	}
+	
+	/**
+	 * @deprecated use setFileStreamHeaders(HttpServletResponse response, String mimeType, DispositionType dipositionType, String fileName) instead
+	 */
+	public static void setFileStreamHeaders(HttpServletResponse response, String mimeType, String dispositionType, String filename) {
+		setContentTypeHeader(response, mimeType);
+		setContentDispositionHeader(response, dispositionType, filename);
 	}
 }
