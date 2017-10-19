@@ -32,6 +32,7 @@
  */
 package com.sonicle.commons.web;
 
+import com.sonicle.commons.EnumUtils;
 import com.sonicle.commons.web.json.PayloadAsListRecords;
 import com.sonicle.commons.web.json.MapItem;
 import com.sonicle.commons.web.json.Payload;
@@ -351,6 +352,35 @@ public class ServletUtils {
 		} catch(ValidatorException ex) {
 			throw new Exception(MessageFormat.format("Error getting parameter [{0}]", name), ex);
 		}
+	}
+	
+	/**
+	 * Gets request's parameter value.
+	 * @param <E>
+	 * @param request The HttpServletRequest.
+	 * @param name Parameter name.
+	 * @param defaultValue Desired defaultValue if undefined.
+	 * @param enumClass The enum type class.
+	 * @return Value as Float.
+	 */
+	public static <E extends Enum<E>> E getEnumParameter(ServletRequest request, String name, E defaultValue, Class<E> enumClass) {
+		String value = getStringParameter(request, name, null);
+		return (value == null) ? defaultValue : EnumUtils.forSerializedName(value, defaultValue, enumClass);
+	}
+	
+	/**
+	 * Gets request's parameter value.
+	 * @param <E>
+	 * @param request The HttpServletRequest.
+	 * @param name Parameter name.
+	 * @param required True to generate an exception if undefined.
+	 * @param enumClass The enum type class.
+	 * @return Value as Float.
+	 */
+	public static <E extends Enum<E>> E getEnumParameter(ServletRequest request, String name, boolean required, Class<E> enumClass) throws Exception {
+		E value = getEnumParameter(request, name, null, enumClass);
+		if (required && (value == null)) throw new Exception(MessageFormat.format("Error getting parameter [{0}]", name));
+		return value;
 	}
 	
 	/**
