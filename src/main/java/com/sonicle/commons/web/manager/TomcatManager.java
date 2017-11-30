@@ -88,26 +88,26 @@ public class TomcatManager {
 		return listDeployedApplications(null);
 	}
 	
-	public List<DeployedApp> listDeployedApplications(String name) throws Exception {
+	public List<DeployedApp> listDeployedApplications(String nameStartsWith) throws Exception {
 		HttpResponse response = doGetRequest("list");
 		List<String> lines = IOUtils.readLines(response.getEntity().getContent(), "UTF-8");
 		checkResponse(lines);
 		
 		ArrayList<DeployedApp> apps = new ArrayList<>();
-		for(int i=1; i<lines.size(); i++) {
+		for (int i=1; i<lines.size(); i++) {
 			final DeployedApp da = new DeployedApp(lines.get(i));
-			if(name == null) {
+			if (nameStartsWith == null) {
 				apps.add(da);
-			} else {
-				if(StringUtils.startsWith(da.name, name)) apps.add(da);
+			} else if (StringUtils.startsWith(da.name, nameStartsWith)) {
+				apps.add(da);
 			}
 		}
 		return apps;
 	}
 	
 	private void checkResponse(List<String> lines) throws Exception {
-		if(lines.isEmpty()) throw new Exception("Bad response");
-		if(!StringUtils.startsWith(lines.get(0), "OK")) throw new Exception(lines.get(0));
+		if (lines.isEmpty()) throw new Exception("Bad response");
+		if (!StringUtils.startsWith(lines.get(0), "OK")) throw new Exception(lines.get(0));
 	}
 	
 	private HttpResponse doGetRequest(String commandUrl) throws IOException, Exception {
@@ -117,12 +117,12 @@ public class TomcatManager {
 		HttpResponse response = client.execute(request);
 		
 		int status = response.getStatusLine().getStatusCode();
-		if(status == 200) {
+		if (status == 200) {
 			return response;
 		} else {
-			if(status == 401 || status == 403) {
+			if (status == 401 || status == 403) {
 				throw new Exception("Login failed");
-			} else if(status == 404) {
+			} else if (status == 404) {
 				throw new Exception("Tomcat Manager not found");
 			} else {
 				throw new Exception(response.getStatusLine().getReasonPhrase());

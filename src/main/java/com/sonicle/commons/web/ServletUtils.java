@@ -540,8 +540,7 @@ public class ServletUtils {
 	 * @return True if can deflate, false otherwise
 	 */
 	public static boolean acceptsDeflate(HttpServletRequest request) {
-		final String ae = request.getHeader("Accept-Encoding");
-		return (ae != null) && ae.contains("gzip");
+		return StringUtils.containsIgnoreCase(request.getHeader("Accept-Encoding"), "gzip");
 	}
 	
 	/**
@@ -620,6 +619,10 @@ public class ServletUtils {
 	public static void setLocationHeader(HttpServletResponse response, String url) {
 		response.setCharacterEncoding("UTF-8");
 		response.setHeader("Location", url);
+	}
+	
+	public static String getContentTypeHeader(HttpServletResponse response) {
+		return StringUtils.substringBefore(response.getContentType(), ";");
 	}
 	
 	/**
