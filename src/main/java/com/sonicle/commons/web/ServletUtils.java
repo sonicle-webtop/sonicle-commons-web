@@ -67,7 +67,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.zip.GZIPOutputStream;
 import javax.crypto.Cipher;
@@ -93,28 +95,167 @@ import org.slf4j.LoggerFactory;
  * @author malbinola
  */
 public class ServletUtils {
-	final static Logger logger = (Logger) LoggerFactory.getLogger(ServletUtils.class);
+	private static final Logger logger = (Logger) LoggerFactory.getLogger(ServletUtils.class);
 	
 	/**
-	 * Returns the webapp name on filesystem of the passed servletContext.
-	 * @param context The servlet context.
-	 * @return The webapp name.
+	 * Note that gzipping is only beneficial for larger resources. 
+	 * Due to the overhead and latency of compression and decompression, 
+	 * you should only gzip files above a certain size threshold; 
+	 * we recommend a minimum range between 150 and 1000 bytes. 
+	 * Gzipping files below 150 bytes can actually make them larger.
 	 */
-	public static String getWebappName(ServletContext context) {
-		return getWebappName(context, false);
-	}
+	public static final int GZIP_MIN_THRESHOLD = 860;
+	private static final Set<String> compressibleMediaTypes = new HashSet<>();
 	
-	/**
-	 * Returns the webapp name on filesystem of the passed servletContext.
-	 * You can control the output deciding to strip or not any versioning 
-	 * information (characters after `##` in the name).
-	 * @param context The servlet context.
-	 * @param stripVersion True to strip version info, false otherwise.
-	 * @return The webapp name.
-	 */
-	public static String getWebappName(ServletContext context, boolean stripVersion) {
-		final String name = new File(context.getRealPath("/")).getName();
-		return stripVersion ? StringUtils.split(name, "##", 2)[0] : name;
+	static {
+		compressibleMediaTypes.add("application/alto-costmap+json");
+		compressibleMediaTypes.add("application/alto-costmapfilter+json");
+		compressibleMediaTypes.add("application/alto-directory+json");
+		compressibleMediaTypes.add("application/alto-endpointcost+json");
+		compressibleMediaTypes.add("application/alto-endpointcostparams+json");
+		compressibleMediaTypes.add("application/alto-endpointprop+json");
+		compressibleMediaTypes.add("application/alto-endpointpropparams+json");
+		compressibleMediaTypes.add("application/alto-error+json");
+		compressibleMediaTypes.add("application/alto-networkmap+json");
+		compressibleMediaTypes.add("application/alto-networkmapfilter+json");
+		compressibleMediaTypes.add("application/atom+xml");
+		compressibleMediaTypes.add("application/calendar+json");
+		compressibleMediaTypes.add("application/coap-group+json");
+		compressibleMediaTypes.add("application/csvm+json");
+		compressibleMediaTypes.add("application/dart");
+		compressibleMediaTypes.add("application/dicom+json");
+		compressibleMediaTypes.add("application/ecmascript");
+		compressibleMediaTypes.add("application/fido.trusted-apps+json");
+		compressibleMediaTypes.add("application/geo+json");
+		compressibleMediaTypes.add("application/javascript");
+		compressibleMediaTypes.add("application/jf2feed+json");
+		compressibleMediaTypes.add("application/jose+json");
+		compressibleMediaTypes.add("application/jrd+json");
+		compressibleMediaTypes.add("application/json");
+		compressibleMediaTypes.add("application/json-patch+json");
+		compressibleMediaTypes.add("application/jsonml+json");
+		compressibleMediaTypes.add("application/jwk+json");
+		compressibleMediaTypes.add("application/jwk-set+json");
+		compressibleMediaTypes.add("application/ld+json");
+		compressibleMediaTypes.add("application/manifest+json");
+		compressibleMediaTypes.add("application/merge-patch+json");
+		compressibleMediaTypes.add("application/mud+json");
+		compressibleMediaTypes.add("application/postscript");
+		compressibleMediaTypes.add("application/ppsp-tracker+json");
+		compressibleMediaTypes.add("application/problem+json");
+		compressibleMediaTypes.add("application/raml+yaml");
+		compressibleMediaTypes.add("application/rdap+json");
+		compressibleMediaTypes.add("application/rdf+xml");
+		compressibleMediaTypes.add("application/reputon+json");
+		compressibleMediaTypes.add("application/rss+xml");
+		compressibleMediaTypes.add("application/rtf");
+		compressibleMediaTypes.add("application/scim+json");
+		compressibleMediaTypes.add("application/soap+xml");
+		compressibleMediaTypes.add("application/tar");
+		compressibleMediaTypes.add("application/vcard+json");
+		compressibleMediaTypes.add("application/vnd.api+json");
+		compressibleMediaTypes.add("application/vnd.apothekende.reservation+json");
+		compressibleMediaTypes.add("application/vnd.avalon+json");
+		compressibleMediaTypes.add("application/vnd.bekitzur-stech+json");
+		compressibleMediaTypes.add("application/vnd.capasystems-pg+json");
+		compressibleMediaTypes.add("application/vnd.collection+json");
+		compressibleMediaTypes.add("application/vnd.collection.doc+json");
+		compressibleMediaTypes.add("application/vnd.collection.next+json");
+		compressibleMediaTypes.add("application/vnd.coreos.ignition+json");
+		compressibleMediaTypes.add("application/vnd.dart");
+		compressibleMediaTypes.add("application/vnd.datapackage+json");
+		compressibleMediaTypes.add("application/vnd.dataresource+json");
+		compressibleMediaTypes.add("application/vnd.document+json");
+		compressibleMediaTypes.add("application/vnd.drive+json");
+		compressibleMediaTypes.add("application/vnd.geo+json");
+		compressibleMediaTypes.add("application/vnd.google-earth.kml+xml");
+		compressibleMediaTypes.add("application/vnd.hal+json");
+		compressibleMediaTypes.add("application/vnd.hc+json");
+		compressibleMediaTypes.add("application/vnd.heroku+json");
+		compressibleMediaTypes.add("application/vnd.hyper-item+json");
+		compressibleMediaTypes.add("application/vnd.hyperdrive+json");
+		compressibleMediaTypes.add("application/vnd.ims.lis.v2.result+json");
+		compressibleMediaTypes.add("application/vnd.ims.lti.v2.toolconsumerprofile+json");
+		compressibleMediaTypes.add("application/vnd.ims.lti.v2.toolproxy+json");
+		compressibleMediaTypes.add("application/vnd.ims.lti.v2.toolproxy.id+json");
+		compressibleMediaTypes.add("application/vnd.ims.lti.v2.toolsettings+json");
+		compressibleMediaTypes.add("application/vnd.ims.lti.v2.toolsettings.simple+json");
+		compressibleMediaTypes.add("application/vnd.las.las+json");
+		compressibleMediaTypes.add("application/vnd.mason+json");
+		compressibleMediaTypes.add("application/vnd.micro+json");
+		compressibleMediaTypes.add("application/vnd.miele+json");
+		compressibleMediaTypes.add("application/vnd.mozilla.xul+xml");
+		compressibleMediaTypes.add("application/vnd.ms-fontobject");
+		compressibleMediaTypes.add("application/vnd.ms-opentype");
+		compressibleMediaTypes.add("application/vnd.nearst.inv+json");
+		compressibleMediaTypes.add("application/vnd.oftn.l10n+json");
+		compressibleMediaTypes.add("application/vnd.oma.lwm2m+json");
+		compressibleMediaTypes.add("application/vnd.oracle.resource+json");
+		compressibleMediaTypes.add("application/vnd.pagerduty+json");
+		compressibleMediaTypes.add("application/vnd.siren+json");
+		compressibleMediaTypes.add("application/vnd.sun.wadl+xml");
+		compressibleMediaTypes.add("application/vnd.tableschema+json");
+		compressibleMediaTypes.add("application/vnd.vel+json");
+		compressibleMediaTypes.add("application/vnd.xacml+json");
+		compressibleMediaTypes.add("application/wasm");
+		compressibleMediaTypes.add("application/webpush-options+json");
+		compressibleMediaTypes.add("application/x-httpd-php");
+		compressibleMediaTypes.add("application/x-javascript");
+		compressibleMediaTypes.add("application/x-ns-proxy-autoconfig");
+		compressibleMediaTypes.add("application/x-sh");
+		compressibleMediaTypes.add("application/x-tar");
+		compressibleMediaTypes.add("application/x-virtualbox-hdd");
+		compressibleMediaTypes.add("application/x-virtualbox-ova");
+		compressibleMediaTypes.add("application/x-virtualbox-ovf");
+		compressibleMediaTypes.add("application/x-virtualbox-vbox");
+		compressibleMediaTypes.add("application/x-virtualbox-vdi");
+		compressibleMediaTypes.add("application/x-virtualbox-vhd");
+		compressibleMediaTypes.add("application/x-virtualbox-vmdk");
+		compressibleMediaTypes.add("application/x-web-app-manifest+json");
+		compressibleMediaTypes.add("application/x-www-form-urlencoded");
+		compressibleMediaTypes.add("application/xhtml+xml");
+		compressibleMediaTypes.add("application/xml");
+		compressibleMediaTypes.add("application/xml-dtd");
+		compressibleMediaTypes.add("application/xop+xml");
+		compressibleMediaTypes.add("application/yang-data+json");
+		compressibleMediaTypes.add("application/yang-patch+json");
+		compressibleMediaTypes.add("font/otf");
+		compressibleMediaTypes.add("image/bmp");
+		compressibleMediaTypes.add("image/svg+xml");
+		compressibleMediaTypes.add("image/vnd.adobe.photoshop");
+		compressibleMediaTypes.add("image/x-icon");
+		compressibleMediaTypes.add("image/x-ms-bmp");
+		compressibleMediaTypes.add("message/imdn+xml");
+		compressibleMediaTypes.add("message/rfc822");
+		compressibleMediaTypes.add("model/gltf+json");
+		compressibleMediaTypes.add("model/gltf-binary");
+		compressibleMediaTypes.add("model/x3d+xml");
+		compressibleMediaTypes.add("text/cache-manifest");
+		compressibleMediaTypes.add("text/calender");
+		compressibleMediaTypes.add("text/cmd");
+		compressibleMediaTypes.add("text/css");
+		compressibleMediaTypes.add("text/csv");
+		compressibleMediaTypes.add("text/html");
+		compressibleMediaTypes.add("text/javascript");
+		compressibleMediaTypes.add("text/jsx");
+		compressibleMediaTypes.add("text/markdown");
+		compressibleMediaTypes.add("text/n3");
+		compressibleMediaTypes.add("text/plain");
+		compressibleMediaTypes.add("text/richtext");
+		compressibleMediaTypes.add("text/rtf");
+		compressibleMediaTypes.add("text/tab-separated-values");
+		compressibleMediaTypes.add("text/uri-list");
+		compressibleMediaTypes.add("text/vcard");
+		compressibleMediaTypes.add("text/vtt");
+		compressibleMediaTypes.add("text/x-gwt-rpc");
+		compressibleMediaTypes.add("text/x-jquery-tmpl");
+		compressibleMediaTypes.add("text/x-markdown");
+		compressibleMediaTypes.add("text/x-org");
+		compressibleMediaTypes.add("text/x-processing");
+		compressibleMediaTypes.add("text/x-suse-ymp");
+		compressibleMediaTypes.add("text/xml");
+		compressibleMediaTypes.add("x-shader/x-fragment");
+		compressibleMediaTypes.add("x-shader/x-vertex");
 	}
 	
 	/**
@@ -544,16 +685,12 @@ public class ServletUtils {
 	}
 	
 	/**
-	 * Returns if a mime-type is generally deflatable.
-	 * @param mimeType A valid mime-type
-	 * @return 
+	 * Returns if a mediaType is generally compressible.
+	 * @param mediaType A content mediaType.
+	 * @return True if content can be compressed, false otherwise.
 	 */
-	public static boolean isDeflatable(String mimeType) {
-		return mimeType.startsWith("text/")
-			|| mimeType.equals("application/postscript")
-			|| mimeType.startsWith("application/ms")
-			|| mimeType.startsWith("application/vnd")
-			|| mimeType.endsWith("xml");
+	public static boolean isCompressible(String mediaType) {
+		return compressibleMediaTypes.contains(mediaType);
 	}
 	
 	/**
@@ -608,6 +745,14 @@ public class ServletUtils {
 	 */
 	public static void setJsonContentType(HttpServletResponse response) {
 		setContentTypeHeader(response, "application/json");
+	}
+	
+	/**
+	 * Sets the <code>Content-Encoding</code> header as <code>gzip</code>.
+	 * @param response The HttpServletResponse.
+	 */
+	public static void setCompressedContentHeader(HttpServletResponse response) {
+		response.setHeader("Content-Encoding", "gzip");
 	}
 	
 	/**
@@ -701,17 +846,17 @@ public class ServletUtils {
 		response.setHeader("Cache-Control", MessageFormat.format("private, max-age={0}", maxAge));//, must-revalidate
 	}
 	
-	public static OutputStream prepareForStreamCopy(HttpServletRequest request, HttpServletResponse response, String mediaType, int contentLength, int gzipThreshold) throws IOException {
+	public static OutputStream prepareForStreamCopy(HttpServletRequest request, HttpServletResponse response, String mediaType, long contentLength, long gzipMinThreshold) throws IOException {
 		final int BUFFER_SIZE = 4*1024;
 		
-		boolean willDeflate = acceptsDeflate(request) && isDeflatable(mediaType) && (contentLength >= gzipThreshold);
-		if(willDeflate) {
-			response.setHeader("Content-Encoding", "gzip");
+		boolean willDeflate = acceptsDeflate(request) && isCompressible(mediaType) && (contentLength >= gzipMinThreshold);
+		if (willDeflate) {
+			setCompressedContentHeader(response);
 			return new GZIPOutputStream(response.getOutputStream(), BUFFER_SIZE);
 			// Content length is not directly predictable in case of GZIP.
 			// So only add it if there is no means of GZIP, else browser will hang.
 		} else {
-			if(contentLength >= 0) response.setContentLength(contentLength);
+			if (contentLength >= 0) setContentLengthHeader(response, contentLength);
 			return response.getOutputStream();
 		}
 	}
