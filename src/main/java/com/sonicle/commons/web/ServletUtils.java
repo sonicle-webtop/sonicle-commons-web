@@ -51,6 +51,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -76,6 +77,7 @@ import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -83,6 +85,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -259,6 +262,22 @@ public class ServletUtils {
 	}
 	
 	/**
+	 * Explicitly update the lastAccessTime of the passed session.
+	 * This method can be used to ensure a session does not time out.
+	 * @param session The HTTP session
+	 */
+	public static void touchSession(HttpSession session) {
+		try {
+			Field field = session.getClass().getDeclaredField("session");
+			field.setAccessible(true);
+			HttpSession realSession = (HttpSession)field.get(session);
+			realSession.getClass().getMethod("access").invoke(realSession);
+		} catch(Throwable t) {
+			logger.error("Error touching session", t);
+		}
+	}
+	
+	/**
 	 * Returns the request URL until the servlet path (excluded).
 	 * This URL may differ from the orginal browser URL due to rewrites
 	 * (eg. Apache url_rewrite) potentially applied in the chain.
@@ -269,6 +288,10 @@ public class ServletUtils {
 		StringBuffer url = request.getRequestURL();
 		int iof = url.indexOf(request.getServletPath());
 		return (iof == -1) ? url.toString() : url.substring(0, iof);
+	}
+	
+	public static boolean isForwarded(HttpServletRequest request) {
+		return DispatcherType.FORWARD.equals(request.getDispatcherType());
 	}
 	
 	public static String getHost(HttpServletRequest request) throws MalformedURLException {
