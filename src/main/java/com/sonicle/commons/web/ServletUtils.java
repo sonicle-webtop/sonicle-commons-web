@@ -58,12 +58,18 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -77,6 +83,8 @@ import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.mail.internet.ContentDisposition;
+import javax.mail.internet.ParseException;
 import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -810,18 +818,44 @@ public class ServletUtils {
 	 * disposition and filename. Character encoding will be set to UTF-8.
 	 * https://stackoverflow.com/questions/18050718/utf-8-encoding-name-in-downloaded-file
 	 * https://stackoverflow.com/questions/5325322/java-servlet-download-filename-special-characters
+	 * http://test.greenbytes.de/tech/tc2231/#attwithfn2231utf8
 	 * @param response The HttpServletResponse.
 	 * @param dispositionType The disposition mode.
 	 * @param filename The choosen filename.
 	 */
 	public static void setContentDispositionHeader(HttpServletResponse response, DispositionType dispositionType, String filename) {
-		response.setCharacterEncoding("UTF-8");
+		StringBuilder sb = new StringBuilder(dispositionType.toString());
 		CharsetEncoder enc = StandardCharsets.US_ASCII.newEncoder();
 		if (enc.canEncode(filename)) {
-			response.addHeader("Content-Disposition", dispositionType.toString() + "; filename=\"" + filename + "\"");
+			sb.append("; filename=\"").append(filename).append("\"");
+			
 		} else {
-			response.addHeader("Content-Disposition", dispositionType.toString() + "; filename*=UTF-8''" + toURLEncodedString(filename));
+			enc.onMalformedInput(CodingErrorAction.IGNORE);
+			enc.onUnmappableCharacter(CodingErrorAction.IGNORE);
+			
+			String normFilename = Normalizer.normalize(filename, Form.NFKD);
+			CharBuffer cbuf = CharBuffer.wrap(normFilename);
+			
+			ByteBuffer bbuf;
+			try {
+				bbuf = enc.encode(cbuf);
+			} catch (CharacterCodingException e) {
+				bbuf = ByteBuffer.allocate(0);
+			}
+			
+			String encFilename = new String(bbuf.array(), bbuf.position(), bbuf.limit(), StandardCharsets.US_ASCII);
+			if (!StringUtils.isEmpty(encFilename)) {
+				sb.append("; filename=\"").append(encFilename).append("\"");
+			}
+			
+			String uencFilename = toURLEncodedString(filename);
+			if (uencFilename != null) {
+				sb.append("; filename*=UTF-8''").append(uencFilename);
+			}
 		}
+		
+		response.setCharacterEncoding("UTF-8");
+		response.addHeader("Content-Disposition", sb.toString());
 	}
 	
 	public static void setFileStreamHeadersForceDownload(HttpServletResponse response, String filename) {
@@ -1303,6 +1337,7 @@ public class ServletUtils {
 	/**
 	 * @deprecated use setContentDispositionHeader(HttpServletResponse response, DispositionType dispositionType, String fileName) instead
 	 */
+	@Deprecated
 	public static void setContentDispositionHeader(HttpServletResponse response, String dispositionType, String fileName) {
 		response.addHeader("Content-Disposition", MessageFormat.format("{0}; filename=\"{1}\"", dispositionType, fileName));
 	}
@@ -1310,6 +1345,7 @@ public class ServletUtils {
 	/**
 	 * @deprecated use setFileStreamHeaders(HttpServletResponse response, String mimeType, DispositionType dipositionType, String fileName) instead
 	 */
+	@Deprecated
 	public static void setFileStreamHeaders(HttpServletResponse response, String mimeType, String dispositionType, String filename) {
 		setContentTypeHeader(response, mimeType);
 		setContentDispositionHeader(response, dispositionType, filename);
