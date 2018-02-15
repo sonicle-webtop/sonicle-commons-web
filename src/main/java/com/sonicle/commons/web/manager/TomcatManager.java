@@ -88,7 +88,7 @@ public class TomcatManager {
 		return listDeployedApplications(null);
 	}
 	
-	public List<DeployedApp> listDeployedApplications(String nameStartsWith) throws Exception {
+	public List<DeployedApp> listDeployedApplications(String baseName) throws Exception {
 		HttpResponse response = doGetRequest("list");
 		List<String> lines = IOUtils.readLines(response.getEntity().getContent(), "UTF-8");
 		checkResponse(lines);
@@ -96,10 +96,13 @@ public class TomcatManager {
 		ArrayList<DeployedApp> apps = new ArrayList<>();
 		for (int i=1; i<lines.size(); i++) {
 			final DeployedApp da = new DeployedApp(lines.get(i));
-			if (nameStartsWith == null) {
+			if (baseName == null) {
 				apps.add(da);
-			} else if (StringUtils.startsWith(da.name, nameStartsWith)) {
-				apps.add(da);
+			} else {
+				String bn = StringUtils.substringBefore(da.name, "##");
+				if (StringUtils.equals(bn, baseName)) {
+					apps.add(da);
+				}
 			}
 		}
 		return apps;
