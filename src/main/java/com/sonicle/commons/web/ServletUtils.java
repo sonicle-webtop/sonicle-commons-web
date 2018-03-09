@@ -47,7 +47,6 @@ import eu.medsea.mimeutil.MimeUtil;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -83,13 +82,11 @@ import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import javax.mail.internet.ContentDisposition;
-import javax.mail.internet.ParseException;
 import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -269,6 +266,14 @@ public class ServletUtils {
 		compressibleMediaTypes.add("x-shader/x-vertex");
 	}
 	
+	public static HttpServletRequest toHttp(ServletRequest request) {
+		return (HttpServletRequest)request;
+	}
+	
+	public static HttpServletResponse toHttp(ServletResponse response) {
+		return (HttpServletResponse)response;
+	}
+	
 	/**
 	 * Explicitly update the lastAccessTime of the passed session.
 	 * This method can be used to ensure a session does not time out.
@@ -292,10 +297,45 @@ public class ServletUtils {
 	 * @param request The HttpServletRequest object.
 	 * @return 
 	 */
+	@Deprecated
 	public static String getRequestURL(HttpServletRequest request) {
 		StringBuffer url = request.getRequestURL();
 		int iof = url.indexOf(request.getServletPath());
 		return (iof == -1) ? url.toString() : url.substring(0, iof);
+	}
+	
+	/**
+	 * Returns the request URI relative to context path.
+	 * eg. request URL: http://localhost/context/servlet/other/stuff
+	 *   -> request URI: /context/servlet/other/stuff
+	 *   -> relativized URI: /servlet/other/stuff
+	 * This URL may differ from the orginal browser URL due to rewrites
+	 * (eg. Apache url_rewrite) potentially applied in the chain.
+	 * @param request The HttpServletRequest object.
+	 * @return 
+	 */
+	public static String getContextRequestURI(HttpServletRequest request) {
+		String uri = request.getRequestURI();
+		String ctx = request.getContextPath();
+		return uri.substring(ctx.length());
+	}
+	
+	/**
+	 * Returns the base URL.
+	 * eg. request URL: http://localhost/context/servlet/other/stuff
+	 *   -> request URI: /context/servlet/other/stuff
+	 *   -> context path: /context
+	 *   -> base URL: http://localhost/context
+	 * This URL may differ from the orginal browser URL due to rewrites
+	 * (eg. Apache url_rewrite) potentially applied in the chain.
+	 * @param request The HttpServletRequest object.
+	 * @return 
+	 */
+	public static String getBaseURL(HttpServletRequest request) {
+		StringBuffer url = request.getRequestURL();
+		String uri = request.getRequestURI();
+		String ctx = request.getContextPath();
+		return url.substring(0, url.length() - uri.length() + ctx.length());
 	}
 	
 	public static boolean isForwarded(HttpServletRequest request) {
