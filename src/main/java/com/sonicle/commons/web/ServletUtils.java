@@ -866,14 +866,15 @@ public class ServletUtils {
 	public static void setContentDispositionHeader(HttpServletResponse response, DispositionType dispositionType, String filename) {
 		StringBuilder sb = new StringBuilder(dispositionType.toString());
 		CharsetEncoder enc = StandardCharsets.US_ASCII.newEncoder();
-		if (enc.canEncode(filename)) {
-			sb.append("; filename=\"").append(filename).append("\"");
+		String sanitizedFilename = StringUtils.replace(filename, ",", ""); // Prevent Chrome (ERR_RESPONSE_HEADERS_MULTIPLE_CONTENT_DISPOSITION) bug
+		if (enc.canEncode(sanitizedFilename)) {
+			sb.append("; filename=\"").append(sanitizedFilename).append("\"");
 			
 		} else {
 			enc.onMalformedInput(CodingErrorAction.IGNORE);
 			enc.onUnmappableCharacter(CodingErrorAction.IGNORE);
 			
-			String normFilename = Normalizer.normalize(filename, Form.NFKD);
+			String normFilename = Normalizer.normalize(sanitizedFilename, Form.NFKD);
 			CharBuffer cbuf = CharBuffer.wrap(normFilename);
 			
 			ByteBuffer bbuf;
@@ -888,7 +889,7 @@ public class ServletUtils {
 				sb.append("; filename=\"").append(encFilename).append("\"");
 			}
 			
-			String uencFilename = toURLEncodedString(filename);
+			String uencFilename = toURLEncodedString(sanitizedFilename);
 			if (uencFilename != null) {
 				sb.append("; filename*=UTF-8''").append(uencFilename);
 			}
