@@ -458,6 +458,38 @@ public class ServletUtils {
 	 * @param defaultValue Desired defaultValue if undefined.
 	 * @return Value as Integer.
 	 */
+	public static Short getShortParameter(ServletRequest request, String name, Short defaultValue) {
+		try {
+			return ServletUtils.getShortParameter(request, name, true);
+		} catch(Exception ex) {
+			return defaultValue;
+		}
+	}
+	
+	/**
+	 * Gets request's parameter value.
+	 * @param request The HttpServletRequest.
+	 * @param name Parameter name.
+	 * @param required True to generate an exception if undefined.
+	 * @return Value as Integer.
+	 * @throws java.lang.Exception
+	 */
+	public static Short getShortParameter(ServletRequest request, String name, boolean required) throws Exception {
+		try {
+			String value = StringUtils.defaultIfBlank(request.getParameter(name), null);
+			return Validator.validateShort(required, value);
+		} catch(ValidatorException ex) {
+			throw new Exception(MessageFormat.format("Error getting parameter [{0}]", name), ex);
+		}
+	}
+	
+	/**
+	 * Gets request's parameter value.
+	 * @param request The HttpServletRequest.
+	 * @param name Parameter name.
+	 * @param defaultValue Desired defaultValue if undefined.
+	 * @return Value as Integer.
+	 */
 	public static Integer getIntParameter(ServletRequest request, String name, Integer defaultValue) {
 		try {
 			return ServletUtils.getIntParameter(request, name, true);
