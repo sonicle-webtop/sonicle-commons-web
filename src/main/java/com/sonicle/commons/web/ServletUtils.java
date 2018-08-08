@@ -50,6 +50,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -92,6 +93,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.codec.binary.Base32;
+import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -402,9 +404,9 @@ public class ServletUtils {
 	 * @param name Parameter name.
 	 * @param required True to generate an exception if undefined.
 	 * @return Value as String.
-	 * @throws java.lang.Exception
+	 * @throws ParameterException
 	 */
-	public static String getStringParameter(ServletRequest request, String name, boolean required) throws Exception {
+	public static String getStringParameter(ServletRequest request, String name, boolean required) throws ParameterException {
 		return getStringParameter(request, name, required, true);
 	}
 	
@@ -415,18 +417,18 @@ public class ServletUtils {
 	 * @param required True to generate an exception if undefined.
 	 * @param emptyAsNull True to treat empty string as undefined.
 	 * @return Value as String.
-	 * @throws java.lang.Exception
+	 * @throws ParameterException
 	 */
-	public static String getStringParameter(ServletRequest request, String name, boolean required, boolean emptyAsNull) throws Exception {
+	public static String getStringParameter(ServletRequest request, String name, boolean required, boolean emptyAsNull) throws ParameterException {
 		try {
 			String value = request.getParameter(name);
 			return Validator.validateString(required, value, emptyAsNull);
 		} catch(ValidatorException ex) {
-			throw new Exception(MessageFormat.format("Error getting parameter [{0}]", name), ex);
+			throw new ParameterException(MessageFormat.format("Error getting parameter [{0}]", name), ex);
 		}
 	}
 	
-	public static ArrayList<String> getStringParameterBySeparator(ServletRequest request, String name, String separator) throws Exception {
+	public static ArrayList<String> getStringParameterBySeparator(ServletRequest request, String name, String separator) throws ParameterException {
 		try {
 			String value = request.getParameter(name);
 			String value2 = Validator.validateString(false, value, true);
@@ -434,11 +436,11 @@ public class ServletUtils {
 			String[] values = StringUtils.split(value2, separator);
 			return new ArrayList<>(Arrays.asList(values));
 		} catch(ValidatorException ex) {
-			throw new Exception(MessageFormat.format("Error getting parameter [{0}]", name), ex);
+			throw new ParameterException(MessageFormat.format("Error getting parameter [{0}]", name), ex);
 		}
 	}
 	
-	public static ArrayList<String> getStringParameters(ServletRequest request, String name) throws Exception {
+	public static ArrayList<String> getStringParameters(ServletRequest request, String name) throws ParameterException {
 		try {
 			String[] values = request.getParameterValues(name);
 			if(Validator.isNull(values)) return new ArrayList<>();
@@ -447,7 +449,7 @@ public class ServletUtils {
 			}
 			return new ArrayList<>(Arrays.asList(values));
 		} catch(ValidatorException ex) {
-			throw new Exception(MessageFormat.format("Error getting parameter [{0}]", name), ex);
+			throw new ParameterException(MessageFormat.format("Error getting parameter [{0}]", name), ex);
 		}
 	}
 	
@@ -472,14 +474,14 @@ public class ServletUtils {
 	 * @param name Parameter name.
 	 * @param required True to generate an exception if undefined.
 	 * @return Value as Integer.
-	 * @throws java.lang.Exception
+	 * @throws ParameterException
 	 */
-	public static Short getShortParameter(ServletRequest request, String name, boolean required) throws Exception {
+	public static Short getShortParameter(ServletRequest request, String name, boolean required) throws ParameterException {
 		try {
 			String value = StringUtils.defaultIfBlank(request.getParameter(name), null);
 			return Validator.validateShort(required, value);
 		} catch(ValidatorException ex) {
-			throw new Exception(MessageFormat.format("Error getting parameter [{0}]", name), ex);
+			throw new ParameterException(MessageFormat.format("Error getting parameter [{0}]", name), ex);
 		}
 	}
 	
@@ -504,14 +506,14 @@ public class ServletUtils {
 	 * @param name Parameter name.
 	 * @param required True to generate an exception if undefined.
 	 * @return Value as Integer.
-	 * @throws java.lang.Exception
+	 * @throws ParameterException
 	 */
-	public static Integer getIntParameter(ServletRequest request, String name, boolean required) throws Exception {
+	public static Integer getIntParameter(ServletRequest request, String name, boolean required) throws ParameterException {
 		try {
 			String value = StringUtils.defaultIfBlank(request.getParameter(name), null);
 			return Validator.validateInteger(required, value);
 		} catch(ValidatorException ex) {
-			throw new Exception(MessageFormat.format("Error getting parameter [{0}]", name), ex);
+			throw new ParameterException(MessageFormat.format("Error getting parameter [{0}]", name), ex);
 		}
 	}
 	
@@ -537,14 +539,14 @@ public class ServletUtils {
 	 * @param name Parameter name.
 	 * @param required True to generate an exception if undefined.
 	 * @return Value as Long.
-	 * @throws java.lang.Exception
+	 * @throws ParameterException
 	 */
-	public static Long getLongParameter(ServletRequest request, String name, boolean required) throws Exception {
+	public static Long getLongParameter(ServletRequest request, String name, boolean required) throws ParameterException {
 		try {
 			String value = StringUtils.defaultIfBlank(request.getParameter(name), null);
 			return Validator.validateLong(required, value);
 		} catch(ValidatorException ex) {
-			throw new Exception(MessageFormat.format("Error getting parameter [{0}]", name), ex);
+			throw new ParameterException(MessageFormat.format("Error getting parameter [{0}]", name), ex);
 		}
 	}
 
@@ -587,14 +589,14 @@ public class ServletUtils {
 	 * @param locale Locale to use for decimal format.
 	 * @param required True to generate an exception if undefined.
 	 * @return Value as Float.
-	 * @throws java.lang.Exception
+	 * @throws ParameterException
 	 */
-	public static Float getFloatParameter(ServletRequest request, String name, Locale locale, boolean required) throws Exception {
+	public static Float getFloatParameter(ServletRequest request, String name, Locale locale, boolean required) throws ParameterException {
 		try {
 			String value = StringUtils.defaultIfBlank(request.getParameter(name), null);
 			return Validator.validateFloat(required, value, locale);
 		} catch(ValidatorException ex) {
-			throw new Exception(MessageFormat.format("Error getting parameter [{0}]", name), ex);
+			throw new ParameterException(MessageFormat.format("Error getting parameter [{0}]", name), ex);
 		}
 	}
 	
@@ -621,9 +623,9 @@ public class ServletUtils {
 	 * @param enumClass The enum type class.
 	 * @return Value as Float.
 	 */
-	public static <E extends Enum<E>> E getEnumParameter(ServletRequest request, String name, boolean required, Class<E> enumClass) throws Exception {
+	public static <E extends Enum<E>> E getEnumParameter(ServletRequest request, String name, boolean required, Class<E> enumClass) throws ParameterException {
 		E value = getEnumParameter(request, name, null, enumClass);
-		if (required && (value == null)) throw new Exception(MessageFormat.format("Error getting parameter [{0}]", name));
+		if (required && (value == null)) throw new ParameterException(MessageFormat.format("Error getting parameter [{0}]", name));
 		return value;
 	}
 	
@@ -648,25 +650,25 @@ public class ServletUtils {
 	 * @param name Parameter name.
 	 * @param required True to generate an exception if undefined.
 	 * @return Value as Date.
-	 * @throws java.lang.Exception
+	 * @throws ParameterException
 	 */
-	public static Date getDateParameter(ServletRequest request, String name, boolean required) throws Exception {
+	public static Date getDateParameter(ServletRequest request, String name, boolean required) throws ParameterException {
 		try {
 			String value = StringUtils.defaultIfBlank(request.getParameter(name), null);
 			//return Validator.validateDate(required, value, "yyyy-MM-dd'T'HH:mm:ss'Z'");
 			return Validator.validateDate(required, value, "yyyy-MM-dd");
 		} catch(ValidatorException ex) {
-			throw new Exception(MessageFormat.format("Error getting parameter [{0}]", name), ex);
+			throw new ParameterException(MessageFormat.format("Error getting parameter [{0}]", name), ex);
 		}
 	}
 	
-	public static <T>T getObjectParameter(ServletRequest request, String name, Class<T> type, boolean required) throws Exception {
+	public static <T>T getObjectParameter(ServletRequest request, String name, Class<T> type, boolean required) throws ParameterException {
 		T value = getObjectParameter(request, name, null, type);
-		if(required && (value == null)) throw new Exception(MessageFormat.format("Error getting parameter [{0}]", name));
+		if(required && (value == null)) throw new ParameterException(MessageFormat.format("Error getting parameter [{0}]", name));
 		return value;
 	}
 	
-	public static <T>T getObjectParameter(ServletRequest request, String name, T defaultValue, Class<T> type) throws Exception {
+	public static <T>T getObjectParameter(ServletRequest request, String name, T defaultValue, Class<T> type) throws ParameterException {
 		String value = getStringParameter(request, name, false);
 		return LangUtils.value(value, defaultValue, type);
 	}
@@ -769,6 +771,8 @@ public class ServletUtils {
 		T data = JsonResult.gson.fromJson(payload, type);
 		return new PayloadAsList<>(records, data);
 	}
+	
+	
 	
 	public static String getUserAgent(HttpServletRequest request) {
 		return request.getHeader("user-agent");
@@ -882,7 +886,7 @@ public class ServletUtils {
 	 */
 	public static void setContentTypeHeader(HttpServletResponse response, String mediaType) {
 		response.setCharacterEncoding("UTF-8");
-		response.setContentType(StringUtils.isEmpty(mediaType) ? "application/octet-stream" : mediaType);
+		response.setContentType(StringUtils.isBlank(mediaType) ? "application/octet-stream" : mediaType);
 	}
 	
 	/**
@@ -974,6 +978,18 @@ public class ServletUtils {
 	
 	public static void setCacheControlPrivateMaxAge(HttpServletResponse response, int maxAge) {
 		response.setHeader("Cache-Control", MessageFormat.format("private, max-age={0}", maxAge));//, must-revalidate
+	}
+	
+	public static void writeJsonResponse(HttpServletResponse response, Object data) throws IOException {
+		setJsonContentType(response);
+		String s = JsonResult.GSON.toJson(data);
+		// TODO: make this
+		writePlainResponse(response, s);
+	}
+	
+	public static void writePlainResponse(HttpServletResponse response, String data) throws IOException {
+		response.setContentLength(data.getBytes(Charsets.UTF_8).length);
+		response.getWriter().print(data);
 	}
 	
 	public static OutputStream prepareForStreamCopy(HttpServletRequest request, HttpServletResponse response, String mediaType, long contentLength, long gzipMinThreshold) throws IOException {
