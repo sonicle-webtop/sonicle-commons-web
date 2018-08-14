@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2014 Sonicle S.r.l.
  *
  * This program is free software; you can redistribute it and/or modify it under
@@ -32,31 +32,28 @@
  */
 package com.sonicle.commons.web.json;
 
-import java.util.HashMap;
-import org.apache.commons.lang3.StringUtils;
+import java.io.PrintWriter;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  *
  * @author malbinola
  */
-public class JsonHashMap extends HashMap<String, Object> {
+public class JsonDataResult {
+	private final Map<String, Object> data = new LinkedHashMap<>();
 	
-	public static JsonHashMap valueOf(String s) {
-		try {
-			if(StringUtils.isEmpty(s)) return new JsonHashMap();
-			return JsonResult.GSON_PLAIN_WONULLS.fromJson(s, JsonHashMap.class);
-		} catch(Exception ex) {
-			ex.printStackTrace();
-			return new JsonHashMap();
-		}
+	public JsonDataResult set(String propName, Object propValue) {
+		data.put(propName, propValue);
+		return this;
 	}
-
-	public JsonHashMap() {
-		super();
+	
+	public JsonDataResult remove(String propName) {
+		data.remove(propName);
+		return this;
 	}
-
-	public JsonHashMap(Object id, Object value) {
-		put("id", id);
-		put("value", value);
+	
+	public void printTo(PrintWriter out) {
+		new JsonResult(data).printTo(out);
 	}
 }
