@@ -179,16 +179,16 @@ public class JsonResult extends HashMap<String, Object> {
 		setData(data);
 	}
 	
-	public JsonResult(Exception ex) {
+	public JsonResult(Throwable t) {
 		super();
 		setSuccess(false);
-		setMessage(ex.getMessage());
+		setMessage(t.getMessage());
 	}
 	
-	public JsonResult(Exception ex, Object data) {
+	public JsonResult(Throwable t, Object data) {
 		super();
 		setSuccess(false);
-		setMessage(ex.getMessage());
+		setMessage(t.getMessage());
 		setData(data);
 	}
 	
