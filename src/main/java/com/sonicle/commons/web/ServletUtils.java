@@ -992,6 +992,18 @@ public class ServletUtils {
 		response.getWriter().print(data);
 	}
 	
+	public static void writeFileResponse(HttpServletResponse response, boolean inline, String filename, String mediaType, long size, InputStream is) throws IOException {
+		if (inline) {
+			ServletUtils.setFileStreamHeaders(response, filename);
+		} else {
+			ServletUtils.setFileStreamHeadersForceDownload(response, filename);
+		}
+		if (size != -1) {
+			ServletUtils.setContentLengthHeader(response, size);
+		}
+		IOUtils.copy(is, response.getOutputStream());
+	}
+	
 	public static OutputStream prepareForStreamCopy(HttpServletRequest request, HttpServletResponse response, String mediaType, long contentLength, long gzipMinThreshold) throws IOException {
 		final int BUFFER_SIZE = 4*1024;
 		
@@ -1070,6 +1082,7 @@ public class ServletUtils {
 		} catch(IOException ex) { /* Do nothing! */}
 	}
 	
+	/*
 	public static void writeFileStream(HttpServletResponse response, String filename, InputStream fileStream) {
 		writeFileStream(response, filename, fileStream, false);
 	}
@@ -1082,8 +1095,9 @@ public class ServletUtils {
 		ServletUtils.setFileStreamHeaders(response, ctype, dispositionType, filename);
 		try {
 			ServletUtils.writeInputStream(fileStream, response.getOutputStream());
-		} catch(IOException ex) { /* Do nothing! */}
+		} catch(IOException ex) {}
 	}
+	*/
 	
 	/*
 	public static void writeFileStream(WebTopApp wtApp, HttpServletResponse response, String filename, InputStream fileStream) {
