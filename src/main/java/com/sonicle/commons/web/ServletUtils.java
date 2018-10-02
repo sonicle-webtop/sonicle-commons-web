@@ -50,7 +50,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -107,6 +106,9 @@ import org.slf4j.LoggerFactory;
 public class ServletUtils {
 	private static final Logger logger = (Logger) LoggerFactory.getLogger(ServletUtils.class);
 	
+	public static final String HEADER_HOST = "Host";
+	public static final String HEADER_X_FORWARDED_HOST = "X-Forwarded-Host";
+	
 	/**
 	 * Note that gzipping is only beneficial for larger resources. 
 	 * Due to the overhead and latency of compression and decompression, 
@@ -118,6 +120,11 @@ public class ServletUtils {
 	private static final Set<String> compressibleMediaTypes = new HashSet<>();
 	
 	static {
+		//MimeUtil.registerMimeDetector(ExtensionMimeDetector.class.getName());
+		//MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.MagicMimeMimeDetector");
+		MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.ExtensionMimeDetector");
+		//MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.OpendesktopMimeDetector");
+		
 		compressibleMediaTypes.add("application/alto-costmap+json");
 		compressibleMediaTypes.add("application/alto-costmapfilter+json");
 		compressibleMediaTypes.add("application/alto-directory+json");
@@ -346,6 +353,26 @@ public class ServletUtils {
 	
 	public static String getHost(HttpServletRequest request) throws MalformedURLException {
 		return new URL(request.getRequestURL().toString()).getHost();
+	}
+	
+	/**
+	 * Returns the hostname from the request.
+	 * @param request The HttpServletRequest object.
+	 * @return The hostname or null
+	 */
+	public static String __getHost(final HttpServletRequest request) {
+		// Maybe we are behind a proxy
+		String host = request.getHeader(HEADER_X_FORWARDED_HOST);
+		if (logger.isTraceEnabled()) logger.trace("{}: {}", HEADER_X_FORWARDED_HOST, host);
+		if (host != null) {
+			// We are only interested in the first header entry
+			host = new StringTokenizer(host, ",").nextToken().trim();
+		}
+		if (host == null) {
+			host = request.getHeader(HEADER_HOST);
+			if (logger.isTraceEnabled()) logger.trace("{}: {}", HEADER_HOST, host);
+		}
+		return host;
 	}
 	
 	public static String getInternetName(HttpServletRequest request) throws MalformedURLException {
@@ -817,10 +844,6 @@ public class ServletUtils {
 	 * @return MediaType string
 	 */
 	public static String guessMediaType(String fileName) {
-		//MimeUtil.registerMimeDetector(ExtensionMimeDetector.class.getName());
-		//MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.MagicMimeMimeDetector");
-		MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.ExtensionMimeDetector");
-		//MimeUtil.registerMimeDetector("eu.medsea.mimeutil.detector.OpendesktopMimeDetector");
 		MimeType mime = MimeUtil.getMostSpecificMimeType(MimeUtil.getMimeTypes(fileName));
 		return (mime == null) ? null : mime.toString();
 	}
