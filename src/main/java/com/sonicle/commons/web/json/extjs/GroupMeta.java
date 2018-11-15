@@ -65,8 +65,8 @@ public class GroupMeta extends HashMap<String, Object> {
 		return (String) get(FIELD);
 	}
 	
-	public GroupMeta setField(String value) {
-		this.put(FIELD , value);
+	public GroupMeta setField(String field) {
+		this.put(FIELD , field);
 		return this;
 	}
 	
@@ -74,8 +74,8 @@ public class GroupMeta extends HashMap<String, Object> {
 		return (String) get(DIRECTION);
 	}
 	
-	public GroupMeta setDirection(String value) {
-		this.put(DIRECTION , value);
+	public GroupMeta setDirection(String direction) {
+		this.put(DIRECTION , direction);
 		return this;
 	}
 	

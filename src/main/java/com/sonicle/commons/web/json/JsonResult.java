@@ -107,6 +107,7 @@ public class JsonResult extends HashMap<String, Object> {
 	public static final String TOTAL_PROP = "total";
 	public static final String START_PROP = "start";
 	public static final String LIMIT_PROP = "limit";
+	public static final String PAGE_PROP = "page";
 	public static final String SELECTED_PROP = "selected";
 	protected String dataProperty = DATA_PROP;
 
@@ -244,8 +245,8 @@ public class JsonResult extends HashMap<String, Object> {
 		return (Object)get(dataProperty);
 	}
 
-	public JsonResult setData(Object value) {
-		put(dataProperty, value);
+	public JsonResult setData(Object data) {
+		put(dataProperty, data);
 		return this;
 	}
 	
@@ -253,8 +254,8 @@ public class JsonResult extends HashMap<String, Object> {
 		return (Integer)this.get(TOTAL_PROP);
 	}
 
-	public JsonResult setTotal(int value) {
-		this.put(TOTAL_PROP, value);
+	public JsonResult setTotal(int total) {
+		this.put(TOTAL_PROP, total);
 		return this;
 	}
 	
@@ -262,8 +263,8 @@ public class JsonResult extends HashMap<String, Object> {
 		return (Integer)this.get(START_PROP);
 	}
 
-	public JsonResult setStart(int value) {
-		this.put(START_PROP, value);
+	public JsonResult setStart(int start) {
+		this.put(START_PROP, start);
 		return this;
 	}
 	
@@ -271,8 +272,17 @@ public class JsonResult extends HashMap<String, Object> {
 		return (Integer)this.get(LIMIT_PROP);
 	}
 
-	public JsonResult setLimit(int value) {
-		this.put(LIMIT_PROP, value);
+	public JsonResult setLimit(int limit) {
+		this.put(LIMIT_PROP, limit);
+		return this;
+	}
+	
+	public int getPage() {
+		return (Integer)this.get(PAGE_PROP);
+	}
+
+	public JsonResult setPage(int page) {
+		this.put(PAGE_PROP, page);
 		return this;
 	}
 	
@@ -280,8 +290,8 @@ public class JsonResult extends HashMap<String, Object> {
 		return (Object)this.get(SELECTED_PROP);
 	}
 
-	public JsonResult setSelected(Object value) {
-		this.put(SELECTED_PROP, value);
+	public JsonResult setSelected(Object selected) {
+		this.put(SELECTED_PROP, selected);
 		return this;
 	}
 	
