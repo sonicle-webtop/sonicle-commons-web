@@ -43,32 +43,52 @@ import org.apache.commons.lang3.StringUtils;
 public class ContextUtils {
 	
 	/**
-	 * Returns the webapp name on filesystem of the passed servletContext.
+	 * Returns the real context name of the passed servletContext, as it 
+	 * as it appears on file-system.
 	 * @param context The servlet context.
-	 * @return The webapp name.
+	 * @return The context name.
 	 */
-	public static String getWebappName(ServletContext context) {
-		return getWebappName(context, false);
+	public static String getWebappFullName(ServletContext context) {
+		return getWebappFullName(context, false);
 	}
 	
 	/**
-	 * Returns the webapp name on filesystem of the passed servletContext.
-	 * You can control the output deciding to strip or not any versioning 
-	 * information (characters after `##` in the name).
+	 * Returns the real context name of the passed servletContext, as it 
+	 * as it appears on file-system.
 	 * @param context The servlet context.
 	 * @param stripVersion True to strip version info, false otherwise.
-	 * @return The webapp name.
+	 * @return The context name.
 	 */
-	public static String getWebappName(ServletContext context, boolean stripVersion) {
+	public static String getWebappFullName(ServletContext context, boolean stripVersion) {
 		final String name = new File(context.getRealPath("/")).getName();
 		return stripVersion ? StringUtils.substringBeforeLast(name, "##") : name;
 	}
 	
 	public static String getWebappVersion(ServletContext context) {
-		return getWebappVersion(getWebappName(context));
+		return getWebappVersion(getWebappFullName(context));
 	}
 	
-	public static String getWebappVersion(String webappName) {
-		return StringUtils.substringAfterLast(webappName, "##");
+	public static String getWebappVersion(String contextName) {
+		return StringUtils.substringAfterLast(contextName, "##");
+	}
+	
+	public static String stripWebappVersion(String contextName) {
+		return StringUtils.substringBeforeLast(contextName, "##");
+	}
+	
+	/**
+	 * @deprecated use ContextUtils.getWebappFullName instead
+	 */
+	@Deprecated
+	public static String getWebappName(ServletContext context) {
+		return getWebappFullName(context);
+	}
+	
+	/**
+	 * @deprecated use ContextUtils.getWebappFullName instead
+	 */
+	@Deprecated
+	public static String getWebappName(ServletContext context, boolean stripVersion) {
+		return getWebappFullName(context, false);
 	}
 }
