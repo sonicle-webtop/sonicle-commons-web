@@ -75,20 +75,4 @@ public class ContextUtils {
 	public static String stripWebappVersion(String contextName) {
 		return StringUtils.substringBeforeLast(contextName, "##");
 	}
-	
-	/**
-	 * @deprecated use ContextUtils.getWebappFullName instead
-	 */
-	@Deprecated
-	public static String getWebappName(ServletContext context) {
-		return getWebappFullName(context);
-	}
-	
-	/**
-	 * @deprecated use ContextUtils.getWebappFullName instead
-	 */
-	@Deprecated
-	public static String getWebappName(ServletContext context, boolean stripVersion) {
-		return getWebappFullName(context, false);
-	}
 }
