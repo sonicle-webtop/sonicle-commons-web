@@ -886,13 +886,22 @@ public class ServletUtils {
 	}
 	
 	/**
+	 * Sets the <code>CharacterEncoding</code> header.
+	 * @param response The HttpServletResponse
+	 * @param charset The string charset
+	 */
+	public static void setCharacterEncoding(HttpServletResponse response, String charset) {
+		response.setCharacterEncoding(charset);
+	}
+	
+	/**
 	 * Sets the <code>Location</code> header using provided URL.
 	 * URL value is expected to be escaped and may contain only ASCII characters.
 	 * @param response The HttpServletResponse
 	 * @param url The URL to redirect to.
 	 */
 	public static void setLocationHeader(HttpServletResponse response, String url) {
-		response.setCharacterEncoding("UTF-8");
+		setCharacterEncoding(response, "UTF-8");
 		response.setHeader("Location", url);
 	}
 	
@@ -908,7 +917,7 @@ public class ServletUtils {
 	 * @param mediaType The chosen mediaType.
 	 */
 	public static void setContentTypeHeader(HttpServletResponse response, String mediaType) {
-		response.setCharacterEncoding("UTF-8");
+		setCharacterEncoding(response, "UTF-8");
 		response.setContentType(StringUtils.isBlank(mediaType) ? "application/octet-stream" : mediaType);
 	}
 	
@@ -954,7 +963,7 @@ public class ServletUtils {
 			}
 		}
 		
-		response.setCharacterEncoding("UTF-8");
+		setCharacterEncoding(response, "UTF-8");
 		response.addHeader("Content-Disposition", sb.toString());
 	}
 	
@@ -989,7 +998,9 @@ public class ServletUtils {
 		} catch (IOException ex) { /* Do nothing... */ }
 	}
 	
-	
+	public static void setCacheControl(HttpServletResponse response, int maxAge) {
+		response.setHeader("Cache-Control", "max-age=" + String.valueOf(maxAge));
+	}
 	
 	public static void setCacheControlPrivate(HttpServletResponse response) {
 		response.setHeader("Cache-Control", "private");
