@@ -34,6 +34,7 @@ package com.sonicle.commons.web.json.bean;
 
 import com.sonicle.commons.web.json.JsonResult;
 import java.util.ArrayList;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -45,6 +46,22 @@ public class QueryObj {
 	
 	public QueryObj() {
 		this.conditions = new ArrayList<>();
+	}
+	
+	public boolean hasCondition(String keyword) {
+		if (keyword == null | conditions == null) return false;
+		for (Condition condition : conditions) {
+			if (keyword.equals(condition.keyword)) return true;
+		}
+		return false;
+	}
+	
+	public boolean hasCondition(String keyword, String value) {
+		if (keyword == null | conditions == null) return false;
+		for (Condition condition : conditions) {
+			if (keyword.equals(condition.keyword) && StringUtils.equals(condition.value, value)) return true;
+		}
+		return false;
 	}
 	
 	public static class Condition {

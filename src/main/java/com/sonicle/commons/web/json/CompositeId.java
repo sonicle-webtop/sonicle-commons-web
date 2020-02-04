@@ -32,6 +32,9 @@
  */
 package com.sonicle.commons.web.json;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -48,6 +51,11 @@ public class CompositeId {
 	
 	public CompositeId(int maxTokens) {
 		tokens = new String[maxTokens];
+	}
+	
+	public CompositeId(Collection<String> tokens) {
+		this(tokens != null ? tokens.size() : 0);
+		if (tokens != null) setTokens(tokens);
 	}
 	
 	public CompositeId(Object... tokens) {
@@ -90,6 +98,19 @@ public class CompositeId {
 		return tokens[index];
 	}
 	
+	public Collection<String> getTokens() {
+		return new ArrayList<>(Arrays.asList(tokens));
+	}
+	
+	public CompositeId setTokens(Collection<String> tokens) {
+		int i = -1;
+		for (String token : tokens) {
+			i++;
+			this.tokens[i] = token;
+		}
+		return this;
+	}
+	
 	public CompositeId setTokens(Object... tokens) {
 		for(int i=0; i<tokens.length; i++) {
 			this.tokens[i] = (tokens[i] != null) ? tokens[i].toString() : null;
@@ -99,7 +120,7 @@ public class CompositeId {
 	
 	@Override
 	public String toString() {
-		return StringUtils.join(tokens, "|");
+		return StringUtils.join(tokens, separator);
 	}
 	
 	public String toString(boolean compress) {
