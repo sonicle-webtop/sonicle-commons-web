@@ -99,7 +99,7 @@ public class CompositeId {
 	}
 	
 	public Collection<String> getTokens() {
-		return new ArrayList<>(Arrays.asList(tokens));
+		return tokens == null ? new ArrayList<>(0) : new ArrayList<>(Arrays.asList(tokens));
 	}
 	
 	public CompositeId setTokens(Collection<String> tokens) {
