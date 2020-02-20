@@ -63,6 +63,11 @@ public class CompositeId {
 		setTokens(tokens);
 	}
 	
+	public CompositeId withSeparator(String separator) {
+		this.separator = separator;
+		return this;
+	}
+	
 	public CompositeId parse(String s) {
 		return parse(s, false);
 	}
