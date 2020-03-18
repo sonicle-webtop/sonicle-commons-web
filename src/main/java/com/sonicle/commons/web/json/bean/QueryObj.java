@@ -34,6 +34,10 @@ package com.sonicle.commons.web.json.bean;
 
 import com.sonicle.commons.web.json.JsonResult;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -62,6 +66,15 @@ public class QueryObj {
 			if (keyword.equals(condition.keyword) && StringUtils.equals(condition.value, value)) return true;
 		}
 		return false;
+	}
+	
+	public Map<String, Collection<Condition>> getConditionsMap() {
+		LinkedHashMap<String, Collection<Condition>> mvm = new LinkedHashMap<>();
+		for (Condition condition : conditions) {
+			if (!mvm.containsKey(condition.keyword)) mvm.put(condition.keyword, new ArrayList<>());
+			mvm.get(condition.keyword).add(condition);
+		}
+		return mvm;
 	}
 	
 	public static class Condition {
