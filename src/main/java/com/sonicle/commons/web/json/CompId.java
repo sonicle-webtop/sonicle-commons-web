@@ -100,6 +100,11 @@ public class CompId {
 		return tokens[index];
 	}
 	
+	public boolean isTokenEmpty(int index) {
+		if (!hasToken(index)) return true;
+		return StringUtils.isEmpty(getToken(index));
+	}
+	
 	public Collection<String> getTokens() {
 		return (tokens == null) ? new ArrayList<>(0) : new ArrayList<>(Arrays.asList(tokens));
 	}
