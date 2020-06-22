@@ -68,6 +68,16 @@ public class QueryObj {
 		return false;
 	}
 	
+	public boolean removeCondition(String keyword) {
+		if (keyword == null | conditions == null) return false;
+		return conditions.removeIf(c -> keyword.equals(c.keyword));
+	}
+	
+	public boolean removeCondition(String keyword, String value) {
+		if (keyword == null | conditions == null) return false;
+		return conditions.removeIf(c -> keyword.equals(c.keyword) && StringUtils.equals(c.value, value));
+	}
+	
 	public Map<String, Collection<Condition>> getConditionsMap() {
 		LinkedHashMap<String, Collection<Condition>> mvm = new LinkedHashMap<>();
 		for (Condition condition : conditions) {
