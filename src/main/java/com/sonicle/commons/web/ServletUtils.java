@@ -351,16 +351,25 @@ public class ServletUtils {
 		return DispatcherType.FORWARD.equals(request.getDispatcherType());
 	}
 	
-	public static String getHost(HttpServletRequest request) throws MalformedURLException {
+	/**
+	 * Extract the host from the URL of the request object. Keep in mind that 
+	 * this method can return unconsistent values, especially behind proxy-pass.
+	 * Evaluate whether to use {@link #getHostByHeaders()} instead.
+	 * @param request The HttpServletRequest object.
+	 * @return The hostname or null
+	 * @throws MalformedURLException 
+	 */
+	public static String getHostByURL(HttpServletRequest request) throws MalformedURLException {
 		return new URL(request.getRequestURL().toString()).getHost();
 	}
 	
 	/**
-	 * Returns the hostname from the request.
+	 * Extract the host from the request evaluating headers, this is useful
+	 * especially we are behind a proxy-pass.
 	 * @param request The HttpServletRequest object.
 	 * @return The hostname or null
 	 */
-	public static String __getHost(final HttpServletRequest request) {
+	public static String getHostByHeaders(final HttpServletRequest request) {
 		// Maybe we are behind a proxy
 		String host = request.getHeader(HEADER_X_FORWARDED_HOST);
 		if (logger.isTraceEnabled()) logger.trace("{}: {}", HEADER_X_FORWARDED_HOST, host);
@@ -375,8 +384,15 @@ public class ServletUtils {
 		return host;
 	}
 	
+	/**
+	 * @deprecated Use {@link #getHostByHeaders()} instead.
+	 * @param request
+	 * @return
+	 * @throws MalformedURLException 
+	 */
+	@Deprecated
 	public static String getInternetName(HttpServletRequest request) throws MalformedURLException {
-		String host = getHost(request);
+		String host = getHostByURL(request);
 		int ix1 = host.indexOf('.');
 		int ix2 = host.lastIndexOf('.');
 		return (ix1 == ix2) ? host : host.substring(ix1 + 1);
