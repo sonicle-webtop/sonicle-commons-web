@@ -381,7 +381,7 @@ public class ServletUtils {
 			host = request.getHeader(HEADER_HOST);
 			if (logger.isTraceEnabled()) logger.trace("{}: {}", HEADER_HOST, host);
 		}
-		return host;
+		return StringUtils.substringBeforeLast(host, ":"); // Strip any explicit port info
 	}
 	
 	/**
