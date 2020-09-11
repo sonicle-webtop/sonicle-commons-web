@@ -66,8 +66,9 @@ public class GridMetadata extends ResultMeta {
 		return (String)this.get(META_STORE_ROOT);
 	}
 
-	public void setRoot(String root) {
+	public GridMetadata setRoot(String root) {
 		this.put(META_STORE_ROOT, root);
+		return this;
 	}
 
 	public Object getFields() {
