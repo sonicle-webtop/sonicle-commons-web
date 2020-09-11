@@ -38,7 +38,7 @@ import java.util.List;
  *
  * @author malbinola
  */
-public class GridMetadata extends ResultMeta {
+public class GridMetadata extends ResultMeta<GridMetadata> {
 	public static final String META_STORE_ROOT = "root";
 	public static final String META_FIELDS = "fields";
 	public static final String META_COLUMNS_INFO = "colsInfo";
@@ -56,7 +56,7 @@ public class GridMetadata extends ResultMeta {
 	}
 	
 	public GridMetadata(boolean defaults) {
-		super();
+		this();
 		this.setRoot("data");
 		this.setTotalProperty("total");
 		this.setMessageProperty("message");

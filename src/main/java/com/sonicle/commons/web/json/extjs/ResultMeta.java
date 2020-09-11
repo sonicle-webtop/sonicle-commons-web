@@ -37,22 +37,23 @@ import java.util.HashMap;
 /**
  *
  * @author malbinola
+ * @param <T>
  */
-public class ResultMeta extends HashMap {
+public class ResultMeta<T extends ResultMeta> extends HashMap {
 	public static final String ERROR = "error";
 	
 	public ResultMeta() {
 		super();
 	}
 	
-	public ResultMeta set(String key, Object value) {
+	public T set(String key, Object value) {
 		this.put(key, value);
-		return this;
+		return (T)this;
 	}
 	
-	public ResultMeta setError(Error error) {
+	public T setError(Error error) {
 		this.put(ERROR, error);
-		return this;
+		return (T)this;
 	}
 	
 	public static class Error extends HashMap {

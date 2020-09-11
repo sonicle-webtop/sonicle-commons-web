@@ -36,15 +36,15 @@ package com.sonicle.commons.web.json.extjs;
  *
  * @author malbinola
  */
-public class LookupMeta extends ResultMeta {
+public class LookupMeta extends ResultMeta<LookupMeta> {
 	public static final String SELECTED = "selected";
 	
 	public Object getSelected() {
 		return (Object)this.get(SELECTED);
 	}
 
-	public LookupMeta setSelected(Object value) {
-		this.put(SELECTED, value);
+	public LookupMeta setSelected(Object selected) {
+		this.put(SELECTED, selected);
 		return this;
 	}
 }
