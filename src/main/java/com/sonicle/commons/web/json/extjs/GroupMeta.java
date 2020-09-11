@@ -32,11 +32,13 @@
  */
 package com.sonicle.commons.web.json.extjs;
 
+import com.google.gson.annotations.SerializedName;
+import com.sonicle.commons.EnumUtils;
 import com.sonicle.commons.web.json.JsonResult;
 import java.util.HashMap;
 
 /**
- *
+ * Helper object in ExtJS style to deal with Gouper (or groupDir, groupField) data.
  * @author malbinola
  */
 public class GroupMeta extends HashMap<String, Object> {
@@ -49,20 +51,22 @@ public class GroupMeta extends HashMap<String, Object> {
 		super();
 	}
 	
-	public GroupMeta(String field) {
-		super();
-		this.setField(field);
-		this.setDirection(DIRECTION_ASC);
-	}
-	
 	public GroupMeta(String field, String direction) {
 		super();
 		this.setField(field);
 		this.setDirection(direction);
 	}
 	
+	public GroupMeta(String field) {
+		this(field, Direction.ASC);
+	}
+	
+	public GroupMeta(String field, Direction direction) {
+		this(field, EnumUtils.toSerializedName(direction));
+	}
+	
 	public String getField() {
-		return (String) get(FIELD);
+		return (String)get(FIELD);
 	}
 	
 	public GroupMeta setField(String field) {
@@ -70,11 +74,16 @@ public class GroupMeta extends HashMap<String, Object> {
 		return this;
 	}
 	
-	public String getDirection() {
-		return (String) get(DIRECTION);
+	public Object getDirection() {
+		return get(DIRECTION);
 	}
 	
 	public GroupMeta setDirection(String direction) {
+		this.put(DIRECTION , direction);
+		return this;
+	}
+	
+	public GroupMeta setDirection(Direction direction) {
 		this.put(DIRECTION , direction);
 		return this;
 	}
@@ -90,5 +99,10 @@ public class GroupMeta extends HashMap<String, Object> {
 	
 	public static GroupMeta fromJson(String value) throws Exception {
 		return JsonResult.gson.fromJson(value, GroupMeta.class);
+	}
+	
+	public static enum Direction {
+		@SerializedName("ASC") ASC,
+		@SerializedName("DESC") DESC;
 	}
 }

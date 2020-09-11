@@ -32,28 +32,22 @@
  */
 package com.sonicle.commons.web.json.extjs;
 
+import com.google.gson.annotations.SerializedName;
+import com.sonicle.commons.EnumUtils;
 import com.sonicle.commons.web.json.JsonResult;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- *
+ * Helper object in ExtJS style to deal with SortInfo data.
  * @author malbinola
  */
 public class SortMeta extends HashMap<String, Object> {
 	public static final String FIELD = "field";
 	public static final String DIRECTION = "direction";
-	public static final String DIRECTION_ASC = "ASC";
-	public static final String DIRECTION_DESC = "DESC";
 	
 	public SortMeta() {
 		super();
-	}
-	
-	public SortMeta(String field) {
-		super();
-		this.setField(field);
-		this.setDirection(DIRECTION_ASC);
 	}
 	
 	public SortMeta(String field, String direction) {
@@ -62,21 +56,34 @@ public class SortMeta extends HashMap<String, Object> {
 		this.setDirection(direction);
 	}
 	
-	public String getField() {
-		return (String) get(FIELD);
+	public SortMeta(String field) {
+		this(field, Direction.ASC);
 	}
 	
-	public SortMeta setField(String value) {
-		this.put(FIELD , value);
+	public SortMeta(String field, Direction direction) {
+		this(field, EnumUtils.toSerializedName(direction));
+	}
+	
+	public String getField() {
+		return (String)get(FIELD);
+	}
+	
+	public SortMeta setField(String field) {
+		this.put(FIELD , field);
 		return this;
 	}
 	
-	public String getDirection() {
+	public Object getDirection() {
 		return (String) get(DIRECTION);
 	}
 	
-	public SortMeta setDirection(String value) {
-		this.put(DIRECTION , value);
+	public SortMeta setDirection(String direction) {
+		this.put(DIRECTION , direction);
+		return this;
+	}
+	
+	public SortMeta setDirection(Direction direction) {
+		this.put(DIRECTION , direction);
 		return this;
 	}
 	
@@ -105,5 +112,10 @@ public class SortMeta extends HashMap<String, Object> {
 		public static SortMetaList fromJson(String value) throws Exception {
 			return JsonResult.gson.fromJson(value, SortMetaList.class);
 		}
+	}
+	
+	public static enum Direction {
+		@SerializedName("ASC") ASC,
+		@SerializedName("DESC") DESC;
 	}
 }

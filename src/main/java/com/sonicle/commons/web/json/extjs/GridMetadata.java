@@ -32,6 +32,8 @@
  */
 package com.sonicle.commons.web.json.extjs;
 
+import java.util.List;
+
 /**
  *
  * @author malbinola
@@ -64,79 +66,118 @@ public class GridMetadata extends ResultMeta {
 		return (String)this.get(META_STORE_ROOT);
 	}
 
-	public void setRoot(String value) {
-		this.put(META_STORE_ROOT, value);
+	public void setRoot(String root) {
+		this.put(META_STORE_ROOT, root);
 	}
 
 	public Object getFields() {
 		return (Object)this.get(META_FIELDS);
 	}
 
-	public void setFields(Object value) {
-		this.put(META_FIELDS, value);
+	public GridMetadata setFields(Object fields) {
+		this.put(META_FIELDS, fields);
+		return this;
+	}
+	
+	public GridMetadata setFields(String[] fields) {
+		this.put(META_FIELDS, fields);
+		return this;
+	}
+	
+	public GridMetadata setFields(List<FieldMeta> fields) {
+		this.put(META_FIELDS, fields);
+		return this;
 	}
 
 	public Object getColumnsInfo() {
 		return (Object)this.get(META_COLUMNS_INFO);
 	}
 
-	public void setColumnsInfo(Object value) {
-		this.put(META_COLUMNS_INFO, value);
+	public GridMetadata setColumnsInfo(Object columnsInfo) {
+		this.put(META_COLUMNS_INFO, columnsInfo);
+		return this;
+	}
+	
+	public GridMetadata setColumnsInfo(List<GridColumnMeta> columnsInfo) {
+		this.put(META_COLUMNS_INFO, columnsInfo);
+		return this;
 	}
 	
 	public Object getSortInfo() {
 		return (Object)this.get(META_SORT_INFO);
 	}
 
-	public void setSortInfo(Object value) {
-		this.put(META_SORT_INFO, value);
+	public GridMetadata setSortInfo(Object sortInfo) {
+		this.put(META_SORT_INFO, sortInfo);
+		return this;
+	}
+	
+	public GridMetadata setSortInfo(SortMeta sortInfo) {
+		this.put(META_SORT_INFO, sortInfo);
+		return this;
+	}
+	
+	public GridMetadata setSortInfo(List<SortMeta> sortInfo) {
+		this.put(META_SORT_INFO, sortInfo);
+		return this;
 	}
 	
 	public Object getGroupInfo() {
 		return (Object)this.get(META_GROUP_INFO);
 	}
 
-	public void setGroupInfo(Object value) {
-		this.put(META_GROUP_INFO, value);
+	public GridMetadata setGroupInfo(Object groupInfo) {
+		this.put(META_GROUP_INFO, groupInfo);
+		return this;
+	}
+	
+	public GridMetadata setGroupInfo(GroupMeta groupInfo) {
+		this.put(META_GROUP_INFO, groupInfo);
+		return this;
 	}
 	
 	public String getIdProperty() {
 		return (String)this.get(META_ID_PROPERTY);
 	}
 
-	public void setIdProperty(String value) {
-		this.put(META_ID_PROPERTY, value);
+	public GridMetadata setIdProperty(String idProperty) {
+		this.put(META_ID_PROPERTY, idProperty);
+		return this;
 	}
 	
 	public String getTotalProperty() {
 		return (String)this.get(META_TOTAL_PROPERTY);
 	}
 	
-	public void setTotalProperty(String value) {
-		this.put(META_TOTAL_PROPERTY, value);
+	public GridMetadata setTotalProperty(String totalProperty) {
+		this.put(META_TOTAL_PROPERTY, totalProperty);
+		return this;
 	}
 	
 	public String getMessageProperty() {
 		return (String)this.get(META_MESSAGE_PROPERTY);
 	}
 
-	public void setMessageProperty(String value) {
-		this.put(META_MESSAGE_PROPERTY, value);
+	public GridMetadata setMessageProperty(String messageProperty) {
+		this.put(META_MESSAGE_PROPERTY, messageProperty);
+		return this;
 	}
 	
 	public Integer getTotalCount() {
 		return (Integer)this.get(META_TOTAL_COUNT);
 	}
 
-	public void setTotalCount(Integer value) {
-		this.put(META_TOTAL_COUNT, value);
+	public GridMetadata setTotalCount(Integer totalCount) {
+		this.put(META_TOTAL_COUNT, totalCount);
+		return this;
 	}
 
 	public Object getSelected() {
 		return (Object)this.get(META_SELECTED);
 	}
 
-	public void setSelected(Object value) {
-		this.put(META_SELECTED, value);
+	public GridMetadata setSelected(Object selected) {
+		this.put(META_SELECTED, selected);
+		return this;
 	}
 }

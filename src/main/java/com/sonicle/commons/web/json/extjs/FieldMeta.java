@@ -35,7 +35,7 @@ package com.sonicle.commons.web.json.extjs;
 import java.util.HashMap;
 
 /**
- *
+ * Helper object in ExtJS style to deal field definition data
  * @author malbinola
  */
 public class FieldMeta extends HashMap<String, Object> {
@@ -53,29 +53,29 @@ public class FieldMeta extends HashMap<String, Object> {
 	}
 	
 	public String getName() {
-		return (String) get(NAME);
+		return (String)get(NAME);
 	}
 	
-	public FieldMeta setName(String value) {
-		this.put(NAME , value);
+	public FieldMeta setName(String name) {
+		this.put(NAME, name);
 		return this;
 	}
 	
 	public String getType() {
-		return (String) get(TYPE);
+		return (String)get(TYPE);
 	}
 	
-	public FieldMeta setType(String value) {
-		this.put(TYPE , value);
+	public FieldMeta setType(String type) {
+		this.put(TYPE, type);
 		return this;
 	}
 	
 	public Boolean getAllowBlank() {
-		return (Boolean) get(ALLOW_BLANK);
+		return (Boolean)get(ALLOW_BLANK);
 	}
 	
-	public FieldMeta setAllowBlank(Boolean value) {
-		this.put(ALLOW_BLANK , value);
+	public FieldMeta setAllowBlank(Boolean allowBlank) {
+		this.put(ALLOW_BLANK, allowBlank);
 		return this;
 	}
 	

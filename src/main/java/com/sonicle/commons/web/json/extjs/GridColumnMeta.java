@@ -35,7 +35,7 @@ package com.sonicle.commons.web.json.extjs;
 import java.util.HashMap;
 
 /**
- * Helper Json-ready class to deal with ExtJs grid column metadata info.
+ * Helper object in ExtJS style to deal with ColumnsInfo data.
  * @author malbinola
  */
 public class GridColumnMeta extends HashMap<String, Object> {
@@ -73,68 +73,68 @@ public class GridColumnMeta extends HashMap<String, Object> {
 		setHeader(header);
 	}
 	
-	public GridColumnMeta setHeader(String value) {
-		this.put(HEADER , value);
+	public GridColumnMeta setHeader(String header) {
+		this.put(HEADER, header);
 		return this;
 	}
 	
-	public GridColumnMeta setDataIndex(String value) {
-		this.put(DATA_INDEX , value);
+	public GridColumnMeta setDataIndex(String dataIndex) {
+		this.put(DATA_INDEX, dataIndex);
 		return this;
 	}
 	
-	public GridColumnMeta setHidden(boolean value) {
-		this.put(HIDDEN , value);
+	public GridColumnMeta setHidden(boolean hidden) {
+		this.put(HIDDEN, hidden);
 		return this;
 	}
 	
-	public GridColumnMeta setWidth(int value) {
-		this.put(WIDTH , value);
+	public GridColumnMeta setWidth(int width) {
+		this.put(WIDTH, width);
 		return this;
 	}
 	
-	public GridColumnMeta setSortable(boolean value) {
-		this.put(SORTABLE , value);
+	public GridColumnMeta setSortable(boolean sortable) {
+		this.put(SORTABLE, sortable);
 		return this;
 	}
 	
-	public GridColumnMeta setHideable(boolean value) {
-		this.put(HIDEABLE , value);
+	public GridColumnMeta setHideable(boolean hideable) {
+		this.put(HIDEABLE, hideable);
 		return this;
 	}
 	
-	public GridColumnMeta setMenuDisabled(boolean value) {
-		this.put(MENU_DISABLED , value);
+	public GridColumnMeta setMenuDisabled(boolean menuDisabled) {
+		this.put(MENU_DISABLED , menuDisabled);
 		return this;
 	}
 	
-	public GridColumnMeta setDraggable(boolean value) {
-		this.put(DRAGGABLE , value);
+	public GridColumnMeta setDraggable(boolean draggable) {
+		this.put(DRAGGABLE, draggable);
 		return this;
 	}
 	
-	public GridColumnMeta setGroupable(boolean value) {
-		this.put(GROUPABLE , value);
+	public GridColumnMeta setGroupable(boolean groupable) {
+		this.put(GROUPABLE, groupable);
 		return this;
 	}
 	
-	public GridColumnMeta setRenderer(String value) {
-		this.put(RENDERER , value);
+	public GridColumnMeta setRenderer(String renderer) {
+		this.put(RENDERER, renderer);
 		return this;
 	}
 	
-	public GridColumnMeta setXType(String value) {
-		this.put(XTYPE, value);
+	public GridColumnMeta setXType(String xtype) {
+		this.put(XTYPE, xtype);
 		return this;
 	}
 	
-	public GridColumnMeta setFormat(String value) {
-		this.put(FORMAT, value);
+	public GridColumnMeta setFormat(String format) {
+		this.put(FORMAT, format);
 		return this;
 	}
 	
-	public GridColumnMeta setTpl(String value) {
-		this.put(TPL, value);
+	public GridColumnMeta setTpl(String tpl) {
+		this.put(TPL, tpl);
 		return this;
 	}
 	
