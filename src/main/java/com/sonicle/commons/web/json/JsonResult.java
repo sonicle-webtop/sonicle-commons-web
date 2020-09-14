@@ -40,7 +40,6 @@ import com.sonicle.commons.web.gson.JodaDateTimeTypeAdapter;
 import com.sonicle.commons.web.gson.JodaLocalDateTypeAdapter;
 import com.sonicle.commons.web.gson.JodaLocalTimeTypeAdapter;
 import com.sonicle.commons.web.json.extjs.ExtGridFilter;
-import com.sonicle.commons.web.json.extjs.GridMetadata;
 import com.sonicle.commons.web.json.extjs.ResultMeta;
 import java.io.PrintWriter;
 import java.text.ParseException;
@@ -56,6 +55,10 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class JsonResult extends HashMap<String, Object> {
 	
+	/**
+	 * @deprecated Use {@link #GSON} instead.
+	 */
+	@Deprecated
 	public static final Gson gson = new GsonBuilder()
 		.serializeNulls()
 		.disableHtmlEscaping()
@@ -78,7 +81,6 @@ public class JsonResult extends HashMap<String, Object> {
 	
 	//public static final Gson gsonNoHtmlEscape_ = new GsonBuilder()
 	public static final Gson GSON_WONULLS = new GsonBuilder()
-		.serializeNulls()
 		.disableHtmlEscaping()
 		.registerTypeAdapter(org.joda.time.DateTime.class, new JodaDateTimeTypeAdapter())
 		.registerTypeAdapter(org.joda.time.LocalDate.class, new JodaLocalDateTypeAdapter())
