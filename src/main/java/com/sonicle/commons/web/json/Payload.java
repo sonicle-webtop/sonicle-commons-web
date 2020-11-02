@@ -39,11 +39,13 @@ package com.sonicle.commons.web.json;
  * @param <D> Type of data property.
  */
 public class Payload<M,D> {
-	public M map;
-	public D data;
+	public final M map;
+	public final D data;
+	public final String raw;
 	
-	public Payload(M map, D data) {
+	public Payload(final M map, final D data, final String raw) {
 		this.map = map;
 		this.data = data;
+		this.raw = raw;
 	}
 }

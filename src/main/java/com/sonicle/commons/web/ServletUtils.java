@@ -300,20 +300,6 @@ public class ServletUtils {
 	}
 	
 	/**
-	 * Returns the request URL until the servlet path (excluded).
-	 * This URL may differ from the orginal browser URL due to rewrites
-	 * (eg. Apache url_rewrite) potentially applied in the chain.
-	 * @param request The HttpServletRequest object.
-	 * @return 
-	 */
-	@Deprecated
-	public static String getRequestURL(HttpServletRequest request) {
-		StringBuffer url = request.getRequestURL();
-		int iof = url.indexOf(request.getServletPath());
-		return (iof == -1) ? url.toString() : url.substring(0, iof);
-	}
-	
-	/**
 	 * Returns the request URI relative to context path.
 	 * eg. request URL: http://localhost/context/servlet/other/stuff
 	 *   -> request URI: /context/servlet/other/stuff
@@ -743,7 +729,22 @@ public class ServletUtils {
 	 * @throws IOException 
 	 */
 	public static <D>Payload getPayload(HttpServletRequest request, Class<D> dataType) throws IOException {
-		return getPayload(request, MapItem.class, dataType);
+		return getPayload(request, MapItem.class, dataType, false);
+	}
+	
+	/**
+	 * Unserializes the HTTP request's payload string into a Payload object 
+	 * containing a map property object for testing field presence and a data
+	 * bean representing the unserialized fields data.
+	 * @param <D> Type of data property.
+	 * @param request The HttpServletRequest.
+	 * @param dataType Class type of data property.
+	 * @param returnRawPayload Set to `true` to keep (in the result) raw payload extracted from the request.
+	 * @return Payload object that contains unserialized data.
+	 * @throws IOException 
+	 */
+	public static <D>Payload getPayload(HttpServletRequest request, Class<D> dataType, boolean returnRawPayload) throws IOException {
+		return getPayload(request, MapItem.class, dataType, returnRawPayload);
 	}
 	
 	/**
@@ -757,7 +758,7 @@ public class ServletUtils {
 	 * @throws IOException 
 	 */
 	public static <D>Payload getPayload(String payload, Class<D> dataType) throws IOException {
-		return getPayload(payload, MapItem.class, dataType);
+		return getPayload(payload, MapItem.class, dataType, false);
 	}
 	
 	/**
@@ -769,17 +770,13 @@ public class ServletUtils {
 	 * @param request The HttpServletRequest.
 	 * @param mapType Class type of map property.
 	 * @param dataType Class type of data property.
+	 * @param returnRawPayload Set to `true` to keep (in the result) raw payload extracted from the request.
 	 * @return Payload object that contains unserialized data.
 	 * @throws IOException
 	 */
-	public static <M, D>Payload getPayload(HttpServletRequest request, Class<M> mapType, Class<D> dataType) throws IOException {
+	public static <M, D>Payload getPayload(HttpServletRequest request, Class<M> mapType, Class<D> dataType, boolean returnRawPayload) throws IOException {
 		String payload = ServletUtils.getPayload(request);
-		/*
-		M map = JsonResult.gson.fromJson(payload, mapType);
-		D data = JsonResult.gson.fromJson(payload, dataType);
-		return new Payload<>(map, data);
-		*/
-		return getPayload(payload, mapType, dataType);
+		return getPayload(payload, mapType, dataType, returnRawPayload);
 	}
 	
 	/**
@@ -791,13 +788,14 @@ public class ServletUtils {
 	 * @param payload The HttpServletRequest's payload raw string.
 	 * @param mapType Class type of map property.
 	 * @param dataType Class type of data property.
+	 * @param returnRawPayload Set to `true` to keep (in the result) raw payload extracted from the request.
 	 * @return Payload object that contains unserialized data.
 	 * @throws IOException
 	 */
-	public static <M, D>Payload getPayload(String payload, Class<M> mapType, Class<D> dataType) throws IOException {
+	public static <M, D>Payload getPayload(String payload, Class<M> mapType, Class<D> dataType, boolean returnRawPayload) throws IOException {
 		M map = JsonResult.gson.fromJson(payload, mapType);
 		D data = JsonResult.gson.fromJson(payload, dataType);
-		return new Payload<>(map, data);
+		return new Payload<>(map, data, returnRawPayload ? payload : null);
 	}
 	
 	/**
@@ -808,6 +806,7 @@ public class ServletUtils {
 	 * @return
 	 * @throws IOException 
 	 */
+	@Deprecated 
 	public static <T>PayloadAsList getPayloadAsList(HttpServletRequest request, Class<T> type) throws IOException {
 		String payload = ServletUtils.getPayload(request);
 		PayloadAsListRecords records = JsonResult.gson.fromJson(payload, PayloadAsListRecords.class);
