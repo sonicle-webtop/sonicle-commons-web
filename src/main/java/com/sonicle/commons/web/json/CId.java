@@ -126,6 +126,13 @@ public class CId {
 				.build();
 	}
 	
+	public static CId buildWithSeparator(String separator, Object... tokens) {
+		return new Builder()
+				.withSeparator(separator)
+				.withTokens(tokens)
+				.build();
+	}
+	
 	public static class Builder<B extends Builder> {
 		private ArrayList<String> tokens = new ArrayList<>();
 		private String separator = "|";
