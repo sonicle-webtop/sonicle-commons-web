@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Sonicle S.r.l.
+ * Copyright (C) 2020 Sonicle S.r.l.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by
@@ -28,28 +28,40 @@
  * version 3, these Appropriate Legal Notices must retain the display of the
  * Sonicle logo and Sonicle copyright notice. If the display of the logo is not
  * reasonably feasible for technical reasons, the Appropriate Legal Notices must
- * display the words "Copyright (C) 2014 Sonicle S.r.l.".
+ * display the words "Copyright (C) 2020 Sonicle S.r.l.".
  */
-package com.sonicle.commons.web.json.bean;
+package com.sonicle.commons.web.json.extjs;
 
+import com.google.gson.annotations.SerializedName;
 import com.sonicle.commons.web.json.JsonResult;
+import java.util.ArrayList;
 
 /**
  *
- * @author malbinola
+ * @author Federico Ballarini
  */
-public class StringMap extends AbstractMap<StringMap, String> {
-	public StringMap() {
-		super();
+public class SortParam {
+	public String property;
+	public Direction direction;
+
+	public SortParam(String property, Direction direction) {
+		this.property = property;
+		this.direction = direction;
 	}
 	
-	public static StringMap fromJson(String value) {
-		if(value == null) return null;
-		return JsonResult.GSON.fromJson(value, StringMap.class);
+	public static class List extends ArrayList<SortParam> {
+		public List() {
+			super();
+		}
+		
+		public static List fromJson(String value) {
+			if (value == null) return null;
+			return JsonResult.GSON.fromJson(value, List.class);
+		}
 	}
-
-	public static String toJson(StringArray value) {
-		if(value == null) return null;
-		return JsonResult.GSON.toJson(value, StringMap.class);
+	
+	public static enum Direction {
+		@SerializedName("ASC") ASC,
+		@SerializedName("DESC") DESC
 	}
 }
