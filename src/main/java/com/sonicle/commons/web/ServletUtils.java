@@ -1204,11 +1204,12 @@ public class ServletUtils {
 	 * 
 	 * @param response Response object to write to.
 	 * @param data Bytes to write.
-	 * @param contentType Data length.
+	 * @param length Data length.
+	 * @param contentType Media-type name to set, or null if you want to skip this configuration.
 	 * @throws IOException 
 	 */
 	public static void writeContent(HttpServletResponse response, byte[] data, int length, String contentType) throws IOException {
-		response.setContentType(contentType);
+		if (contentType != null) response.setContentType(contentType);
 		response.setContentLength(length);
 		IOUtils.write(data, response.getOutputStream());
 	}
