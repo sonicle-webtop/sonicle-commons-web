@@ -44,6 +44,7 @@ import com.sonicle.commons.validation.ValidatorException;
 import com.sonicle.commons.web.json.JsonResult;
 import eu.medsea.mimeutil.MimeType;
 import eu.medsea.mimeutil.MimeUtil;
+import inet.ipaddr.IPAddress;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -1250,15 +1251,15 @@ public class ServletUtils {
 			}
 		}
 		
-		ip = getIPFromHeader(request, "X-Forwarded-For", true);
+		ip = getIPFromHeader(request, "X-Forwarded-For", false);
 		if(ip != null) return ip;
-		ip = getIPFromHeader(request, "Proxy-Client-IP", true);
+		ip = getIPFromHeader(request, "Proxy-Client-IP", false);
 		if(ip != null) return ip;
-		ip = getIPFromHeader(request, "WL-Proxy-Client-IP", true);
+		ip = getIPFromHeader(request, "WL-Proxy-Client-IP", false);
 		if(ip != null) return ip;
-		ip = getIPFromHeader(request, "HTTP_CLIENT_IP", true);
+		ip = getIPFromHeader(request, "HTTP_CLIENT_IP", false);
 		if(ip != null) return ip;
-		ip = getIPFromHeader(request, "HTTP_X_FORWARDED_FOR", true);
+		ip = getIPFromHeader(request, "HTTP_X_FORWARDED_FOR", false);
 		if(ip != null) return ip;
 		return request.getRemoteAddr();
 	}
@@ -1272,7 +1273,7 @@ public class ServletUtils {
 	 * @return The IP address.
 	 */
 	public static String getIPFromHeader(HttpServletRequest request, String header) {
-		return getIPFromHeader(request, header, false);
+		return getIPFromHeader(request, header, true);
 	}
 	
 	/**
@@ -1281,10 +1282,10 @@ public class ServletUtils {
 	 * 
 	 * @param request The HTTP request.
 	 * @param header The HTTP header to look into.
-	 * @param allowPrivate Specifies if a private address must be considered valid.
+	 * @param ignorePrivate Specifies whether to ignore private addresses in lookup.
 	 * @return The IP address.
 	 */
-	public static String getIPFromHeader(HttpServletRequest request, String header, boolean allowPrivate) {
+	public static String getIPFromHeader(HttpServletRequest request, String header, boolean ignorePrivate) {
 		StringTokenizer tokenizer = null;
 		String value = null, ip = null;
 		
@@ -1292,7 +1293,9 @@ public class ServletUtils {
 			tokenizer = new StringTokenizer(value, ",");
 			while (tokenizer.hasMoreTokens()) {
 				ip = tokenizer.nextToken().trim();
-				if (IPUtils.isIPv4Valid(ip) && (allowPrivate || !IPUtils.isIPv4Private(ip))) return ip;
+				IPAddress addr = IPUtils.toIPAddress(ip);
+				if (addr != null && (!ignorePrivate || !addr.isLocal())) return ip;
+				//if (IPUtils.isIPv4Valid(ip) && (!ignorePrivate || !IPUtils.isIPv4Private(ip))) return ip;
 			}
 		}
 		return null;
