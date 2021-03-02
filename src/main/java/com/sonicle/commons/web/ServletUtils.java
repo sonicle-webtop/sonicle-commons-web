@@ -1422,8 +1422,9 @@ public class ServletUtils {
 			byte[] encBytes = aes.doFinal(value.getBytes());
 			//return Base64.encodeBase64String(encBytes);
 			return new String(new Base32().encode(encBytes));
-		} catch(Exception ex) {
-			logger.error("Unable to encrypt cookie value", ex);
+			
+		} catch(Throwable t) {
+			logger.debug("Unable to encrypt cookie value", t);
 			return null;
 		}
 	}
@@ -1435,8 +1436,9 @@ public class ServletUtils {
 			//byte[] encBytes = Base64.decodeBase64(value);
 			byte[] bytes = aes.doFinal(encBytes);
 			return new String(bytes);
-		} catch(Exception ex) {
-			logger.error("Unable to dencrypt cookie value", ex);
+			
+		} catch(Throwable t) {
+			logger.debug("Unable to dencrypt cookie value", t);
 			return null;
 		}
 	}
