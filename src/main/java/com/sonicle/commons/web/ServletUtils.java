@@ -1232,16 +1232,11 @@ public class ServletUtils {
 	}
 	
 	/**
-	 * Discovers the remote client IP address from a request.
-	 * This method also take into account possible headers that a proxy or a
-	 * gateway could apply (eg. X-Forwarded-For, HTTP_X_FORWARDED_FOR, ect).
+	 * Dumps, if tracing enabled, request headers names with values.
 	 * @param request The HTTP request.
-	 * @return The client IP address.
 	 */
-	public static String getClientIP(HttpServletRequest request) {
-		String ip = null;
-		
-		if(logger.isTraceEnabled()) {
+	public static void dumpRequestHeaders(HttpServletRequest request) {
+		if (logger.isTraceEnabled()) {
 			String hName = null;
 			Enumeration<String> hNames = request.getHeaderNames();
 			logger.trace("Listing current request headers:");
@@ -1250,18 +1245,45 @@ public class ServletUtils {
 				logger.trace("{}: {}", hName, request.getHeader(hName));
 			}
 		}
-		
+	}
+	
+	/**
+	 * Discovers the remote client IP address from a request.
+	 * This method also take into account possible headers that a proxy or a
+	 * gateway could apply (eg. X-Forwarded-For, HTTP_X_FORWARDED_FOR, ect).
+	 * @param request The HTTP request.
+	 * @return The client IP address.
+	 */
+	public static String getClientIP(HttpServletRequest request) {
+		String ip = null;
 		ip = getIPFromHeader(request, "X-Forwarded-For", false);
-		if(ip != null) return ip;
+		if (ip != null) {
+			if (logger.isDebugEnabled()) logger.debug("Returning IP address from '{}' [{}]", "X-Forwarded-For", ip);
+			return ip;
+		}
 		ip = getIPFromHeader(request, "Proxy-Client-IP", false);
-		if(ip != null) return ip;
+		if (ip != null) {
+			if (logger.isDebugEnabled()) logger.debug("Returning IP address from '{}' [{}]", "Proxy-Client-IP", ip);
+			return ip;
+		}
 		ip = getIPFromHeader(request, "WL-Proxy-Client-IP", false);
-		if(ip != null) return ip;
+		if (ip != null) {
+			if (logger.isDebugEnabled()) logger.debug("Returning IP address from '{}' [{}]", "WL-Proxy-Client-IP", ip);
+			return ip;
+		}
 		ip = getIPFromHeader(request, "HTTP_CLIENT_IP", false);
-		if(ip != null) return ip;
+		if (ip != null) {
+			if (logger.isDebugEnabled()) logger.debug("Returning IP address from '{}' [{}]", "HTTP_CLIENT_IP", ip);
+			return ip;
+		}
 		ip = getIPFromHeader(request, "HTTP_X_FORWARDED_FOR", false);
-		if(ip != null) return ip;
-		return request.getRemoteAddr();
+		if (ip != null) {
+			if (logger.isDebugEnabled()) logger.debug("Returning IP address from '{}' [{}]", "HTTP_X_FORWARDED_FOR", ip);
+			return ip;
+		}
+		ip = request.getRemoteAddr();
+		if (logger.isDebugEnabled()) logger.debug("Returning IP address from request [{}]", ip);
+		return ip;
 	}
 	
 	/**
