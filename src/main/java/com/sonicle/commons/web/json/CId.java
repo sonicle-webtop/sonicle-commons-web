@@ -32,11 +32,12 @@
  */
 package com.sonicle.commons.web.json;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  *
@@ -64,7 +65,7 @@ public class CId {
 		this.tokens = StringUtils.split(s, separator, tokens);
 	}
 	
-	protected CId(Builder builder) {
+	protected CId(AbstractBuilder builder) {
 		this((String[])builder.tokens.toArray(new String[builder.tokens.size()]), builder.separator);
 	}
 	
@@ -113,6 +114,23 @@ public class CId {
 		}
 	}
 	
+	@Override
+	public int hashCode() {
+		return new HashCodeBuilder()
+			.append(toString())
+			.toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof CId == false) return false;
+		if (this == obj) return true;
+		final CId otherObject = (CId)obj;
+		return new EqualsBuilder()
+			.append(toString(), otherObject.toString())
+			.isEquals();
+	}
+	
 	private int indexOfNull() {
 		for (int i=0; i<tokens.length; i++) {
 			if (tokens[i] == null) return i;
@@ -123,6 +141,12 @@ public class CId {
 	public static CId build(Object... tokens) {
 		return new Builder()
 				.withTokens(tokens)
+				.build();
+	}
+	
+	public static CId build(CId cid, Object... tokens) {
+		return new Builder()
+				.withTokens(cid, tokens)
 				.build();
 	}
 	
@@ -146,19 +170,75 @@ public class CId {
 				.build();
 	}
 	
+	public static final class Builder extends AbstractBuilder<Builder, CId> {
+
+		@Override
+		public CId build() {
+			return new CId(this);
+		}
+	}
+	
+	public static abstract class AbstractBuilder<B extends AbstractBuilder, T extends CId> {
+		private ArrayList<String> tokens = new ArrayList<>();
+		private String separator = "|";
+		
+		public abstract T build();
+		
+		public B withSeparator(String separator) {
+			this.separator = separator;
+			return (B)this;
+		}
+		
+		public B withTokens(Collection<String> tokens) {
+			addTokens(tokens);
+			return (B)this;
+		}
+		
+		public B withTokens(Object... tokens) {
+			addTokens(null, tokens);
+			return (B)this;
+		}
+		
+		public B withTokens(CId cid, Object... tokens) {
+			addTokens(cid.getTokens(), tokens);
+			return (B)this;
+		}
+		
+		public B addToken(Object token) {
+			this.tokens.add((token instanceof String) ? (String)token : String.valueOf(token));
+			return (B)this;
+		}
+		
+		private void addTokens(Collection<String> tokens1, Object... tokens2) {
+			if (tokens1 != null) {
+				for (String s : tokens1) addToken(s);
+			}
+			if (tokens2 != null) {
+				for (Object o : tokens2) addToken(o);
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/*
 	public static class Builder<B extends Builder> {
 		private ArrayList<String> tokens = new ArrayList<>();
 		private String separator = "|";
 		
-		/*
-		public T build() {
-			
-			((Class)((ParameterizedType)this.getClass().
-       getGenericSuperclass()).getActualTypeArguments()[0]).newInstance();
-			
-			return (T)new CId(this);
-		}
-		*/
+		//public T build() {	
+		//	((Class)((ParameterizedType)this.getClass().getGenericSuperclass()).getActualTypeArguments()[0]).newInstance();
+		//	
+		//	return (T)new CId(this);
+		//}
 		
 		public CId build() {
 			return new CId(this);
@@ -198,4 +278,5 @@ public class CId {
 			}
 		}
 	}
+	*/
 }
