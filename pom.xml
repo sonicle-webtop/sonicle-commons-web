@@ -20,7 +20,7 @@
 		
 		<!-- DEP: widely used libs -->
 		<commons-codec.version>1.9</commons-codec.version>
-		<commons-io.version>2.4</commons-io.version>
+		<commons-io.version>2.7</commons-io.version>
 		<commons-lang3.version>3.3.2</commons-lang3.version>
 		<gson.version>2.6.2</gson.version>
 		<httpclient.version>4.5.3</httpclient.version>
