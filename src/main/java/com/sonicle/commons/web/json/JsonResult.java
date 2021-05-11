@@ -56,7 +56,7 @@ import javax.servlet.http.HttpServletResponse;
 public class JsonResult extends HashMap<String, Object> {
 	
 	/**
-	 * @deprecated Use {@link #GSON} instead.
+	 * @deprecated Use gson() method instead
 	 */
 	@Deprecated
 	public static final Gson gson = new GsonBuilder()
@@ -69,6 +69,10 @@ public class JsonResult extends HashMap<String, Object> {
 		.registerTypeAdapter(ExtGridFilter.class, new GsonExtJsGridFilterTypeAdapter())
 		.create();
 	
+	/**
+	 * @deprecated Use gson() method instead
+	 */
+	@Deprecated
 	public static final Gson GSON = new GsonBuilder()
 		.serializeNulls()
 		.disableHtmlEscaping()
@@ -79,7 +83,10 @@ public class JsonResult extends HashMap<String, Object> {
 		//.registerTypeAdapter(ExtGridFilter.class, new GsonExtJsGridFilterTypeAdapter())
 		.create();
 	
-	//public static final Gson gsonNoHtmlEscape_ = new GsonBuilder()
+	/**
+	 * @deprecated Use gson(false) method instead
+	 */
+	@Deprecated
 	public static final Gson GSON_WONULLS = new GsonBuilder()
 		.disableHtmlEscaping()
 		.registerTypeAdapter(org.joda.time.DateTime.class, new JodaDateTimeTypeAdapter())
@@ -89,17 +96,38 @@ public class JsonResult extends HashMap<String, Object> {
 		//.registerTypeAdapter(ExtGridFilter.class, new GsonExtJsGridFilterTypeAdapter())
 		.create();
 	
-	//public static final Gson gsonWoNulls_ = new GsonBuilder()
+	/**
+	 * @deprecated Use gsonPlain(false) method instead
+	 */
+	@Deprecated
 	public static final Gson GSON_PLAIN_WONULLS = new GsonBuilder()
 		.disableHtmlEscaping()
 		.create();
 	
-	/*
-	public static final Gson gsonWoNullsNoEscape_ = new GsonBuilder()
-		.registerTypeAdapter(java.util.Date.class, new GsonISODateTypeAdapter())
-		.disableHtmlEscaping()
-		.create();
-	*/
+	public static Gson gson() {
+		return gson(true);
+	}
+	
+	public static Gson gson(boolean serializeNulls) {
+		GsonBuilder gb = new GsonBuilder()
+			.disableHtmlEscaping()
+			.registerTypeAdapter(org.joda.time.DateTime.class, new JodaDateTimeTypeAdapter())
+			.registerTypeAdapter(org.joda.time.LocalDate.class, new JodaLocalDateTypeAdapter())
+			.registerTypeAdapter(org.joda.time.LocalTime.class, new JodaLocalTimeTypeAdapter())
+			.registerTypeAdapter(java.util.Date.class, new GsonISODateTypeAdapter());
+			//.registerTypeAdapter(ExtGridFilter.class, new GsonExtJsGridFilterTypeAdapter())
+		return serializeNulls ? gb.serializeNulls().create() : gb.create();
+	}
+	
+	public static Gson gsonPlain() {
+		return gsonPlain(true);
+	}
+	
+	public static Gson gsonPlain(boolean serializeNulls) {
+		GsonBuilder gb = new GsonBuilder()
+			.disableHtmlEscaping();
+		return serializeNulls ? gb.serializeNulls().create() : gb.create();
+	}
 	
 	public static final String SUCCESS_PROP = "success";
 	public static final String MESSAGE_PROP = "message";
