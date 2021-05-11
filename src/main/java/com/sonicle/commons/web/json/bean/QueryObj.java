@@ -94,10 +94,10 @@ public class QueryObj {
 	}
 	
 	public static QueryObj fromJson(String value) {
-		return JsonResult.gson.fromJson(value, QueryObj.class);
+		return JsonResult.gson().fromJson(value, QueryObj.class);
 	}
 
 	public static String toJson(QueryObj value) {
-		return JsonResult.gson.toJson(value, QueryObj.class);
+		return JsonResult.gson().toJson(value, QueryObj.class);
 	}
 }

@@ -51,10 +51,10 @@ public class IntegerSet extends HashSet<Integer> {
 	}
 
 	public static IntegerSet fromJson(String value) {
-		return JsonResult.gson.fromJson(value, IntegerSet.class);
+		return JsonResult.gson().fromJson(value, IntegerSet.class);
 	}
 
 	public static String toJson(IntegerSet value) {
-		return JsonResult.gson.toJson(value, IntegerSet.class);
+		return JsonResult.gson().toJson(value, IntegerSet.class);
 	}
 }

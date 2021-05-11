@@ -51,6 +51,6 @@ public class JsonUtils {
 	}
 	
 	public static String toJson(String ... args) {
-		return JsonResult.GSON.toJson(createJsonObject(args));
+		return JsonResult.gson().toJson(createJsonObject(args));
 	}
 }

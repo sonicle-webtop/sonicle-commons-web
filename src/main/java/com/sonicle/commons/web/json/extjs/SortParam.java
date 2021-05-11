@@ -56,7 +56,7 @@ public class SortParam {
 		
 		public static List fromJson(String value) {
 			if (value == null) return null;
-			return JsonResult.GSON.fromJson(value, List.class);
+			return JsonResult.gson().fromJson(value, List.class);
 		}
 	}
 	

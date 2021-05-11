@@ -55,55 +55,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class JsonResult extends HashMap<String, Object> {
 	
-	/**
-	 * @deprecated Use gson() method instead
-	 */
-	@Deprecated
-	public static final Gson gson = new GsonBuilder()
-		.serializeNulls()
-		.disableHtmlEscaping()
-		.registerTypeAdapter(org.joda.time.DateTime.class, new JodaDateTimeTypeAdapter())
-		.registerTypeAdapter(org.joda.time.LocalDate.class, new JodaLocalDateTypeAdapter())
-		.registerTypeAdapter(org.joda.time.LocalTime.class, new JodaLocalTimeTypeAdapter())
-		.registerTypeAdapter(java.util.Date.class, new GsonISODateTypeAdapter())
-		.registerTypeAdapter(ExtGridFilter.class, new GsonExtJsGridFilterTypeAdapter())
-		.create();
-	
-	/**
-	 * @deprecated Use gson() method instead
-	 */
-	@Deprecated
-	public static final Gson GSON = new GsonBuilder()
-		.serializeNulls()
-		.disableHtmlEscaping()
-		.registerTypeAdapter(org.joda.time.DateTime.class, new JodaDateTimeTypeAdapter())
-		.registerTypeAdapter(org.joda.time.LocalDate.class, new JodaLocalDateTypeAdapter())
-		.registerTypeAdapter(org.joda.time.LocalTime.class, new JodaLocalTimeTypeAdapter())
-		.registerTypeAdapter(java.util.Date.class, new GsonISODateTypeAdapter())
-		//.registerTypeAdapter(ExtGridFilter.class, new GsonExtJsGridFilterTypeAdapter())
-		.create();
-	
-	/**
-	 * @deprecated Use gson(false) method instead
-	 */
-	@Deprecated
-	public static final Gson GSON_WONULLS = new GsonBuilder()
-		.disableHtmlEscaping()
-		.registerTypeAdapter(org.joda.time.DateTime.class, new JodaDateTimeTypeAdapter())
-		.registerTypeAdapter(org.joda.time.LocalDate.class, new JodaLocalDateTypeAdapter())
-		.registerTypeAdapter(org.joda.time.LocalTime.class, new JodaLocalTimeTypeAdapter())
-		.registerTypeAdapter(java.util.Date.class, new GsonISODateTypeAdapter())
-		//.registerTypeAdapter(ExtGridFilter.class, new GsonExtJsGridFilterTypeAdapter())
-		.create();
-	
-	/**
-	 * @deprecated Use gsonPlain(false) method instead
-	 */
-	@Deprecated
-	public static final Gson GSON_PLAIN_WONULLS = new GsonBuilder()
-		.disableHtmlEscaping()
-		.create();
-	
 	public static Gson gson() {
 		return gson(true);
 	}
@@ -347,9 +298,9 @@ public class JsonResult extends HashMap<String, Object> {
 	 */
 	public String toJson(boolean serializeNulls) {
 		if(serializeNulls) {
-			return JsonResult.GSON.toJson(this);
+			return gson().toJson(this);
 		} else {
-			return JsonResult.GSON_WONULLS.toJson(this);
+			return gson(false).toJson(this);
 		}
 	}
 	

@@ -93,11 +93,11 @@ public class SortMeta extends HashMap<String, Object> {
 	}
 	
 	public static String toJson(SortMeta value) throws Exception {
-		return JsonResult.gson.toJson(value);
+		return JsonResult.gson().toJson(value);
 	}
 	
 	public static SortMeta fromJson(String value) throws Exception {
-		return JsonResult.gson.fromJson(value, SortMeta.class);
+		return JsonResult.gson().fromJson(value, SortMeta.class);
 	}
 	
 	public static class SortMetaList extends ArrayList<SortMeta> {
@@ -106,11 +106,11 @@ public class SortMeta extends HashMap<String, Object> {
 		}
 		
 		public static String toJson(SortMetaList value) throws Exception {
-			return JsonResult.gson.toJson(value);
+			return JsonResult.gson().toJson(value);
 		}
 
 		public static SortMetaList fromJson(String value) throws Exception {
-			return JsonResult.gson.fromJson(value, SortMetaList.class);
+			return JsonResult.gson().fromJson(value, SortMetaList.class);
 		}
 	}
 	

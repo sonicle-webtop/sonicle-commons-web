@@ -45,11 +45,11 @@ public class StringMap extends AbstractMap<StringMap, String> {
 	
 	public static StringMap fromJson(String value) {
 		if(value == null) return null;
-		return JsonResult.GSON.fromJson(value, StringMap.class);
+		return JsonResult.gson().fromJson(value, StringMap.class);
 	}
 
 	public static String toJson(StringArray value) {
 		if(value == null) return null;
-		return JsonResult.GSON.toJson(value, StringMap.class);
+		return JsonResult.gson().toJson(value, StringMap.class);
 	}
 }

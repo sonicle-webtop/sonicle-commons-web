@@ -32,6 +32,7 @@
  */
 package com.sonicle.commons.web;
 
+import com.google.gson.Gson;
 import com.sonicle.commons.EnumUtils;
 import com.sonicle.commons.web.json.PayloadAsListRecords;
 import com.sonicle.commons.web.json.MapItem;
@@ -794,8 +795,9 @@ public class ServletUtils {
 	 * @throws IOException
 	 */
 	public static <M, D>Payload getPayload(String payload, Class<M> mapType, Class<D> dataType, boolean returnRawPayload) throws IOException {
-		M map = JsonResult.gson.fromJson(payload, mapType);
-		D data = JsonResult.gson.fromJson(payload, dataType);
+		Gson gson=JsonResult.gson();
+		M map = gson.fromJson(payload, mapType);
+		D data = gson.fromJson(payload, dataType);
 		return new Payload<>(map, data, returnRawPayload ? payload : null);
 	}
 	
@@ -810,8 +812,9 @@ public class ServletUtils {
 	@Deprecated 
 	public static <T>PayloadAsList getPayloadAsList(HttpServletRequest request, Class<T> type) throws IOException {
 		String payload = ServletUtils.getPayload(request);
-		PayloadAsListRecords records = JsonResult.gson.fromJson(payload, PayloadAsListRecords.class);
-		T data = JsonResult.gson.fromJson(payload, type);
+		Gson gson=JsonResult.gson();
+		PayloadAsListRecords records = gson.fromJson(payload, PayloadAsListRecords.class);
+		T data = gson.fromJson(payload, type);
 		return new PayloadAsList<>(records, data);
 	}
 	
@@ -1032,7 +1035,7 @@ public class ServletUtils {
 	
 	public static void writeJsonResponse(HttpServletResponse response, Object data) throws IOException {
 		setJsonContentType(response);
-		String s = JsonResult.GSON.toJson(data);
+		String s = JsonResult.gson().toJson(data);
 		// TODO: make this
 		writePlainResponse(response, s);
 	}
@@ -1478,12 +1481,12 @@ public class ServletUtils {
 		
 		public static StringArray fromJson(String value) {
 			if(value == null) return null;
-			return JsonResult.gson.fromJson(value, StringArray.class);
+			return JsonResult.gson().fromJson(value, StringArray.class);
 		}
 
 		public static String toJson(StringArray value) {
 			if(value == null) return null;
-			return JsonResult.gson.toJson(value, StringArray.class);
+			return JsonResult.gson().toJson(value, StringArray.class);
 		}
 	}
 	
@@ -1494,12 +1497,12 @@ public class ServletUtils {
 		
 		public static IntegerArray fromJson(String value) {
 			if(value == null) return null;
-			return JsonResult.gson.fromJson(value, IntegerArray.class);
+			return JsonResult.gson().fromJson(value, IntegerArray.class);
 		}
 
 		public static String toJson(IntegerArray value) {
 			if(value == null) return null;
-			return JsonResult.gson.toJson(value, IntegerArray.class);
+			return JsonResult.gson().toJson(value, IntegerArray.class);
 		}
 	}
 	

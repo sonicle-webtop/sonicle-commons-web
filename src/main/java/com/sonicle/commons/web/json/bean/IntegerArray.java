@@ -47,11 +47,11 @@ public class IntegerArray extends ArrayList<Integer> {
 
 	public static IntegerArray fromJson(String value) {
 		if(value == null) return null;
-		return JsonResult.gson.fromJson(value, IntegerArray.class);
+		return JsonResult.gson().fromJson(value, IntegerArray.class);
 	}
 
 	public static String toJson(IntegerArray value) {
 		if(value == null) return null;
-		return JsonResult.gson.toJson(value, IntegerArray.class);
+		return JsonResult.gson().toJson(value, IntegerArray.class);
 	}
 }

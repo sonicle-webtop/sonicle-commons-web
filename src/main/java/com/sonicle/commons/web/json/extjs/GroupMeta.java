@@ -94,11 +94,11 @@ public class GroupMeta extends HashMap<String, Object> {
 	}
 	
 	public static String toJson(GroupMeta value) throws Exception {
-		return JsonResult.gson.toJson(value);
+		return JsonResult.gson().toJson(value);
 	}
 	
 	public static GroupMeta fromJson(String value) throws Exception {
-		return JsonResult.gson.fromJson(value, GroupMeta.class);
+		return JsonResult.gson().fromJson(value, GroupMeta.class);
 	}
 	
 	public static enum Direction {

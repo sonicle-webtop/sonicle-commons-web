@@ -51,10 +51,10 @@ public class StringSet extends HashSet<String> {
 	}
 
 	public static StringSet fromJson(String value) {
-		return JsonResult.gson.fromJson(value, StringSet.class);
+		return JsonResult.gson().fromJson(value, StringSet.class);
 	}
 
 	public static String toJson(StringSet value) {
-		return JsonResult.gson.toJson(value, StringSet.class);
+		return JsonResult.gson().toJson(value, StringSet.class);
 	}
 }

@@ -156,9 +156,9 @@ public class RestJsonResult extends HashMap<String, Object> {
 	 */
 	public String print(boolean serializeNulls) {
 		if(serializeNulls) {
-			return JsonResult.GSON.toJson(this);
+			return JsonResult.gson().toJson(this);
 		} else {
-			return JsonResult.GSON_WONULLS.toJson(this);
+			return JsonResult.gson(false).toJson(this);
 		}
 	}
 }

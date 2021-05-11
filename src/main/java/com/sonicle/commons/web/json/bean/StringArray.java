@@ -47,11 +47,11 @@ public class StringArray extends ArrayList<String> {
 
 	public static StringArray fromJson(String value) {
 		if(value == null) return null;
-		return JsonResult.gson.fromJson(value, StringArray.class);
+		return JsonResult.gson().fromJson(value, StringArray.class);
 	}
 
 	public static String toJson(StringArray value) {
 		if(value == null) return null;
-		return JsonResult.gson.toJson(value, StringArray.class);
+		return JsonResult.gson().toJson(value, StringArray.class);
 	}
 }
