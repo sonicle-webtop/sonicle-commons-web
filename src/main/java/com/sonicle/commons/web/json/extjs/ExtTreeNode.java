@@ -51,9 +51,7 @@ public class ExtTreeNode extends HashMap<String, Object> {
 	public static final String CHECKED_PROP = "checked";
 	public static final String CHILDREN_PROP = "children";
 	
-	public ExtTreeNode() {
-		
-	}
+	public ExtTreeNode() {}
 	
 	public ExtTreeNode(Object id, String text, boolean leaf) {
 		this(id, text, leaf, null, null);
@@ -95,7 +93,7 @@ public class ExtTreeNode extends HashMap<String, Object> {
 	
 	public final ExtTreeNode setLeaf(boolean value) {
 		this.put(LEAF_PROP, value);
-		if(value) this.remove(CHILDREN_PROP);
+		if (value) this.remove(CHILDREN_PROP);
 		return this;
 	}
 	
@@ -131,7 +129,7 @@ public class ExtTreeNode extends HashMap<String, Object> {
 	}
 	
 	public final ExtTreeNode setExpanded(boolean value) {
-		if(value && !getLeaf()) this.put(EXPANDED_PROP, value);
+		if (value && !getLeaf()) this.put(EXPANDED_PROP, value);
 		return this;
 	}
 	
@@ -149,7 +147,7 @@ public class ExtTreeNode extends HashMap<String, Object> {
 	}
 	
 	public final ExtTreeNode setLoaded(boolean value) {
-		if(value && !getLeaf()) this.put(LOADED_PROP, value);
+		if (value && !getLeaf()) this.put(LOADED_PROP, value);
 		return this;
 	}
 	
@@ -159,6 +157,11 @@ public class ExtTreeNode extends HashMap<String, Object> {
 	
 	public final ExtTreeNode setChildren(ArrayList<ExtTreeNode> value) {
 		this.put(CHILDREN_PROP, value);
+		return this;
+	}
+	
+	public final ExtTreeNode set(String name, Object value) {
+		this.put(name, value);
 		return this;
 	}
 }
