@@ -45,6 +45,7 @@ import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.HashMap;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A convenience class used to easly reply to an async request.
@@ -164,13 +165,13 @@ public class JsonResult extends HashMap<String, Object> {
 	public JsonResult(Throwable t) {
 		super();
 		setSuccess(false);
-		setMessage(t.getMessage());
+		setMessage(buildThrowableMessage(t));
 	}
 	
 	public JsonResult(Throwable t, Object data) {
 		super();
 		setSuccess(false);
-		setMessage(t.getMessage());
+		setMessage(buildThrowableMessage(t));
 		setData(data);
 	}
 	
@@ -331,6 +332,10 @@ public class JsonResult extends HashMap<String, Object> {
 	 */
 	public void printTo(PrintWriter out, boolean serializeNulls) {
 		out.println(toJson(serializeNulls));
+	}
+	
+	protected String buildThrowableMessage(Throwable t) {
+		return StringUtils.isBlank(t.getMessage()) ? t.getClass().getCanonicalName() : t.getMessage();
 	}
 	
 
