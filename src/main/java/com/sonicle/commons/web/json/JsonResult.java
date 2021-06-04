@@ -55,6 +55,10 @@ import org.apache.commons.lang3.StringUtils;
  * @author malbinola
  */
 public class JsonResult extends HashMap<String, Object> {
+	private static final JodaDateTimeTypeAdapter JODA_DATETIME_ADAPTER = new JodaDateTimeTypeAdapter();
+	private static final JodaLocalDateTypeAdapter JODA_LOCALDATE_ADAPTER = new JodaLocalDateTypeAdapter();
+	private static final JodaLocalTimeTypeAdapter JODA_LOCALTIME_ADAPTER = new JodaLocalTimeTypeAdapter();
+	private static final GsonISODateTypeAdapter ISODATE_ADAPTER = new GsonISODateTypeAdapter();
 	
 	public static Gson gson() {
 		return gson(true);
@@ -63,10 +67,10 @@ public class JsonResult extends HashMap<String, Object> {
 	public static Gson gson(boolean serializeNulls) {
 		GsonBuilder gb = new GsonBuilder()
 			.disableHtmlEscaping()
-			.registerTypeAdapter(org.joda.time.DateTime.class, new JodaDateTimeTypeAdapter())
-			.registerTypeAdapter(org.joda.time.LocalDate.class, new JodaLocalDateTypeAdapter())
-			.registerTypeAdapter(org.joda.time.LocalTime.class, new JodaLocalTimeTypeAdapter())
-			.registerTypeAdapter(java.util.Date.class, new GsonISODateTypeAdapter());
+			.registerTypeAdapter(org.joda.time.DateTime.class, JODA_DATETIME_ADAPTER)
+			.registerTypeAdapter(org.joda.time.LocalDate.class, JODA_LOCALDATE_ADAPTER)
+			.registerTypeAdapter(org.joda.time.LocalTime.class, JODA_LOCALTIME_ADAPTER)
+			.registerTypeAdapter(java.util.Date.class, ISODATE_ADAPTER);
 			//.registerTypeAdapter(ExtGridFilter.class, new GsonExtJsGridFilterTypeAdapter())
 		return serializeNulls ? gb.serializeNulls().create() : gb.create();
 	}
