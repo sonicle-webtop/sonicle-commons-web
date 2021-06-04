@@ -52,13 +52,13 @@ import java.util.TimeZone;
  * @author malbinola
  */
 public class GsonISODateTypeAdapter implements JsonSerializer<Date>, JsonDeserializer<Date> {
-
+	private static final TimeZone UTC_TIMEZONE = TimeZone.getTimeZone("UTC");
 	private final DateFormat dateFormat;
 	
 	public GsonISODateTypeAdapter() {
 		//dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
 		dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
-		dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+		dateFormat.setTimeZone(UTC_TIMEZONE);
 	}
 	
 	@Override

@@ -50,25 +50,19 @@ import org.joda.time.format.DateTimeFormatter;
  * @author malbinola
  */
 public class JodaDateTimeTypeAdapter implements JsonSerializer<DateTime>, JsonDeserializer<DateTime> {
-	private final DateTimeFormatter fmt;
+	private static final DateTimeFormatter FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 	
-	public JodaDateTimeTypeAdapter() {
-		fmt = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-	}
+	public JodaDateTimeTypeAdapter() {}
 
 	@Override
 	public JsonElement serialize(DateTime t, Type type, JsonSerializationContext jsc) {
-		synchronized(fmt) {
-			return new JsonPrimitive(fmt.print(t));
-		}
+		return new JsonPrimitive(FORMATTER.print(t));
 	}
 
 	@Override
 	public DateTime deserialize(JsonElement je, Type type, JsonDeserializationContext jdc) throws JsonParseException {
 		try {
-			synchronized(fmt) {
-				return fmt.parseDateTime(je.getAsString());
-			}
+			return FORMATTER.parseDateTime(je.getAsString());
 		} catch(IllegalArgumentException | UnsupportedOperationException ex) {
 			throw new JsonSyntaxException(je.getAsString(), ex);
 		}

@@ -50,25 +50,19 @@ import org.joda.time.format.DateTimeFormatter;
  * @author malbinola
  */
 public class JodaLocalDateTypeAdapter implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDate> {
-	private final DateTimeFormatter fmt;
+	private static final DateTimeFormatter FORMATTER = DateTimeFormat.forPattern("yyyy-MM-dd");
 	
-	public JodaLocalDateTypeAdapter() {
-		fmt = DateTimeFormat.forPattern("yyyy-MM-dd");
-	}
+	public JodaLocalDateTypeAdapter() {}
 
 	@Override
 	public JsonElement serialize(LocalDate ld, Type type, JsonSerializationContext jsc) {
-		synchronized(fmt) {
-			return new JsonPrimitive(fmt.print(ld));
-		}
+		return new JsonPrimitive(FORMATTER.print(ld));
 	}
 
 	@Override
 	public LocalDate deserialize(JsonElement je, Type type, JsonDeserializationContext jdc) throws JsonParseException {
 		try {
-			synchronized(fmt) {
-				return fmt.parseLocalDate(je.getAsString());
-			}
+			return FORMATTER.parseLocalDate(je.getAsString());
 		} catch(IllegalArgumentException | UnsupportedOperationException ex) {
 			throw new JsonSyntaxException(je.getAsString(), ex);
 		}

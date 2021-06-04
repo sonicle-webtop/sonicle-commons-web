@@ -50,28 +50,21 @@ import org.joda.time.format.DateTimeFormatter;
  * @author malbinola
  */
 public class JodaLocalTimeTypeAdapter implements JsonSerializer<LocalTime>, JsonDeserializer<LocalTime> {
-	private final DateTimeFormatter fmt;
+	private static final DateTimeFormatter FORMATTER = DateTimeFormat.forPattern("HH:mm:ss");
 	
-	public JodaLocalTimeTypeAdapter() {
-		fmt = DateTimeFormat.forPattern("HH:mm:ss");
-	}
+	public JodaLocalTimeTypeAdapter() {}
 
 	@Override
 	public JsonElement serialize(LocalTime lt, Type type, JsonSerializationContext jsc) {
-		synchronized(fmt) {
-			return new JsonPrimitive(fmt.print(lt));
-		}
+		return new JsonPrimitive(FORMATTER.print(lt));
 	}
 
 	@Override
 	public LocalTime deserialize(JsonElement je, Type type, JsonDeserializationContext jdc) throws JsonParseException {
 		try {
-			synchronized(fmt) {
-				return fmt.parseLocalTime(je.getAsString());
-			}
+			return FORMATTER.parseLocalTime(je.getAsString());
 		} catch(IllegalArgumentException | UnsupportedOperationException ex) {
 			throw new JsonSyntaxException(je.getAsString(), ex);
 		}
 	}
-	
 }
