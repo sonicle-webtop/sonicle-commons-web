@@ -34,6 +34,7 @@ package com.sonicle.commons.web.json.extjs;
 
 import com.google.gson.annotations.SerializedName;
 import com.sonicle.commons.EnumUtils;
+import com.sonicle.commons.beans.SortInfo;
 import com.sonicle.commons.web.json.JsonResult;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,16 +44,16 @@ import java.util.HashMap;
  * @author malbinola
  */
 public class SortMeta extends HashMap<String, Object> {
-	public static final String FIELD = "field";
+	public static final String PROPERTY = "property";
 	public static final String DIRECTION = "direction";
 	
 	public SortMeta() {
 		super();
 	}
 	
-	public SortMeta(String field, String direction) {
+	public SortMeta(String property, String direction) {
 		super();
-		this.setField(field);
+		this.setProperty(property);
 		this.setDirection(direction);
 	}
 	
@@ -64,12 +65,12 @@ public class SortMeta extends HashMap<String, Object> {
 		this(field, EnumUtils.toSerializedName(direction));
 	}
 	
-	public String getField() {
-		return (String)get(FIELD);
+	public String getProperty() {
+		return (String)get(PROPERTY);
 	}
 	
-	public SortMeta setField(String field) {
-		this.put(FIELD , field);
+	public SortMeta setProperty(String property) {
+		this.put(PROPERTY , property);
 		return this;
 	}
 	
@@ -92,6 +93,10 @@ public class SortMeta extends HashMap<String, Object> {
 		return this;
 	}
 	
+	public SortInfo toSortInfo() {
+		return new SortInfo(getProperty(), EnumUtils.forSerializedName((String)getDirection(), SortInfo.Direction.class));
+	}
+	
 	public static String toJson(SortMeta value) throws Exception {
 		return JsonResult.gson().toJson(value);
 	}
@@ -100,17 +105,25 @@ public class SortMeta extends HashMap<String, Object> {
 		return JsonResult.gson().fromJson(value, SortMeta.class);
 	}
 	
-	public static class SortMetaList extends ArrayList<SortMeta> {
-		public SortMetaList() {
+	public static class List extends ArrayList<SortMeta> {
+		public List() {
 			super();
 		}
 		
-		public static String toJson(SortMetaList value) throws Exception {
+		public static String toJson(List value) throws Exception {
 			return JsonResult.gson().toJson(value);
 		}
 
-		public static SortMetaList fromJson(String value) throws Exception {
-			return JsonResult.gson().fromJson(value, SortMetaList.class);
+		public static List fromJson(String value) throws Exception {
+			return JsonResult.gson().fromJson(value, List.class);
+		}
+		
+		public java.util.List<SortInfo> toSortInfoPredicate() {
+			ArrayList<SortInfo> items = new ArrayList<>();
+			for (SortMeta sortMeta : this) {
+				items.add(sortMeta.toSortInfo());
+			}
+			return items;
 		}
 	}
 	

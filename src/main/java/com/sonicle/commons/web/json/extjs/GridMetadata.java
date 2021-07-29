@@ -52,14 +52,16 @@ public class GridMetadata extends ResultMeta<GridMetadata> {
 	public static final String META_SELECTED = "selected";
 	
 	public GridMetadata() {
-		super();
+		this(true);
 	}
 	
 	public GridMetadata(boolean defaults) {
-		this();
-		this.setRoot("data");
-		this.setTotalProperty("total");
-		this.setMessageProperty("message");
+		super();
+		if (defaults) {
+			this.setRoot("data");
+			this.setTotalProperty("total");
+			this.setMessageProperty("message");
+		}
 	}
 
 	public String getRoot() {
