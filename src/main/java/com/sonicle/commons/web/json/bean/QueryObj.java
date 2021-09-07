@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import net.sf.qualitycheck.Check;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -52,29 +53,40 @@ public class QueryObj {
 		this.conditions = new ArrayList<>();
 	}
 	
-	public boolean hasCondition(String keyword) {
-		if (keyword == null | conditions == null) return false;
+	public boolean hasCondition(final String keyword) {
+		Check.notNull(keyword, "keyword");
+		if (conditions == null) return false;
 		for (Condition condition : conditions) {
 			if (keyword.equals(condition.keyword)) return true;
 		}
 		return false;
 	}
 	
-	public boolean hasCondition(String keyword, String value) {
-		if (keyword == null | conditions == null) return false;
+	public boolean hasCondition(final String keyword, final String value) {
+		Check.notNull(keyword, "keyword");
+		if (conditions == null) return false;
 		for (Condition condition : conditions) {
 			if (keyword.equals(condition.keyword) && StringUtils.equals(condition.value, value)) return true;
 		}
 		return false;
 	}
 	
-	public boolean removeCondition(String keyword) {
-		if (keyword == null | conditions == null) return false;
+	public QueryObj addCondition(final String keyword, final String value, final boolean negated) {
+		if (conditions != null) {
+			conditions.add(new Condition(Check.notNull(keyword, "keyword"), value, negated));
+		}
+		return this;
+	}
+	
+	public boolean removeCondition(final String keyword) {
+		Check.notNull(keyword, "keyword");
+		if (conditions == null) return false;
 		return conditions.removeIf(c -> keyword.equals(c.keyword));
 	}
 	
-	public boolean removeCondition(String keyword, String value) {
-		if (keyword == null | conditions == null) return false;
+	public boolean removeCondition(final String keyword, final String value) {
+		Check.notNull(keyword, "keyword");
+		if (conditions == null) return false;
 		return conditions.removeIf(c -> keyword.equals(c.keyword) && StringUtils.equals(c.value, value));
 	}
 	
@@ -91,6 +103,14 @@ public class QueryObj {
 		public String keyword;
 		public String value;
 		public boolean negated;
+		
+		public Condition() {}
+		
+		public Condition(String keyword, String value, boolean negated) {
+			this.keyword = keyword;
+			this.value = value;
+			this.negated = negated;
+		}
 	}
 	
 	public static QueryObj fromJson(String value) {
