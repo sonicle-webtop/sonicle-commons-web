@@ -34,29 +34,42 @@ package com.sonicle.commons.web.json.bean;
 
 import com.sonicle.commons.web.json.JsonResult;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import net.sf.qualitycheck.Check;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  *
  * @author malbinola
  */
 public class QueryObj {
-	public String allText;
-	public ArrayList<Condition> conditions;
+	protected String allText;
+	protected ArrayList<ConditionEntry> conditions;
 	
 	public QueryObj() {
 		this.conditions = new ArrayList<>();
 	}
 	
+	public String getAllText() {
+		return allText;
+	}
+	
+	public List<ConditionEntry> getConditions() {
+		return Collections.unmodifiableList(conditions);
+	}
+	
 	public boolean hasCondition(final String keyword) {
 		Check.notNull(keyword, "keyword");
 		if (conditions == null) return false;
-		for (Condition condition : conditions) {
+		for (ConditionEntry condition : conditions) {
 			if (keyword.equals(condition.keyword)) return true;
 		}
 		return false;
@@ -65,7 +78,7 @@ public class QueryObj {
 	public boolean hasCondition(final String keyword, final String value) {
 		Check.notNull(keyword, "keyword");
 		if (conditions == null) return false;
-		for (Condition condition : conditions) {
+		for (ConditionEntry condition : conditions) {
 			if (keyword.equals(condition.keyword) && StringUtils.equals(condition.value, value)) return true;
 		}
 		return false;
@@ -73,7 +86,7 @@ public class QueryObj {
 	
 	public QueryObj addCondition(final String keyword, final String value, final boolean negated) {
 		if (conditions != null) {
-			conditions.add(new Condition(Check.notNull(keyword, "keyword"), value, negated));
+			conditions.add(new ConditionEntry(Check.notNull(keyword, "keyword"), value, negated));
 		}
 		return this;
 	}
@@ -90,26 +103,92 @@ public class QueryObj {
 		return conditions.removeIf(c -> keyword.equals(c.keyword) && StringUtils.equals(c.value, value));
 	}
 	
-	public Map<String, Collection<Condition>> getConditionsMap() {
-		LinkedHashMap<String, Collection<Condition>> mvm = new LinkedHashMap<>();
-		for (Condition condition : conditions) {
+	/**
+	 * Groups values by condition keyword
+	 * @return Ordered Map that groups values by its ConditionEntry object.
+	 */
+	public Map<Condition, List<String>> groupConditions() {
+		return groupConditions(null);
+	}
+	
+	/**
+	 * Groups values by condition keyword and optionally promotes values as keywords: 
+	 * useful for those "verb" keywords (like 'is', 'has'), typically used for booleans, 
+	 * where the real topic is in value.
+	 * @param promoteValueAsKeywordFor Collection of keywords whose values will be promoted as keywords
+	 * @return Ordered Map that groups values by its ConditionEntry object.
+	 */
+	public Map<Condition, List<String>> groupConditions(Collection<String> promoteValueAsKeywordFor) {
+		HashSet<String> promoteMap = promoteValueAsKeywordFor != null ? new LinkedHashSet<>(promoteValueAsKeywordFor) : null;
+		LinkedHashMap<Condition, List<String>> mvm = new LinkedHashMap<>();
+		for (ConditionEntry condition : conditions) {
+			Condition key = null;
+			String value = null;
+			
+			if (promoteMap != null && promoteMap.contains(condition.keyword)) {
+				key = new Condition(condition.value, condition.negated);
+			} else {
+				key = new Condition(condition.keyword, condition.negated);
+				value = condition.value;
+			}
+			
+			if (!mvm.containsKey(key)) mvm.put(key, new ArrayList<>());
+			if (value != null) mvm.get(key).add(value);
+		}
+		return mvm;
+	}
+	
+	/**
+	 * @deprecated Use groupConditions() instead.
+	 */
+	@Deprecated
+	public Map<String, Collection<ConditionEntry>> getConditionsMap() {
+		LinkedHashMap<String, Collection<ConditionEntry>> mvm = new LinkedHashMap<>();
+		for (ConditionEntry condition : conditions) {
 			if (!mvm.containsKey(condition.keyword)) mvm.put(condition.keyword, new ArrayList<>());
 			mvm.get(condition.keyword).add(condition);
 		}
 		return mvm;
 	}
 	
-	public static class Condition {
+	public static class ConditionEntry {
 		public String keyword;
 		public String value;
 		public boolean negated;
 		
-		public Condition() {}
+		public ConditionEntry() {}
 		
-		public Condition(String keyword, String value, boolean negated) {
+		public ConditionEntry(String keyword, String value, boolean negated) {
 			this.keyword = keyword;
 			this.value = value;
 			this.negated = negated;
+		}
+	}
+	
+	public static class Condition {
+		public final String keyword;
+		public final boolean negated;
+		
+		public Condition(String keyword, boolean negated) {
+			this.keyword = keyword;
+			this.negated = negated;
+		}
+		
+		@Override
+		public int hashCode() {
+			return new HashCodeBuilder()
+				.append(keyword)
+				.toHashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof Condition == false) return false;
+			if (this == obj) return true;
+			final Condition otherObject = (Condition)obj;
+			return new EqualsBuilder()
+				.append(keyword, otherObject.keyword)
+				.isEquals();
 		}
 	}
 	
