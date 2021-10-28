@@ -39,6 +39,7 @@ import com.sonicle.commons.web.json.MapItem;
 import com.sonicle.commons.web.json.Payload;
 import com.sonicle.commons.web.json.PayloadAsList;
 import com.sonicle.commons.LangUtils;
+import com.sonicle.commons.PathUtils;
 import com.sonicle.commons.net.IPUtils;
 import com.sonicle.commons.validation.Validator;
 import com.sonicle.commons.validation.ValidatorException;
@@ -110,6 +111,9 @@ public class ServletUtils {
 	
 	public static final String HEADER_HOST = "Host";
 	public static final String HEADER_X_FORWARDED_HOST = "X-Forwarded-Host";
+	public static final String HEADER_X_FORWARDED_PROTO = "X-Forwarded-Proto";
+	public static final String HEADER_X_FORWARDED_PORT = "X-Forwarded-Port";
+	public static final String HEADER_X_FORWARDED_PREFIX = "X-Forwarded-Prefix";
 	
 	/**
 	 * Note that gzipping is only beneficial for larger resources. 
@@ -277,12 +281,31 @@ public class ServletUtils {
 		compressibleMediaTypes.add("x-shader/x-vertex");
 	}
 	
+	/**
+	 * Casts a ServletRequest to Http type.
+	 * @param request The ServletRequest object.
+	 * @return The HttpServletRequest object.
+	 */
 	public static HttpServletRequest toHttp(ServletRequest request) {
 		return (HttpServletRequest)request;
 	}
 	
+	/**
+	 * Casts a ServletResponse to Http type.
+	 * @param response The ServletResponse object.
+	 * @return The HttpServletResponse object.
+	 */
 	public static HttpServletResponse toHttp(ServletResponse response) {
 		return (HttpServletResponse)response;
+	}
+	
+	/**
+	 * Checks if passed request has been forwarded.
+	 * @param request The HttpServletRequest object.
+	 * @return 
+	 */
+	public static boolean isForwarded(HttpServletRequest request) {
+		return DispatcherType.FORWARD.equals(request.getDispatcherType());
 	}
 	
 	/**
@@ -302,44 +325,6 @@ public class ServletUtils {
 	}
 	
 	/**
-	 * Returns the request URI relative to context path.
-	 * eg. request URL: http://localhost/context/servlet/other/stuff
-	 *   -> request URI: /context/servlet/other/stuff
-	 *   -> relativized URI: /servlet/other/stuff
-	 * This URL may differ from the orginal browser URL due to rewrites
-	 * (eg. Apache url_rewrite) potentially applied in the chain.
-	 * @param request The HttpServletRequest object.
-	 * @return 
-	 */
-	public static String getContextRequestURI(HttpServletRequest request) {
-		String uri = request.getRequestURI();
-		String ctx = request.getContextPath();
-		return uri.substring(ctx.length());
-	}
-	
-	/**
-	 * Returns the base URL.
-	 * eg. request URL: http://localhost/context/servlet/other/stuff
-	 *   -> request URI: /context/servlet/other/stuff
-	 *   -> context path: /context
-	 *   -> base URL: http://localhost/context
-	 * This URL may differ from the orginal browser URL due to rewrites
-	 * (eg. Apache url_rewrite) potentially applied in the chain.
-	 * @param request The HttpServletRequest object.
-	 * @return 
-	 */
-	public static String getBaseURL(HttpServletRequest request) {
-		StringBuffer url = request.getRequestURL();
-		String uri = request.getRequestURI();
-		String ctx = request.getContextPath();
-		return url.substring(0, url.length() - uri.length() + ctx.length());
-	}
-	
-	public static boolean isForwarded(HttpServletRequest request) {
-		return DispatcherType.FORWARD.equals(request.getDispatcherType());
-	}
-	
-	/**
 	 * Extract the host from the URL of the request object. Keep in mind that 
 	 * this method can return unconsistent values, especially behind proxy-pass.
 	 * Evaluate whether to use {@link #getHostByHeaders()} instead.
@@ -347,8 +332,38 @@ public class ServletUtils {
 	 * @return The hostname or null
 	 * @throws MalformedURLException 
 	 */
-	public static String getHostByURL(HttpServletRequest request) throws MalformedURLException {
+	public static String getHost(HttpServletRequest request) throws MalformedURLException {
 		return new URL(request.getRequestURL().toString()).getHost();
+	}
+	
+	/**
+	 * Extract the host from the URL of the request object. Keep in mind that 
+	 * this method can return unconsistent values, especially behind proxy-pass.
+	 * @param request The HttpServletRequest object.
+	 * @return The hostname and the port (if any)
+	 */
+	public static String getHostAndPort(HttpServletRequest request) {
+		StringBuffer url = request.getRequestURL();
+		String uri = request.getRequestURI();
+		return StringUtils.substringAfter(url.substring(0, url.indexOf(uri)), "://");
+	}
+	
+	/**
+	 * Extract the Scheme of the request by evaluating any interesting headers: X-Forwarded-*.
+	 * This returns consistent replies also behind a proxy-pass.
+	 * @param request The HttpServletRequest object.
+	 * @return The scheme or null
+	 */
+	public static String getSchemeByHeaders(final HttpServletRequest request) {
+		String scheme = request.getHeader(HEADER_X_FORWARDED_PROTO); // Maybe we are behind a proxy
+		if (logger.isTraceEnabled()) logger.trace("{}: {}", HEADER_X_FORWARDED_PROTO, scheme);
+		if (scheme != null) {
+			scheme = new StringTokenizer(scheme, ",").nextToken().trim();
+		}
+		if (scheme == null) {
+			scheme = request.getScheme();
+		}
+		return scheme;
 	}
 	
 	/**
@@ -373,6 +388,228 @@ public class ServletUtils {
 	}
 	
 	/**
+	 * Extract the Port of the request by evaluating any interesting headers: X-Forwarded-*.
+	 * This returns consistent replies also behind a proxy-pass.
+	 * @param request The HttpServletRequest object.
+	 * @return The port or null
+	 */
+	public static String getPortByHeaders(final HttpServletRequest request) {
+		String port = request.getHeader(HEADER_X_FORWARDED_PORT); // Maybe we are behind a proxy
+		if (logger.isTraceEnabled()) logger.trace("{}: {}", HEADER_X_FORWARDED_PORT, port);
+		if (port != null) {
+			port = new StringTokenizer(port, ",").nextToken().trim();
+		}
+		if (port == null) {
+			port = StringUtils.substringAfterLast(getHostAndPort(request), ":");
+		}
+		return port;
+	}
+	
+	/**
+	 * Extract the proxied prefix of the request by evaluating X-Forwarded-Prefix header.
+	 * Consider that X-Forwarded-Prefix is NOT a standard header, neither de-facto.
+	 * @param request The HttpServletRequest object.
+	 * @return The prefix or null
+	 */
+	public static String getPrefixByHeader(final HttpServletRequest request) {
+		String prefix = request.getHeader(HEADER_X_FORWARDED_PREFIX);
+		if (logger.isTraceEnabled()) logger.trace("{}: {}", HEADER_X_FORWARDED_PREFIX, prefix);
+		return prefix != null ? new StringTokenizer(prefix, ",").nextToken().trim() : null;
+	}
+	
+	/**
+	 * Returns the request URI relative to context path.
+	 * If you have the following request URL:
+	 *   proto://host:port/context-path/servlet-path/remaining-path?query
+	 * this method will return "/servlet-path/remaining-path".
+	 * 
+	 * Any rewrites of the URL made from webserver (eg. Apache url_rewrite), 
+	 * may affect this kind of discovery.
+	 * @param request The HttpServletRequest object.
+	 * @return The request URI relative to context
+	 */
+	public static String getContextRelativeRequestURIString(HttpServletRequest request) {
+		String uri = request.getRequestURI();
+		String ctx = request.getContextPath();
+		return uri.substring(ctx.length());
+	}	
+	
+	/**
+	 * Extracts the context path from the request (from an external point of view).
+	 * If you have the following request URL:
+	 *   proto://host:port/context-path/servlet-path/remaining-path?query
+	 * this method will return "/context-path".
+	 * 
+	 * Note that often this task is trivial: make sure that your setup is using 
+	 * X-Forwarded-* headers properly if you are running behind a proxy-pass.
+	 * Any rewrites of the URL made from webserver (eg. Apache url_rewrite), 
+	 * may affect this kind of discovery.
+	 * 
+	 * @param request The HttpServletRequest object.
+	 * @return The external context path
+	 */
+	public static String getContextPath(HttpServletRequest request) {
+		return getContextPath(request, true);
+	}
+	
+	/**
+	 * Extracts the context path from the request.
+	 * If you have the following request URL:
+	 *   proto://host:port/context-path/servlet-path/remaining-path?query
+	 * this method will return "/context-path".
+	 * 
+	 * Depending on the value of external parameter you will get a result based 
+	 * from an external point of view or from inside.
+	 * Any rewrites of the URL made from webserver (eg. Apache url_rewrite), 
+	 * may affect this kind of discovery.
+	 * 
+	 * @param request The HttpServletRequest object.
+	 * @param external Set to `false` to NOT look for X-Forwarded-* headers.
+	 * @return The context path
+	 */
+	public static String getContextPath(HttpServletRequest request, boolean external) {
+		final String prefix = getPrefixByHeader(request);
+		if (StringUtils.isBlank(prefix) || !external) {
+			String uri = StringUtils.defaultString(request.getRequestURI());
+			return uri.substring(0, uri.indexOf(request.getServletPath()));
+			
+		} else {
+			return StringUtils.prependIfMissing(StringUtils.removeEnd(prefix, "/"), "/");
+		}
+	}
+	
+	/**
+	 * Extracts the base URL from the request (from an external point of view).
+	 * If you have the following request URL:
+	 *   proto://host:port/context-path/servlet-path/remaining-path?query
+	 * this method will return "proto://host:port/context-path".
+	 * 
+	 * Note that often this task is trivial: make sure that your setup is using 
+	 * X-Forwarded-* headers properly if you are running behind a proxy-pass.
+	 * Any rewrites of the URL made from webserver (eg. Apache url_rewrite), 
+	 * may affect this kind of discovery.
+	 * 
+	 * @param request The HttpServletRequest object.
+	 * @return The external base URL
+	 */
+	public static String getBaseURLString(HttpServletRequest request) {
+		return getBaseURLString(request, true);
+	}
+	
+	/**
+	 * Extracts the base URL from the request.
+	 * If you have the following request URL:
+	 *   proto://host:port/context-path/servlet-path/remaining-path?query
+	 * this method will return "proto://host:port/context-path".
+	 * 
+	 * Depending on the value of external parameter you will get a result based 
+	 * from an external point of view or from inside.
+	 * Any rewrites of the URL made from webserver (eg. Apache url_rewrite), 
+	 * may affect this kind of discovery.
+	 * 
+	 * @param request The HttpServletRequest object.
+	 * @param external Set to `false` to NOT look for X-Forwarded-* headers.
+	 * @return The base URL
+	 */
+	public static String getBaseURLString(HttpServletRequest request, boolean external) {
+		boolean hasFwHeaders = (request.getHeader(HEADER_X_FORWARDED_HOST) != null);
+		if (!hasFwHeaders || !external) {
+			StringBuffer url = request.getRequestURL();
+			String uri = request.getRequestURI();
+			String ctx = request.getContextPath();
+			return url.substring(0, url.length() - uri.length() + ctx.length());
+			
+		} else {
+			final String scheme = StringUtils.defaultIfBlank(getSchemeByHeaders(request), "http");
+			String host = scheme + "://" + getHostByHeaders(request);
+			// Adds port information (if necessary)
+			final String port = getPortByHeaders(request);
+			if (!StringUtils.isBlank(port) && (("http".equalsIgnoreCase(scheme) && !"80".equals(port)) || ("https".equalsIgnoreCase(scheme) && !"443".equals(port)))) {
+				host += (":" + port);
+			}
+			return PathUtils.concatPathParts(host, getContextPath(request, true));
+		}
+	}
+	
+	/**
+	 * Extracts the request URL from the request (from an external point of view).
+	 * If you have the following request URL:
+	 *   proto://host:port/context-path/servlet-path/remaining-path?query
+	 * this method will return "proto://host:port/context-path/servlet-path/remaining-path".
+	 * 
+	 * Note that often this task is trivial: make sure that your setup is using 
+	 * X-Forwarded-* headers properly if you are running behind a proxy-pass.
+	 * Any rewrites of the URL made from webserver (eg. Apache url_rewrite), 
+	 * may affect this kind of discovery.
+	 * 
+	 * @param request The HttpServletRequest object.
+	 * @return The external request URL
+	 */
+	public static String getRequestURLString(HttpServletRequest request) {
+		return getRequestURLString(request, true);
+	}
+	
+	/**
+	 * Extracts the request URL from the request.
+	 * If you have the following request URL:
+	 *   proto://host:port/context-path/servlet-path/remaining-path?query
+	 * this method will return "proto://host:port/context-path/servlet-path/remaining-path".
+	 * 
+	 * Depending on the value of external parameter you will get a result based 
+	 * from an external point of view or from inside.
+	 * Any rewrites of the URL made from webserver (eg. Apache url_rewrite), 
+	 * may affect this kind of discovery.
+	 * 
+	 * @param request The HttpServletRequest object.
+	 * @param external Set to `false` to NOT look for X-Forwarded-* headers.
+	 * @return The request URL
+	 */
+	public static String getRequestURLString(HttpServletRequest request, boolean external) {
+		boolean hasFwHeaders = (request.getHeader(HEADER_X_FORWARDED_HOST) != null);
+		if (!hasFwHeaders || !external) {
+			return request.getRequestURL().toString();
+			
+		} else {
+			return PathUtils.concatPathParts(getBaseURLString(request, true), getContextRelativeRequestURIString(request));
+		}
+	}
+	
+	/**
+	 * Computes the original request URL, the one that is reported by user's browser.
+	 * This task is always trivial: make sure that your setup is using X-Forwarded-* 
+	 * headers properly if you are running behind a proxy-pass.
+	 * @param request The HttpServletRequest object.
+	 * @return 
+	 */
+	/*
+	public static String getRequestURLString(HttpServletRequest request) {
+		boolean hasFwHeaders = (request.getHeader(HEADER_X_FORWARDED_HOST) != null);
+		if (!hasFwHeaders) {
+			return request.getRequestURL().toString();
+			
+		} else {
+			final String scheme = StringUtils.defaultIfBlank(getSchemeByHeaders(request), "http");
+			String s = scheme + "://" + getHostByHeaders(request);
+			
+			// Adds port information (if necessary)
+			final String port = getPortByHeaders(request);
+			if (!StringUtils.isBlank(port) && (("http".equalsIgnoreCase(scheme) && !"80".equals(port)) || ("https".equalsIgnoreCase(scheme) && !"443".equals(port)))) {
+				s += (":" + port);
+			}
+			
+			// Complete with prefix and return
+			final String prefix = getPrefixByHeader(request);
+			if (StringUtils.isBlank(prefix)) {
+				return s + request.getRequestURI();
+			} else {
+				return s + prefix + getContextRelativeRequestURIString(request);
+			}
+		}
+	}
+	*/
+	
+	
+	/**
 	 * @deprecated Use {@link #getHostByHeaders()} instead.
 	 * @param request
 	 * @return
@@ -380,16 +617,10 @@ public class ServletUtils {
 	 */
 	@Deprecated
 	public static String getInternetName(HttpServletRequest request) throws MalformedURLException {
-		String host = getHostByURL(request);
+		String host = getHost(request);
 		int ix1 = host.indexOf('.');
 		int ix2 = host.lastIndexOf('.');
 		return (ix1 == ix2) ? host : host.substring(ix1 + 1);
-	}
-	
-	public static String getContextPath(HttpServletRequest request) {
-		//TODO: controllare se il metodo funziona anche con il proxypass
-		String uri = StringUtils.defaultString(request.getRequestURI());
-		return uri.substring(0, uri.indexOf(request.getServletPath()));
 	}
 	
 	/**
