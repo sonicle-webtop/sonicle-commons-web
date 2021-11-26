@@ -33,7 +33,12 @@
 package com.sonicle.commons.web;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.jar.Manifest;
 import javax.servlet.ServletContext;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -74,5 +79,22 @@ public class ContextUtils {
 	
 	public static String stripWebappVersion(String contextName) {
 		return StringUtils.substringBeforeLast(contextName, "##");
+	}
+	
+	/**
+	 * Returns, if present, the object representation of Manifest (/META-INF/MANIFEST.MF) file.
+	 * @param context The ServletContext
+	 * @return Manifest object
+	 * @throws IOException 
+	 */
+	public static Manifest getManifest(ServletContext context) throws IOException {
+		final URL url = context.getResource("/META-INF/MANIFEST.MF");
+		InputStream is = null;
+		try {
+			is = url.openStream();
+			return new Manifest(is);
+		} finally {
+			IOUtils.closeQuietly(is);
+		}
 	}
 }
