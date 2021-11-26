@@ -89,6 +89,8 @@ public class ContextUtils {
 	 */
 	public static Manifest getManifest(ServletContext context) throws IOException {
 		final URL url = context.getResource("/META-INF/MANIFEST.MF");
+		if (url == null) return null;
+		
 		InputStream is = null;
 		try {
 			is = url.openStream();
