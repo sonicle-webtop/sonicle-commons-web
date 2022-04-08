@@ -43,6 +43,7 @@ import com.sonicle.commons.web.json.extjs.ExtGridFilter;
 import com.sonicle.commons.web.json.extjs.ResultMeta;
 import java.io.PrintWriter;
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.HashMap;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -121,6 +122,10 @@ public class JsonResult extends HashMap<String, Object> {
 		this.dataProperty = dataProperty;
 		setSuccess(true);
 		setData(data);
+	}
+	
+	public JsonResult(Collection items) {
+		this(DATA_PROP, items, items.size());
 	}
 	
 	public JsonResult(Object data, int totalCount) {

@@ -40,7 +40,9 @@ import org.apache.commons.lang3.StringUtils;
 /**
  *
  * @author malbinola
+ * @deprecated Use CId instead
  */
+@Deprecated
 public class CompositeId {
 	private String[] tokens;
 	private String separator = "|";
