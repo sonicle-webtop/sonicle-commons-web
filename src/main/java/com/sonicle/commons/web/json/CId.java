@@ -74,7 +74,7 @@ public class CId {
 		this.separator = separator;
 	}
 	
-	public int getSize() {
+	public final int getSize() {
 		return tokens.length;
 	}
 	
@@ -84,6 +84,10 @@ public class CId {
 	
 	public String getToken(int index) {
 		return tokens[index];
+	}
+	
+	public String getTokenOrNull(int index) {
+		return hasToken(index) ? getToken(index) : null;
 	}
 	
 	public boolean isTokenEmpty(int index) {

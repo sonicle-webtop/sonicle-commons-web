@@ -34,6 +34,7 @@ package com.sonicle.commons.web.json.bean;
 
 import com.sonicle.commons.web.json.JsonResult;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  *
@@ -43,6 +44,10 @@ public class StringArray extends ArrayList<String> {
 	
 	public StringArray() {
 		super();
+	}
+	
+	public StringArray(String... strings) {
+		super(Arrays.asList(strings));
 	}
 
 	public static StringArray fromJson(String value) {

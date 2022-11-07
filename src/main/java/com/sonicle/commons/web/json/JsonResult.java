@@ -39,6 +39,7 @@ import com.sonicle.commons.web.gson.GsonISODateTypeAdapter;
 import com.sonicle.commons.web.gson.JodaDateTimeTypeAdapter;
 import com.sonicle.commons.web.gson.JodaLocalDateTypeAdapter;
 import com.sonicle.commons.web.gson.JodaLocalTimeTypeAdapter;
+import com.sonicle.commons.web.json.bean.StringArray;
 import com.sonicle.commons.web.json.extjs.ExtGridFilter;
 import com.sonicle.commons.web.json.extjs.ResultMeta;
 import java.io.PrintWriter;
@@ -46,6 +47,7 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.HashMap;
 import javax.servlet.http.HttpServletResponse;
+import net.sf.qualitycheck.Check;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -200,6 +202,11 @@ public class JsonResult extends HashMap<String, Object> {
 	public JsonResult setMessage(String value) {
 		put(MESSAGE_PROP, value);
 		return this;
+	}
+	
+	public JsonResult withMessageArray(String... values) {
+		Check.notNull(values, "values");
+		return setMessage(StringArray.toJson(new StringArray(values)));
 	}
 	
 	public ResultMeta getMetaData() {
