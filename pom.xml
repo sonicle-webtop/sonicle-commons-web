@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.sonicle.libraries</groupId>
 	<artifactId>sonicle-commons-web</artifactId>
-	<version>1.23</version>
+	<version>1.24</version>
 	<packaging>jar</packaging>
 	<name>sonicle-commons-web</name>
 	
