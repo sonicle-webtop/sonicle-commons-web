@@ -119,8 +119,9 @@ public class CacheControl {
 			
 			if (Mode.NOT_ALLOWED.equals(mode)) {
 				directives.add("no-store");
-				if (http10Compatible) {
-					directives.add("max-age=0");
+				directives.add("max-age=0"); // Be conservative: prevents reuse even if some intermediaries ignore no-store!
+				directives.add("must-revalidate"); // Be conservative: force revalidation even in borderline scenarios!
+				if (http10Compatible) {	
 					response.setHeader("Pragma", "no-cache");
 					response.setHeader("Expires", "0");
 				}
