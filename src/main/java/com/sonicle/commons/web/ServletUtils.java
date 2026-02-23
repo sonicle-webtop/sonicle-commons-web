@@ -94,6 +94,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import net.sf.qualitycheck.Check;
 import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
@@ -114,6 +115,7 @@ public class ServletUtils {
 	public static final String HEADER_X_FORWARDED_PROTO = "X-Forwarded-Proto";
 	public static final String HEADER_X_FORWARDED_PORT = "X-Forwarded-Port";
 	public static final String HEADER_X_FORWARDED_PREFIX = "X-Forwarded-Prefix";
+	public static final String HEADER_X_REQUEST_ID = "X-Request-ID"; // https://devcenter.heroku.com/articles/http-request-id
 	
 	/**
 	 * Note that gzipping is only beneficial for larger resources. 
@@ -300,12 +302,31 @@ public class ServletUtils {
 	}
 	
 	/**
+	 * Checks if passed request is a GET.
+	 * @param request The HttpServletRequest object.
+	 * @return 
+	 */
+	public static boolean isGet(final HttpServletRequest request) {
+		return "GET".equalsIgnoreCase(request.getMethod());
+	}
+	
+	/**
+	 * Checks if passed request is a GET.
+	 * @param request The HttpServletRequest object.
+	 * @return 
+	 */
+	public static boolean isPost(final HttpServletRequest request) {
+		return "POST".equalsIgnoreCase(request.getMethod());
+	}
+	
+	/**
 	 * Checks if passed request has been forwarded.
 	 * @param request The HttpServletRequest object.
 	 * @return 
 	 */
-	public static boolean isForwarded(HttpServletRequest request) {
-		return DispatcherType.FORWARD.equals(request.getDispatcherType());
+	public static boolean isForwarded(final HttpServletRequest request) {
+		return request.getAttribute(RequestDispatcher.FORWARD_REQUEST_URI) != null
+			|| request.getAttribute("jakarta.servlet.forward.request_uri") != null;
 	}
 	
 	/**
@@ -476,6 +497,10 @@ public class ServletUtils {
 		} else {
 			return StringUtils.prependIfMissing(StringUtils.removeEnd(prefix, "/"), "/");
 		}
+	}
+	
+	public static String getForwardServletPath(final HttpServletRequest request) {
+		return (String)request.getAttribute(javax.servlet.RequestDispatcher.FORWARD_SERVLET_PATH);
 	}
 	
 	/**
@@ -1095,13 +1120,9 @@ public class ServletUtils {
 	}
 	
 	/**
-	 * Tries to guess MediaType from filename.
 	 * @deprecated Use {@link #guessMediaType()} instead.
-	 * @param fileName The file name
-	 * @return MediaType string
 	 */
-	@Deprecated
-	public static String guessMimeType(String fileName) {
+	@Deprecated public static String guessMimeType(String fileName) {
 		return guessMediaType(fileName);
 	}
 	
@@ -1263,6 +1284,14 @@ public class ServletUtils {
 		try {
 			response.sendError(error);
 		} catch (IOException ex) { /* Do nothing... */ }
+	}
+	
+	/**
+	 * Disable HTTP caching in the passed response.
+	 * @param response The HTTP response.
+	 */
+	public static void setCachingNotAllowed(final HttpServletResponse response) {
+		CacheControl.cacheNotAllowed(response);
 	}
 	
 	public static void setCacheControl(HttpServletResponse response, int maxAge) {
@@ -1574,17 +1603,152 @@ public class ServletUtils {
 		return null;
 	}
 	
-	public static void redirectRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	@Deprecated public static void redirectRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		redirectRequest(request, response, request.getContextPath());
 	}
 	
-	public static void redirectRequest(HttpServletRequest request, HttpServletResponse response, String url) throws IOException {
+	@Deprecated public static void redirectRequest(HttpServletRequest request, HttpServletResponse response, String url) throws IOException {
 		response.sendRedirect(url);
 	}
 	
 	public static void forwardRequest(HttpServletRequest request, HttpServletResponse response, String url) throws ServletException, IOException {
 		RequestDispatcher dispatcher = request.getRequestDispatcher(url);
 		dispatcher.forward(request, response);
+	}
+	
+	
+	
+	/**
+	 * Issue a redirect (compatible with HTTP 1.0 clients) for the passed HTTP request.
+	 * @param request request The HTTP request.
+	 * @param response The HTTP response.
+	 * @param url The URL to redirect to.
+	 * @param contextRelative Set to `true` to interpret the given URL as relative to the current ServletContext.
+	 * @throws IOException if thrown by response methods
+	 */
+	public static void redirectRequest(final HttpServletRequest request, final HttpServletResponse response, final String url, final boolean contextRelative) throws IOException {
+		redirectRequest(request, response, url, contextRelative, true);
+	}
+	
+	/**
+	 * Issue a redirect for the passed HTTP request.
+	 * @param request request The HTTP request.
+	 * @param response The HTTP response.
+	 * @param url The URL to redirect to.
+	 * @param contextRelative Set to `true` to interpret the given URL as relative to the current ServletContext.
+	 * @param http10Compatible Set to `true` to stay compatible with HTTP 1.0 clients.
+	 * @throws IOException if thrown by response methods
+	 */
+	public static void redirectRequest(final HttpServletRequest request, final HttpServletResponse response, final String url, final boolean contextRelative, final boolean http10Compatible) throws IOException {
+		String targetUrl = "";
+		if (contextRelative && url.startsWith("/")) {
+			targetUrl = request.getContextPath();
+		}
+		targetUrl += url;
+		sendRedirect(request, response, targetUrl, http10Compatible);
+	}
+	
+	/**
+	 * Send a redirect back to the HTTP client.
+	 * Heavily inspired by: https://github.com/apache/shiro/blob/1.13.x/web/src/main/java/org/apache/shiro/web/util/RedirectView.java
+	 * @param request The HTTP request.
+	 * @param response The HTTP response.
+	 * @param targetUrl The URL to redirect to.
+	 * @param http10Compatible Set to `true` to stay compatible with HTTP 1.0 clients.
+	 * @throws IOException if thrown by response methods
+	 */
+	public static void sendRedirect(final HttpServletRequest request, final HttpServletResponse response, final String targetUrl, final boolean http10Compatible) throws IOException {
+		String encodedRedirectURL = response.encodeRedirectURL(targetUrl);
+		if (http10Compatible) {
+			// Always send status code 302.
+			response.sendRedirect(encodedRedirectURL);
+		} else {
+			// Correct HTTP status code is 303, in particular for POST requests.
+			response.setStatus(303);
+			response.setHeader("Location", encodedRedirectURL);
+		}
+	}
+	
+	/**
+	 * Extracts the unique ID from the passed Request by evaluating 
+	 * the HEADER_X_REQUEST_ID header (standard de-facto for this purposes).
+	 * @param request The HTTP request.
+	 * @return The Request ID or null if missing
+	 */
+	public static String getRequestID(final HttpServletRequest request) {
+		return getRequestID(request, false);
+	}
+	
+	/**
+	 * Extracts the unique ID from the passed Request by evaluating 
+	 * the HEADER_X_REQUEST_ID header (standard de-facto for this purposes).
+	 * If the ID is missing, you can specify whether to generate a new one (11chars pseudo-unique Postfix like QueueIDs).
+	 * @param request The HTTP request.
+	 * @param generate Set to `true` to generate a new ID if missing.
+	 * @return The Request ID or null if missing
+	 */
+	public static String getRequestID(final HttpServletRequest request, final boolean generate) {
+		String requestId = request.getHeader(HEADER_X_REQUEST_ID);
+		if (generate && StringUtils.isBlank(requestId)) {
+			requestId = RequestId.generateNew();
+		}
+		return requestId;
+	}
+	
+	/**
+	 * Checks if the passed Request is related to Browser prefetching purposes.
+	 * @param request The HTTP request to be evaluated.
+	 * @return boolean result
+	 */
+	public static boolean isPrefetchRequest(final HttpServletRequest request) {
+		String purpose = request.getHeader("Purpose");
+		if (purpose != null && purpose.equalsIgnoreCase("prefetch")) {
+			return true;
+		}
+		purpose = request.getHeader("Sec-Purpose");
+		if (purpose != null && purpose.equalsIgnoreCase("prefetch")) {
+			return true;
+		}
+		purpose = request.getHeader("X-Moz");
+		if (purpose != null && purpose.equalsIgnoreCase("prefetch")) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Checks if the passed Request can be considered a Request for speculative
+	 * purposes, such as prefetching or prerendering a page.
+	 * @param request The HTTP request to be evaluated.
+	 * @return boolean result
+	 */
+	public static boolean isSpeculativeRequest(final HttpServletRequest request) {
+		return isPrefetchRequest(request)
+			|| "prerender".equalsIgnoreCase(request.getHeader("Purpose"))
+			|| (request.getHeader("Sec-Purpose") != null && request.getHeader("Sec-Purpose").toLowerCase().contains("prerender"));		
+	}
+	
+	/**
+	 * Checks if the passed Request can be considered a Request for getting a Document.
+	 * @param request The HTTP request to be evaluated.
+	 * @return boolean result
+	 */
+	public static boolean isRequestToDocument(final HttpServletRequest request) {
+		return "document".equalsIgnoreCase(request.getHeader("Sec-Fetch-Dest"))
+			|| StringUtils.containsIgnoreCase(request.getHeader("Accept"), "text/html");
+	}
+	
+	/**
+	 * Checks if the passed Request can be considered a Request for speculative
+	 * purposes (such as prefetching or prerendering) targeted to a Document page.
+	 * @param request The HTTP request to be evaluated.
+	 * @return boolean result
+	 */
+	public static boolean isSpeculativeRequestToDocument(final HttpServletRequest request) {
+		if (!isSpeculativeRequest(request)) return false;
+		if (!isRequestToDocument(request)) return false;
+		if ("?1".equals(request.getHeader("Sec-Fetch-User"))) return false;
+		return true;
 	}
 	
 	public static Cookie getCookieObject(HttpServletRequest request, String name) {
@@ -1596,8 +1760,8 @@ public class ServletUtils {
 		return null;
 	}
 	
-	public static void eraseCookie(HttpServletResponse response, String name) {
-		setCookie(response, name, StringUtils.EMPTY, 0);
+	public static void eraseCookie(final HttpServletResponse response, final String name) {
+			setCookie(response, name, StringUtils.EMPTY, 0);
 	}
 	
 	public static String getCookie(HttpServletRequest request, String name) {
@@ -1628,20 +1792,19 @@ public class ServletUtils {
 	
 	/**
 	 * Sets a simple string value into a cookie with provided name.
-	 * 
-	 * @param response The HTTP response.
+	 * @param response The HTTP Response object.
 	 * @param name The cookie name.
 	 * @param value The string value.
 	 * @param duration The duration in sec.
 	 */
-	public static void setCookie(HttpServletResponse response, String name, String value, int duration) {
+	public static void setCookie(final HttpServletResponse response, final String name, final String value, final int duration) {
 		try {
-			Cookie coo = new Cookie(name, URLEncoder.encode(value, "UTF-8"));
-			coo.setMaxAge(duration);
+			Cookie coo = new Cookie(Check.notEmpty(name, "name"), URLEncoder.encode(value, "UTF-8"));
 			coo.setHttpOnly(true);
+			coo.setMaxAge(duration);
 			response.addCookie(coo);
 			
-		} catch(Exception ex) {
+		} catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
 	}
@@ -1655,7 +1818,7 @@ public class ServletUtils {
 	 * @param type The object type.
 	 * @param duration The duration in sec.
 	 */
-	public static void setCookie(HttpServletResponse response, String name, Object value, Class type, int duration) {
+	public static void setCookie(final HttpServletResponse response, final String name, final Object value, final Class type, final int duration) {
 		String cookie = LangUtils.serialize(value, type);
 		setCookie(response, name, cookie, duration);
 	}
@@ -1669,7 +1832,7 @@ public class ServletUtils {
 	 * @param value The string value.
 	 * @param duration The duration in sec.
 	 */
-	public static void setEncryptedCookie(String encryptionKey, HttpServletResponse response, String name, String value, int duration) {
+	public static void setEncryptedCookie(final String encryptionKey, HttpServletResponse response, final String name, final String value, final int duration) {
 		String cookie = encryptCookieValue(value, encryptionKey);
 		setCookie(response, name, cookie, duration);
 	}
