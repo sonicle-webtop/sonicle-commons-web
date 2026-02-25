@@ -100,6 +100,7 @@ import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,6 +117,8 @@ public class ServletUtils {
 	public static final String HEADER_X_FORWARDED_PORT = "X-Forwarded-Port";
 	public static final String HEADER_X_FORWARDED_PREFIX = "X-Forwarded-Prefix";
 	public static final String HEADER_X_REQUEST_ID = "X-Request-ID"; // https://devcenter.heroku.com/articles/http-request-id
+	public static final String HEADER_CACHE_CONTROL = "Cache-Control";
+	public static final String HEADER_VARY = "Vary";
 	
 	/**
 	 * Note that gzipping is only beneficial for larger resources. 
@@ -1183,9 +1186,22 @@ public class ServletUtils {
 	}
 	
 	/**
+	 * Sets the specified header.
+	 * Values will be joined together using `, ` separator char.
+	 * @param response The HTTP response.
+	 * @param name The name of the HTTP header to be set.
+	 * @param values A list of values to set.
+	 */
+	public static void setHeader(final HttpServletResponse response, final String name, final String... values) {
+		Check.notNull(response, "response");
+		Check.notEmpty(name, "name");
+		response.setHeader(name, LangUtils.joinStrings(", ", values));
+	}
+	
+	/**
 	 * Sets the <code>Location</code> header using provided URL.
 	 * URL value is expected to be escaped and may contain only ASCII characters.
-	 * @param response The HttpServletResponse
+	 * @param response The HTTP response.
 	 * @param url The URL to redirect to.
 	 */
 	public static void setLocationHeader(HttpServletResponse response, String url) {
@@ -1201,7 +1217,7 @@ public class ServletUtils {
 	 * Sets the <code>Content-Type</code> header using the provided mediaType. 
 	 * If not provided <code>application/octet-stream</code> will be used instead.
 	 * Character encoding will be set to UTF-8.
-	 * @param response The HttpServletResponse.
+	 * @param response The HTTP response.
 	 * @param mediaType The chosen mediaType.
 	 */
 	public static void setContentTypeHeader(HttpServletResponse response, String mediaType) {
@@ -1215,7 +1231,7 @@ public class ServletUtils {
 	 * https://stackoverflow.com/questions/18050718/utf-8-encoding-name-in-downloaded-file
 	 * https://stackoverflow.com/questions/5325322/java-servlet-download-filename-special-characters
 	 * http://test.greenbytes.de/tech/tc2231/#attwithfn2231utf8
-	 * @param response The HttpServletResponse.
+	 * @param response The HTTP response.
 	 * @param dispositionType The disposition mode.
 	 * @param filename The choosen filename.
 	 */
@@ -1280,6 +1296,15 @@ public class ServletUtils {
 		}
 	}
 	
+	/**
+	 * Sets the specified status-code into the response object.
+	 * @param response The HTTP response.
+	 * @param code The HTTP status code to set.
+	 */
+	public static void setStatus(final HttpServletResponse response, final int code) {
+		response.setStatus(code);
+	}
+	
 	public static void sendError(HttpServletResponse response, int error) {
 		try {
 			response.sendError(error);
@@ -1294,20 +1319,32 @@ public class ServletUtils {
 		CacheControl.cacheNotAllowed(response);
 	}
 	
-	public static void setCacheControl(HttpServletResponse response, int maxAge) {
-		response.setHeader("Cache-Control", "max-age=" + String.valueOf(maxAge));
+	/**
+	 * @deprecated Use CacheControl.Builder instead
+	 */
+	@Deprecated public static void setCacheControl(HttpServletResponse response, int maxAge) {
+		response.setHeader(HttpHeaders.CACHE_CONTROL, "max-age=" + String.valueOf(maxAge));
 	}
 	
-	public static void setCacheControlPrivate(HttpServletResponse response) {
-		response.setHeader("Cache-Control", "private");
+	/**
+	 * @deprecated Use CacheControl.Builder instead
+	 */
+	@Deprecated public static void setCacheControlPrivate(HttpServletResponse response) {
+		response.setHeader(HttpHeaders.CACHE_CONTROL, "private");
 	}
 	
-	public static void setCacheControlPrivateNoCache(HttpServletResponse response) {
-		response.setHeader("Cache-Control", "private, no-cache");
+	/**
+	 * @deprecated Use CacheControl.Builder instead
+	 */
+	@Deprecated public static void setCacheControlPrivateNoCache(HttpServletResponse response) {
+		response.setHeader(HttpHeaders.CACHE_CONTROL, "private, no-cache");
 	}
 	
-	public static void setCacheControlPrivateMaxAge(HttpServletResponse response, int maxAge) {
-		response.setHeader("Cache-Control", MessageFormat.format("private, max-age={0}", maxAge));//, must-revalidate
+	/**
+	 * @deprecated Use CacheControl.Builder instead
+	 */
+	@Deprecated public static void setCacheControlPrivateMaxAge(HttpServletResponse response, int maxAge) {
+		response.setHeader(HttpHeaders.CACHE_CONTROL, MessageFormat.format("private, max-age={0}", maxAge));//, must-revalidate
 	}
 	
 	public static void writeJsonResponse(HttpServletResponse response, Object data) throws IOException {
@@ -1701,11 +1738,11 @@ public class ServletUtils {
 	 * @return boolean result
 	 */
 	public static boolean isPrefetchRequest(final HttpServletRequest request) {
-		String purpose = request.getHeader("Purpose");
+		String purpose = request.getHeader("Sec-Purpose");
 		if (purpose != null && purpose.equalsIgnoreCase("prefetch")) {
 			return true;
 		}
-		purpose = request.getHeader("Sec-Purpose");
+		purpose = request.getHeader("Purpose");
 		if (purpose != null && purpose.equalsIgnoreCase("prefetch")) {
 			return true;
 		}
@@ -1747,7 +1784,8 @@ public class ServletUtils {
 	public static boolean isSpeculativeRequestToDocument(final HttpServletRequest request) {
 		if (!isSpeculativeRequest(request)) return false;
 		if (!isRequestToDocument(request)) return false;
-		if ("?1".equals(request.getHeader("Sec-Fetch-User"))) return false;
+		// This below seems not valid!
+		//if ("?1".equals(request.getHeader("Sec-Fetch-User"))) return false;
 		return true;
 	}
 	

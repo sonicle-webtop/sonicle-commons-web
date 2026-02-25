@@ -36,6 +36,7 @@ import com.sonicle.commons.LangUtils;
 import java.util.ArrayList;
 import javax.servlet.http.HttpServletResponse;
 import net.sf.qualitycheck.Check;
+import org.apache.http.HttpHeaders;
 
 /**
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control#directives
@@ -150,7 +151,7 @@ public class CacheControl {
 					}
 				}
 			}
-			response.setHeader("Cache-Control", LangUtils.joinStrings(", ", directives));
+			response.setHeader(HttpHeaders.CACHE_CONTROL, LangUtils.joinStrings(", ", directives));
 		}
 	}
 	
