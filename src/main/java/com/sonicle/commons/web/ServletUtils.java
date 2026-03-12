@@ -1305,9 +1305,15 @@ public class ServletUtils {
 		response.setStatus(code);
 	}
 	
-	public static void sendError(HttpServletResponse response, int error) {
+	public static void sendError(final HttpServletResponse response, final int error) {
 		try {
 			response.sendError(error);
+		} catch (IOException ex) { /* Do nothing... */ }
+	}
+	
+	public static void sendError(final HttpServletResponse response, final int error, final String message) {
+		try {
+			response.sendError(error, message);
 		} catch (IOException ex) { /* Do nothing... */ }
 	}
 	
