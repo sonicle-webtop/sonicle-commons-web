@@ -32,10 +32,10 @@
  */
 package com.sonicle.commons.web;
 
+import com.sonicle.commons.Check;
 import com.sonicle.commons.LangUtils;
 import java.util.ArrayList;
 import javax.servlet.http.HttpServletResponse;
-import net.sf.qualitycheck.Check;
 import org.apache.http.HttpHeaders;
 
 /**

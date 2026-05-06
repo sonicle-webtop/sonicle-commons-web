@@ -32,6 +32,7 @@
  */
 package com.sonicle.commons.web.json.bean;
 
+import com.sonicle.commons.Check;
 import com.sonicle.commons.web.json.JsonResult;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,7 +42,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import net.sf.qualitycheck.Check;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

@@ -34,20 +34,18 @@ package com.sonicle.commons.web.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sonicle.commons.web.gson.GsonExtJsGridFilterTypeAdapter;
+import com.sonicle.commons.Check;
 import com.sonicle.commons.web.gson.GsonISODateTypeAdapter;
 import com.sonicle.commons.web.gson.JodaDateTimeTypeAdapter;
 import com.sonicle.commons.web.gson.JodaLocalDateTypeAdapter;
 import com.sonicle.commons.web.gson.JodaLocalTimeTypeAdapter;
 import com.sonicle.commons.web.json.bean.StringArray;
-import com.sonicle.commons.web.json.extjs.ExtGridFilter;
 import com.sonicle.commons.web.json.extjs.ResultMeta;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.HashMap;
 import javax.servlet.http.HttpServletResponse;
-import net.sf.qualitycheck.Check;
 import org.apache.commons.lang3.StringUtils;
 
 /**
